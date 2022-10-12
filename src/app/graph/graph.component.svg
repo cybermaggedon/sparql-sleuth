@@ -1,0 +1,8 @@
+
+    <svg width="500" height="500">
+      <g>
+	<text *ngFor="let n of nodes" [attr.x]="200 + n.x" [attr.y]="200 + n.y">
+	  {{n.label}}
+	</text>
+      </g>
+    </svg>

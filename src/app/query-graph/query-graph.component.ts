@@ -16,6 +16,8 @@ export class QueryGraphComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+
+	this.run_query();
     }
 
     run_query() {
@@ -41,15 +43,15 @@ export class QueryGraphComponent implements OnInit {
 	    250
 	);
 
-	this.data = [];
+	let data = [];
 
 	for (let row of res) {
-	    this.data.push([
+	    data.push([
 		row.s, row.p, row.o.value
 	    ]);
 	}
 
-	console.log(res);
+	this.data = data;
 
     }
 
