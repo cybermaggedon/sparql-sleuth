@@ -40,10 +40,15 @@ export class QueryService {
 	this.data = data;
     }
 
-    query(s : string | undefined, p : string | undefined,
-	  o : Uri | string | undefined) : Triple[] {
+    query(
+	s : string | undefined, p : string | undefined,
+	o : Uri | string | undefined,
+	limit : number = 100
+    ) : Triple[] {
 
         let result : Triple[] = [];
+
+	let count = 0;
 
 	for (let it_s in this.data) {
 
@@ -72,6 +77,10 @@ export class QueryService {
 			    it_s, it_p, new Value(undefined, dim_o.value)
 			));
 		    }
+
+		    count += 1;
+
+		    if (count >= limit) return result;
 
 		}
 

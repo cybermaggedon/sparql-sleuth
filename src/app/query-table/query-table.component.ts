@@ -9,6 +9,8 @@ import { QueryService } from '../query.service';
 })
 export class QueryTableComponent implements OnInit {
 
+    columns : string[] = [ 's', 'p', 'o' ];
+
     constructor(private query : QueryService) {
     }
 
@@ -21,7 +23,7 @@ export class QueryTableComponent implements OnInit {
 
 //	let res = this.query.query(undefined, undefined, undefined);
 
-	let res = this.query.query(undefined, "http://pivotlabs.vc/challenges/p#has-source", "http://pivotlabs.vc/challenges/s/ktnie");
+	let res = this.query.query(undefined, "http://pivotlabs.vc/challenges/p#has-source", "http://pivotlabs.vc/challenges/s/ktnie", 3);
 
 	console.log(res);
 
