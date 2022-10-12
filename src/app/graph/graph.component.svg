@@ -1,8 +1,20 @@
 
-    <svg width="500" height="500">
-      <g>
-	<text *ngFor="let n of nodes" [attr.x]="200 + n.x" [attr.y]="200 + n.y">
-	  {{n.label}}
-	</text>
-      </g>
-    </svg>
+<svg width="500" height="500">
+  <g>
+    <line *ngFor="let l of links"
+	   [attr.x1]="sx(l.source.x)"
+	   [attr.y1]="sy(l.source.y)"
+	   [attr.x2]="sx(l.target.x)"
+	   [attr.y2]="sy(l.target.y)"
+	   stroke="#8080c0">
+    </line>
+    <circle *ngFor="let n of nodes"
+	     [attr.cx]="sx(n.x)" [attr.cy]="sy(n.y)" r="10"
+	     style="fill: #e08040">
+    </circle>
+    <text *ngFor="let n of nodes"
+	   [attr.x]="sx(n.x, 15)" [attr.y]="sy(n.y, 5)">
+      {{n.label}}
+    </text>
+  </g>
+</svg>

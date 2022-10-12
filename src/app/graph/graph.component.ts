@@ -39,28 +39,16 @@ export class GraphComponent implements OnInit {
 
 	this.nodes = [
 	    {
-		index: 0,
-		x: 4,
-		y: 6,
-		vx: 0,
-		vy: 0,
-		label: "a",
+		index: 0, x: 4, y: 6, vx: 0, vy: 0, label: "a",
 	    },
 	    {
-		index: 1,
-		x: 1.01,
-		y: 6.01,
-		vx: 0,
-		vy: 0,
-		label: "b",
+		index: 1, x: 1.01, y: 6.01, vx: 0, vy: 0, label: "b",
 	    },
 	    {
-		index: 2,
-		x: 2.03,
-		y: 2.03,
-		vx: 0,
-		vy: 0,
-		label: "c",
+		index: 2, x: 2.03, y: 2.03, vx: 0, vy: 0, label: "c",
+	    },
+	    {
+		index: 3, x: 2.03, y: 2.03, vx: 0, vy: 0, label: "d",
 	    }
 	];
 
@@ -73,6 +61,16 @@ export class GraphComponent implements OnInit {
 	    {
 		source: 1,
 		target: 2,
+		index: 1
+	    },
+	    {
+		source: 1,
+		target: 3,
+		index: 1
+	    },
+	    {
+		source: 2,
+		target: 3,
 		index: 1
 	    }
 	];
@@ -103,6 +101,14 @@ export class GraphComponent implements OnInit {
 
     draw(data : string[][]) : void {
 	
+    }
+
+    sx(x : number, adj : number = 0) {
+	return 200 + 3 * x + adj;
+    }
+
+    sy(y : number, adj : number = 0) {
+	return 200 + 3 * y + adj;
     }
 
 }
