@@ -5,19 +5,16 @@ import { DataTriples, data } from './data';
 type Uri = string;
 
 class Value {
-    constructor(uri : string | undefined, literal : string | undefined) {
-	this.uri = uri;
-	this.literal = literal;
+
+    value : string = "";
+    uri : boolean = false;
+
+    constructor(value : string = "", is_uri : boolean = false) {
+	this.value = value;
+	this.uri = is_uri;
     }
-    is_uri() : boolean { return this.uri != undefined; }
-    is_literal() : boolean { return this.uri != undefined; }
-    value() : string {
-	if (this.uri != undefined) return this.uri;
-	if (this.literal != undefined) return this.literal;
-	return "FIXME: Should not happen";
-    }
-    uri? : string = "";
-    literal? : string = "";
+    is_uri() : boolean { return this.uri; }
+    is_literal() : boolean { return !this.uri; }
 };
 
 class Triple {
@@ -26,7 +23,7 @@ class Triple {
     }
     s : Uri = "";
     p : Uri = "";
-    o : Value = new Value(undefined, "");
+    o : Value = new Value();
 };
 
 @Injectable({
@@ -70,11 +67,11 @@ export class QueryService {
 
 		    if (dim_o.type == "literal") {
 			result.push(new Triple(
-			    it_s, it_p, new Value(dim_o.value, undefined)
+			    it_s, it_p, new Value(dim_o.value, false)
 			));
 		    } else {
 			result.push(new Triple(
-			    it_s, it_p, new Value(undefined, dim_o.value)
+			    it_s, it_p, new Value(dim_o.value, true)
 			));
 		    }
 
