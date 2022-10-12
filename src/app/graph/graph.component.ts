@@ -39,39 +39,31 @@ export class GraphComponent implements OnInit {
 
 	this.nodes = [
 	    {
-		index: 0, x: 4, y: 6, vx: 0, vy: 0, label: "a",
+		x: 4, y: 6, vx: 0, vy: 0, label: "a",
 	    },
 	    {
-		index: 1, x: 1.01, y: 6.01, vx: 0, vy: 0, label: "b",
+		x: 1.01, y: 6.01, vx: 0, vy: 0, label: "b",
 	    },
 	    {
-		index: 2, x: 2.03, y: 2.03, vx: 0, vy: 0, label: "c",
+		x: 2.03, y: 2.03, vx: 0, vy: 0, label: "c",
 	    },
 	    {
-		index: 3, x: 2.03, y: 2.03, vx: 0, vy: 0, label: "d",
+		x: 2.03, y: 2.03, vx: 0, vy: 0, label: "d",
 	    }
 	];
 
 	this.links = [
 	    {
-		source: 0,
-		target: 1,
-		index: 0
+		source: 0, target: 1
 	    },
 	    {
-		source: 1,
-		target: 2,
-		index: 1
+		source: 1, target: 2
 	    },
 	    {
-		source: 1,
-		target: 3,
-		index: 1
+		source: 1, target: 3
 	    },
 	    {
-		source: 2,
-		target: 3,
-		index: 1
+		source: 2, target: 3
 	    }
 	];
 
