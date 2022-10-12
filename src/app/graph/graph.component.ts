@@ -1,6 +1,6 @@
 
 import {
-    Component, OnInit, Input, ViewChild, ElementRef
+    Component, OnInit, Input, ViewChild, ElementRef, HostListener
 } from '@angular/core';
 import * as d3 from 'd3';
 import { interval } from 'rxjs';
@@ -13,29 +13,25 @@ import { take } from 'rxjs';
 })
 export class GraphComponent implements OnInit {
 
-    private margin = 50;
-    private width = 1000 - (this.margin * 2);
-    private height = 1000 - (this.margin * 2);
+    private width = 0;
+    private height = 0;
+
+    @ViewChild('box') private graph_container? : ElementRef;
 
     @Input("data") data : string[][] = [];
 
-    @ViewChild("graph") graphElement? : ElementRef = undefined;
-    
-    private svgElement? : any = undefined; // FIXME: Type HTMLElement?
-
     simulator : any;
-    cnt : number = 5;
+
+    scale : number = 1;
 
     nodes : any[] = [];
     links : any [] = [];
 
     tick() : void {
-	this.cnt += 1;
 	this.simulator.tick();
     }
 
     constructor() {
-	this.cnt = 5;
 
 	this.nodes = [
 	    {
@@ -79,28 +75,40 @@ export class GraphComponent implements OnInit {
 	interval(10).pipe(take(100)).subscribe(val => this.tick());
     }
 
-    createSvg() : void {
-
-	let transf = "translate(" + this.margin + "," + this.margin + ")";
-
-	this.svgElement = d3.select("figure#graph")
-	    .append("svg")
-	    .attr("width", this.width + (this.margin * 2))
-	    .attr("height", this.height + (this.margin * 2))
-	    .append("g")
-	    .attr("transform", transf);
+    sx(x : number, adj : number = 0, scale : number = 1) {
+	return 200 + this.scale * x + adj;
     }
 
-    draw(data : string[][]) : void {
-	
+    sy(y : number, adj : number = 0, scale : number = 1) {
+	return 200 + this.scale * y + adj;
     }
 
-    sx(x : number, adj : number = 0) {
-	return 200 + 3 * x + adj;
+    getContainerWidth() : number {
+	if (this.graph_container)
+	    return this.graph_container.nativeElement.clientWidth;
+	return 0;
     }
 
-    sy(y : number, adj : number = 0) {
-	return 200 + 3 * y + adj;
+    getContainerHeight() : number {
+	if (this.graph_container)
+	    return this.graph_container.nativeElement.clientHeight;
+	return 0;
+    }
+
+    @HostListener('window:resize') onResize() {
+	console.log(this.getContainerWidth(), this.getContainerHeight());
+    }
+
+    @HostListener('wheel', ['$event']) onScroll(ev : WheelEvent) {
+	var delta = Math.max(-1, Math.min(1, (ev.deltaY)));
+	if(delta > 0){
+	    console.log("zoom out");
+	    this.scale = this.scale / 1.2;
+	}else if(delta < 0){
+	    console.log("zoom in");
+	    this.scale = this.scale * 1.2;
+	}
+	console.log(this.scale);
     }
 
 }
