@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { QueryService } from '../query.service';
+import { QueryService, Triple } from '../query.service';
 
 @Component({
     selector: 'query-graph',
@@ -9,7 +9,7 @@ import { QueryService } from '../query.service';
 })
 export class QueryGraphComponent implements OnInit {
 
-    data : string[][] = [];
+    data : Triple[] = [];
 
     constructor(
 	private query : QueryService
@@ -43,15 +43,7 @@ export class QueryGraphComponent implements OnInit {
 	    250
 	);
 
-	let data = [];
-
-	for (let row of res) {
-	    data.push([
-		row.s, row.p, row.o.value
-	    ]);
-	}
-
-	this.data = data;
+	this.data = res;
 
     }
 

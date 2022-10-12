@@ -5,6 +5,7 @@ import {
 import * as d3 from 'd3';
 import { interval } from 'rxjs';
 import { take } from 'rxjs';
+import { Triple } from '../query.service';
 
 @Component({
   selector: 'graph',
@@ -18,7 +19,7 @@ export class GraphComponent implements OnInit {
 
     @ViewChild('box') private graph_container? : ElementRef;
 
-    @Input("data") data : string[][] = [];
+    @Input("data") data : Triple[] = [];
 
     simulator : any;
 
@@ -32,7 +33,10 @@ export class GraphComponent implements OnInit {
     }
 
     constructor() {
+    }
 
+    draw() {
+/*
 	this.nodes = [
 	    {
 		x: 4, y: 6, vx: 0, vy: 0, label: "a",
@@ -62,17 +66,57 @@ export class GraphComponent implements OnInit {
 		source: 2, target: 3
 	    }
 	];
+*/
+
+	this.nodes = [];
+	this.links = [];
+
+	let node_map : { [ key : string ] : number } = {};
+	let link_map : { [ key : string ] : number } = {};
+	
+	for(let d of this.data) {
+
+	    if (!(d.s in node_map)) {
+		node_map[d.s] = this.nodes.length;
+		this.nodes.push({
+		    x: 0, y: 0, vx: 0, vy: 0, label: d.s
+		});
+	    }
+
+	    if (!(d.o.value in node_map)) {
+		node_map[d.o.value] = this.nodes.length;
+		this.nodes.push({
+		    x: 0, y: 0, vx: 0, vy: 0, label: d.o.value
+		});
+	    }
+
+	    let lid = d.s + " " + d.p + " " + d.o.value;
+
+	    if (!(lid in link_map)) {
+		link_map[lid] = this.links.length;
+		this.links.push({
+		    source: node_map[d.s],
+		    target: node_map[d.o.value],
+		});
+	    }
+
+	}
+
+	console.log(this.nodes);
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .stop()
 	    .force("charge", d3.forceManyBody())
 	    .force("link", d3.forceLink(this.links))
 	    .force("center", d3.forceCenter());
+
+	interval(10).pipe(take(200)).subscribe(val => this.tick());
+
     }
     
     ngOnInit(): void {
-	console.log(this.data);
-	interval(10).pipe(take(100)).subscribe(val => this.tick());
+//	console.log(this.data);
+	this.draw();
     }
 
     sx(x : number, adj : number = 0, scale : number = 1) {
@@ -102,13 +146,10 @@ export class GraphComponent implements OnInit {
     @HostListener('wheel', ['$event']) onScroll(ev : WheelEvent) {
 	var delta = Math.max(-1, Math.min(1, (ev.deltaY)));
 	if(delta > 0){
-	    console.log("zoom out");
 	    this.scale = this.scale / 1.2;
 	}else if(delta < 0){
-	    console.log("zoom in");
 	    this.scale = this.scale * 1.2;
 	}
-	console.log(this.scale);
     }
 
 }

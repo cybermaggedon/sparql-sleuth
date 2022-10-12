@@ -17,7 +17,7 @@ class Value {
     is_literal() : boolean { return !this.uri; }
 };
 
-class Triple {
+export class Triple {
     constructor(s : Uri, p : Uri, o : Value) {
 	this.s = s; this.p = p; this.o = o;
     }
