@@ -43,27 +43,33 @@ export class QueryService {
     query(s : string | undefined, p : string | undefined,
 	  o : Uri | string | undefined) : Triple[] {
 
-	let result : Triple[] = [];
+        let result : Triple[] = [];
 
 	for (let it_s in this.data) {
 
+	    let dim_s = this.data[it_s];
+
 	    if (s != undefined && s != it_s) continue;
 
-	    for (let it_p in this.data[it_s]) {
+	    for (let it_p in dim_s) {
+
+		let dim_p = dim_s[it_p];
 
 		if (p != undefined && p != it_p) continue;
 
-		for (let it_o in this.data[it_s][it_p]) {
+		for (let it_o in dim_p) {
 
-		    if (o != undefined && o != it_o) continue;
+		    let dim_o = dim_p[it_o];
 
-		    if (this.data[it_s][it_p][it_o].type == "literal") {
+		    if (o != undefined && o != dim_o.value) continue;
+
+		    if (dim_o.type == "literal") {
 			result.push(new Triple(
-			    it_s, it_p, new Value(it_p, undefined)
+			    it_s, it_p, new Value(dim_o.value, undefined)
 			));
 		    } else {
 			result.push(new Triple(
-			    it_s, it_p, new Value(undefined, it_p)
+			    it_s, it_p, new Value(undefined, dim_o.value)
 			));
 		    }
 

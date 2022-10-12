@@ -1,13 +1,3 @@
-/*
-export class DataTriples {
-    [ s : string ] : {
-	[ p : string ] : {
-	    value : string;
-	    type : string;
-	}[];
-    }
-    };
-*/
 
 export type DataTriples = {
     [ s : string ] : {
