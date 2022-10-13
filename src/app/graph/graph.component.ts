@@ -14,9 +14,6 @@ import { Triple } from '../query.service';
 })
 export class GraphComponent implements OnInit {
 
-//    private width = 0;
-//    private height = 0;
-
     @ViewChild('box') private graph_container? : ElementRef;
 
     @Input("data") data : Triple[] = [];
@@ -27,10 +24,14 @@ export class GraphComponent implements OnInit {
 	x : number,
 	y : number,
 	scale : number,
+	width : number,
+	height : number,
     } = {
-	x: 200,
-	y: 200,
+	x: 0,
+	y: 0,
 	scale: 1,
+	width: 0,
+	height: 0,
     };
 
     nodes : any[] = [];
@@ -89,11 +90,6 @@ export class GraphComponent implements OnInit {
 
 	interval(10).subscribe(val => this.tick());
 
-//	this.width = this.getContainerWidth();
-//	this.height = this.getContainerHeight();
-//	console.log(this.width, this.height);
-//	console.log(this.graph_container);
-
     }
     
     ngOnInit() : void {
@@ -101,38 +97,33 @@ export class GraphComponent implements OnInit {
     }
 
     ngAfterViewInit() : void {
+	if (this.graph_container) {
+	    this.view.width = this.graph_container.nativeElement.clientWidth;
+	    this.view.height = this.graph_container.nativeElement.clientHeight;
+	}
     }
 
     sx(x : number, view : any, adj : number = 0) {
-	return view.x + view.scale * x + adj;
+	return view.x + this.view.width / 2 + view.scale * x + adj;
     }
 
     sy(y : number, view : any, adj : number = 0) {
-	return view.y + view.scale * y + adj;
+	return view.y + this.view.height / 2 + view.scale * y + adj;
     }
 
     ax(x : number, view : any) {
-	return (x - view.x) / view.scale;
+	return (x - view.x - this.view.width / 2) / view.scale;
     }
 
     ay(y : number, view : any) {
-	return (y - view.y) / view.scale;
-    }
-
-    getContainerWidth() : number {
-	if (this.graph_container)
-	    return this.graph_container.nativeElement.clientWidth;
-	return 0;
-    }
-
-    getContainerHeight() : number {
-	if (this.graph_container)
-	    return this.graph_container.nativeElement.clientHeight;
-	return 0;
+	return (y - view.y - this.view.height / 2) / view.scale;
     }
 
     @HostListener('window:resize') onResize() {
-	console.log(this.getContainerWidth(), this.getContainerHeight());
+	if (this.graph_container) {
+	    this.view.width = this.graph_container.nativeElement.clientWidth;
+	    this.view.height = this.graph_container.nativeElement.clientHeight;
+	}
     }
 
     selectedNode? : any = undefined;
