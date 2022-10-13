@@ -23,7 +23,15 @@ export class GraphComponent implements OnInit {
 
     simulator : any;
 
-    scale : number = 1;
+    view : {
+	x : number,
+	y : number,
+	scale : number,
+    } = {
+	x: 200,
+	y: 200,
+	scale: 1,
+    };
 
     nodes : any[] = [];
     links : any [] = [];
@@ -119,12 +127,20 @@ export class GraphComponent implements OnInit {
 	this.draw();
     }
 
-    sx(x : number, adj : number = 0, scale : number = 1) {
-	return 200 + this.scale * x + adj;
+    sx(x : number, view : any, adj : number = 0) {
+	return view.x + view.scale * x + adj;
     }
 
-    sy(y : number, adj : number = 0, scale : number = 1) {
-	return 200 + this.scale * y + adj;
+    sy(y : number, view : any, adj : number = 0) {
+	return view.y + view.scale * y + adj;
+    }
+
+    ax(x : number, view : any) {
+	return x / view.scale - view.x;
+    }
+
+    ay(y : number, view : any) {
+	return y / view.scale - view.y;
     }
 
     getContainerWidth() : number {
@@ -153,32 +169,65 @@ export class GraphComponent implements OnInit {
 	}
 	*/
 
+    selectedNode? : any = undefined;
+    selectedCanvas : boolean = false;
+    selectedX : number = 0;
+    selectedY : number = 0;
+    prevX : number = 0;
+    prevY : number = 0;
+
     node_pointer_down(ev : any, node : any) {
-	console.log("Pointer down", node);
+	this.selectedNode = node;
+	this.selectedCanvas = false;
     }
 
     node_click(ev : any, node : any) {
-	console.log("Click", node);
     }
 
-    svg_pointer_down(ev : any) {
-	console.log("SVG pointer down");
+    svg_pointer_down(event : PointerEvent) {
+	if (this.selectedNode == undefined) {
+	    this.selectedCanvas = true;
+	    this.selectedX = event.offsetX;
+	    this.selectedY = event.offsetY;
+	    this.prevX = this.view.x;
+	    this.prevY = this.view.y;
+	    console.log("MOVE");
+	}
+	return false;
     }
 
     svg_pointer_up(ev : any) {
-	console.log("SVG pointer up");
+	this.selectedNode = undefined;
+	this.selectedCanvas = false;
     }
 
-    svg_pointer_move(ev : any) {
-//	console.log("SVG pointer move");
+    svg_pointer_move(event : PointerEvent) {
+	if (this.selectedNode) {
+	    this.selectedNode.x = this.ax(event.offsetX, this.view);
+	    this.selectedNode.y = this.ay(event.offsetY, this.view);
+	}
+	if (this.selectedCanvas) {
+	    this.view.x = (event.offsetX - this.selectedX + this.prevX) / this.view.scale;
+	    this.view.y = (event.offsetY - this.selectedY + this.prevY) / this.view.scale;
+//	    this.selectedX = event.offsetX;
+//	    this.selectedY = event.offsetY;
+	    //	    this.view.x = (event.offsetX - this.view.x)  / this.view.scale;
+//	    console.log(event.offsetX, this.view.x, this.view.scale);
+//	    this.view.x = (event.offsetX - this.view.x) / this.view.scale;
+//	    this.view.y = (event.offsetY + this.view.y) / this.view.scale;
+	}
     }
 
-    svg_wheel(ev : any) {
-//	console.log("SVG wheel");
+    svg_wheel(event: WheelEvent) {
+	var delta = Math.max(-1, Math.min(1, (event.deltaY)));
+	if (delta > 0) {
+	    this.view.scale = this.view.scale / 1.2;
+	} else if(delta < 0) {
+	    this.view.scale = this.view.scale * 1.2;
+	}
     }
 
     svg_click(ev : any) {
-//	console.log("SVG click");
     }
 
 }
