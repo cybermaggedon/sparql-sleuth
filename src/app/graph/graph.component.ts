@@ -142,7 +142,7 @@ export class GraphComponent implements OnInit {
     @HostListener('window:resize') onResize() {
 	console.log(this.getContainerWidth(), this.getContainerHeight());
     }
-
+/*
     @HostListener('wheel', ['$event']) onScroll(ev : WheelEvent) {
 	var delta = Math.max(-1, Math.min(1, (ev.deltaY)));
 	if(delta > 0){
@@ -150,6 +150,35 @@ export class GraphComponent implements OnInit {
 	}else if(delta < 0){
 	    this.scale = this.scale * 1.2;
 	}
+	}
+	*/
+
+    node_pointer_down(ev : any, node : any) {
+	console.log("Pointer down", node);
+    }
+
+    node_click(ev : any, node : any) {
+	console.log("Click", node);
+    }
+
+    svg_pointer_down(ev : any) {
+	console.log("SVG pointer down");
+    }
+
+    svg_pointer_up(ev : any) {
+	console.log("SVG pointer up");
+    }
+
+    svg_pointer_move(ev : any) {
+//	console.log("SVG pointer move");
+    }
+
+    svg_wheel(ev : any) {
+//	console.log("SVG wheel");
+    }
+
+    svg_click(ev : any) {
+//	console.log("SVG click");
     }
 
 }

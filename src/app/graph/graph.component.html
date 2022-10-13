@@ -1,5 +1,11 @@
 <div #box class="box">
-  <svg>
+  <svg
+    (pointerdown)="svg_pointer_down($event)"
+    (pointerup)="svg_pointer_up($event)"
+    (pointermove)="svg_pointer_move($event)"
+    (wheel)="svg_wheel($event)"
+    (click)="svg_click($event)"
+    >
     <g>
       <line *ngFor="let l of links"
 	    [attr.x1]="sx(l.source.x, 0, scale)"
@@ -10,7 +16,10 @@
       </line>
       <circle *ngFor="let n of nodes"
 	      [attr.cx]="sx(n.x, 0, scale)" [attr.cy]="sy(n.y, 0, scale)" r="10"
-	      style="fill: #e08040">
+	      style="fill: #e08040"
+	      (pointerdown)="node_pointer_down($event, n)"
+	      (click)="node_click($event, n)"
+	      >
       </circle>
       <text *ngFor="let n of nodes"
 	    [attr.x]="sx(n.x, 15, scale)" [attr.y]="sy(n.y, 5, scale)">
