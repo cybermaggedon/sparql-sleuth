@@ -207,14 +207,8 @@ export class GraphComponent implements OnInit {
 	    this.selectedNode.y = this.ay(event.offsetY, this.view);
 	}
 	if (this.selectedCanvas) {
-	    this.view.x = (event.offsetX - this.selectedX + this.prevX) / this.view.scale;
-	    this.view.y = (event.offsetY - this.selectedY + this.prevY) / this.view.scale;
-//	    this.selectedX = event.offsetX;
-//	    this.selectedY = event.offsetY;
-	    //	    this.view.x = (event.offsetX - this.view.x)  / this.view.scale;
-//	    console.log(event.offsetX, this.view.x, this.view.scale);
-//	    this.view.x = (event.offsetX - this.view.x) / this.view.scale;
-//	    this.view.y = (event.offsetY + this.view.y) / this.view.scale;
+	    this.view.x = this.prevX + (event.offsetX - this.selectedX);
+	    this.view.y = this.prevY + (event.offsetY - this.selectedY);
 	}
     }
 
