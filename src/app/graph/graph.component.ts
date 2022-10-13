@@ -14,8 +14,8 @@ import { Triple } from '../query.service';
 })
 export class GraphComponent implements OnInit {
 
-    private width = 0;
-    private height = 0;
+//    private width = 0;
+//    private height = 0;
 
     @ViewChild('box') private graph_container? : ElementRef;
 
@@ -44,37 +44,6 @@ export class GraphComponent implements OnInit {
     }
 
     draw() {
-/*
-	this.nodes = [
-	    {
-		x: 4, y: 6, vx: 0, vy: 0, label: "a",
-	    },
-	    {
-		x: 1.01, y: 6.01, vx: 0, vy: 0, label: "b",
-	    },
-	    {
-		x: 2.03, y: 2.03, vx: 0, vy: 0, label: "c",
-	    },
-	    {
-		x: 2.03, y: 2.03, vx: 0, vy: 0, label: "d",
-	    }
-	];
-
-	this.links = [
-	    {
-		source: 0, target: 1
-	    },
-	    {
-		source: 1, target: 2
-	    },
-	    {
-		source: 1, target: 3
-	    },
-	    {
-		source: 2, target: 3
-	    }
-	];
-*/
 
 	this.nodes = [];
 	this.links = [];
@@ -116,15 +85,22 @@ export class GraphComponent implements OnInit {
 	    .stop()
 	    .force("charge", d3.forceManyBody())
 	    .force("link", d3.forceLink(this.links))
-	    .force("center", d3.forceCenter());
+	    .force("center", d3.forceCenter(0, 0));
 
-	interval(10).pipe(take(200)).subscribe(val => this.tick());
+	interval(10).subscribe(val => this.tick());
+
+//	this.width = this.getContainerWidth();
+//	this.height = this.getContainerHeight();
+//	console.log(this.width, this.height);
+//	console.log(this.graph_container);
 
     }
     
-    ngOnInit(): void {
-//	console.log(this.data);
+    ngOnInit() : void {
 	this.draw();
+    }
+
+    ngAfterViewInit() : void {
     }
 
     sx(x : number, view : any, adj : number = 0) {
@@ -136,11 +112,11 @@ export class GraphComponent implements OnInit {
     }
 
     ax(x : number, view : any) {
-	return x / view.scale - view.x;
+	return (x - view.x) / view.scale;
     }
 
     ay(y : number, view : any) {
-	return y / view.scale - view.y;
+	return (y - view.y) / view.scale;
     }
 
     getContainerWidth() : number {
@@ -158,16 +134,6 @@ export class GraphComponent implements OnInit {
     @HostListener('window:resize') onResize() {
 	console.log(this.getContainerWidth(), this.getContainerHeight());
     }
-/*
-    @HostListener('wheel', ['$event']) onScroll(ev : WheelEvent) {
-	var delta = Math.max(-1, Math.min(1, (ev.deltaY)));
-	if(delta > 0){
-	    this.scale = this.scale / 1.2;
-	}else if(delta < 0){
-	    this.scale = this.scale * 1.2;
-	}
-	}
-	*/
 
     selectedNode? : any = undefined;
     selectedCanvas : boolean = false;
@@ -191,7 +157,6 @@ export class GraphComponent implements OnInit {
 	    this.selectedY = event.offsetY;
 	    this.prevX = this.view.x;
 	    this.prevY = this.view.y;
-	    console.log("MOVE");
 	}
 	return false;
     }
@@ -205,6 +170,7 @@ export class GraphComponent implements OnInit {
 	if (this.selectedNode) {
 	    this.selectedNode.x = this.ax(event.offsetX, this.view);
 	    this.selectedNode.y = this.ay(event.offsetY, this.view);
+	    this.simulator.restart();
 	}
 	if (this.selectedCanvas) {
 	    this.view.x = this.prevX + (event.offsetX - this.selectedX);
