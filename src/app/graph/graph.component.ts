@@ -89,10 +89,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	}
 
 	this.simulator = d3.forceSimulation(this.nodes)
+	    .alpha(1)
 	    .stop()
 	    .force("charge", d3.forceManyBody().strength(-20))
 	    .force("link", d3.forceLink(this.links).distance(0.5))
-	    .force("center", d3.forceCenter(0, 0).strength(0.3));
+	    .force("center", d3.forceCenter(0, 0).strength(0.1));
 
 	interval(10).subscribe(val => this.tick());
 
@@ -187,6 +188,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	if (this.selectedNode) {
 	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
 	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
+	    this.simulator.alpha(0.02);
 	    this.simulator.restart();
 	}
 
