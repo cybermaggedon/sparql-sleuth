@@ -8,24 +8,24 @@
     >
     <g>
       <line *ngFor="let l of links"
-	    [attr.x1]="sx(l.source.x, view)"
-	    [attr.y1]="sy(l.source.y, view)"
-	    [attr.x2]="sx(l.target.x, view)"
-	    [attr.y2]="sy(l.target.y, view)"
+	    [attr.x1]="c2sx(l.source.x, view)"
+	    [attr.y1]="c2sy(l.source.y, view)"
+	    [attr.x2]="c2sx(l.target.x, view)"
+	    [attr.y2]="c2sy(l.target.y, view)"
 	    stroke="#8080c0">
       </line>
       <text *ngFor="let n of nodes"
-	    [attr.x]="sx(n.x, view, 15)" [attr.y]="sy(n.y, view, 5)">
+	    [attr.x]="c2sx(n.x, view, 15)" [attr.y]="c2sy(n.y, view, 5)">
 	{{n.label}}
       </text>
       <circle *ngFor="let n of nodes"
-	      [attr.cx]="sx(n.x, view)" [attr.cy]="sy(n.y, view)" r="10"
+	      [attr.cx]="c2sx(n.x, view)" [attr.cy]="c2sy(n.y, view)" r="10"
 	      style="fill: #e08040"
 	      (pointerdown)="node_pointer_down($event, n)"
 	      (click)="node_click($event, n)"
 	      >
       </circle>
-      <circle [attr.cx]="sx(0, view)" [attr.cy]="sy(0, view)" r="5">
+      <circle [attr.cx]="c2sx(0, view)" [attr.cy]="c2sy(0, view)" r="5">
       </circle>
     </g>
   </svg>

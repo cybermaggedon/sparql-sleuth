@@ -113,19 +113,19 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	this.data_subject.next(this.data);
     }
 
-    sx(x : number, view : any, adj : number = 0) {
+    c2sx(x : number, view : any, adj : number = 0) {
 	return view.x + this.view.width / 2 + view.scale * x + adj;
     }
 
-    sy(y : number, view : any, adj : number = 0) {
+    c2sy(y : number, view : any, adj : number = 0) {
 	return view.y + this.view.height / 2 + view.scale * y + adj;
     }
 
-    ax(x : number, view : any) {
+    s2cx(x : number, view : any) {
 	return (x - view.x - this.view.width / 2) / view.scale;
     }
 
-    ay(y : number, view : any) {
+    s2cy(y : number, view : any) {
 	return (y - view.y - this.view.height / 2) / view.scale;
     }
 
@@ -175,8 +175,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
     svg_pointer_move(event : PointerEvent) {
 	if (this.selectedNode) {
-	    this.selectedNode.x = this.ax(event.offsetX, this.view);
-	    this.selectedNode.y = this.ay(event.offsetY, this.view);
+	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
+	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
 	    this.simulator.restart();
 	}
 	if (this.selectedCanvas) {
@@ -188,8 +188,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     svg_wheel(event: WheelEvent) {
 	var delta = Math.max(-1, Math.min(1, (event.deltaY)));
 	if (delta > 0) {
+	    if (this.view.scale < 0.002) return;
 	    this.view.scale = this.view.scale / 1.2;
 	} else if(delta < 0) {
+	    if (this.view.scale > 20) return;
 	    this.view.scale = this.view.scale * 1.2;
 	}
     }
