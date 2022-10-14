@@ -46,6 +46,14 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	this.width_subject.subscribe(w => this.view.width = w);
 	this.height_subject.subscribe(h => this.view.height = h);
 	this.data_subject.subscribe(data => this.draw(data));
+
+	interval(1000).subscribe(t => {
+	    //	    console.log(this.view.x, this.view.y, this.view.scale);
+//	    console.log(this.c2sx(0, this.view), this.c2sy(0, this.view));
+//	    console.log(">", this.view.width, this.view.height);
+//	    console.log(">>", this.graph_container);
+	});
+
     }
 
     draw(data: Triple[]) {
@@ -105,8 +113,17 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     ngAfterViewInit() : void {
+
 	// FIXME: Why this hack?
-	setTimeout(this.updateDimensions, 1);
+	interval(10).pipe(take(1)).subscribe(t => {
+	    this.updateDimensions()
+	});
+
+	console.log(">!!",
+		    this.graph_container!.nativeElement.clientWidth,
+		    this.graph_container!.nativeElement.clientHeight
+		   );
+
     }
 
     ngOnChanges() : void {
@@ -130,6 +147,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     updateDimensions() {
+	console.log("GC", this.graph_container);
 	if (this.graph_container) {
 	    let ne = this.graph_container.nativeElement;
 	    this.width_subject.next(ne.clientWidth);
