@@ -8,6 +8,8 @@ import { interval, Subject } from 'rxjs';
 import { take } from 'rxjs';
 import { Triple } from '../query.service';
 
+import { View } from '../view';
+
 @Component({
   selector: 'graph',
   templateUrl: './graph.component.html',
@@ -21,19 +23,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
     simulator : any;
 
-    view : {
-	x : number,
-	y : number,
-	scale : number,
-	width : number,
-	height : number,
-    } = {
-	x: 0,
-	y: 0,
-	scale: 1,
-	width: 0,
-	height: 0,
-    };
+    view : View;
 
     nodes : any[] = [];
     links : any [] = [];
@@ -47,12 +37,18 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	this.height_subject.subscribe(h => this.view.height = h);
 	this.data_subject.subscribe(data => this.draw(data));
 
-	interval(1000).subscribe(t => {
+	this.view = new View();
+	this.view.centre({x: 0, y: 0});
+	this.view.setZoom(1);
+	this.view.setSppu(10);
+	this.view.setDimension(0, 0);
+
+//	interval(1000).subscribe(t => {
 	    //	    console.log(this.view.x, this.view.y, this.view.scale);
 //	    console.log(this.c2sx(0, this.view), this.c2sy(0, this.view));
 //	    console.log(">", this.view.width, this.view.height);
 //	    console.log(">>", this.graph_container);
-	});
+//	});
 
     }
 
@@ -92,8 +88,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	}
 
-	console.log(this.nodes);
-
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .stop()
 	    .force("charge", d3.forceManyBody().strength(-20))
@@ -119,11 +113,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    this.updateDimensions()
 	});
 
-	console.log(">!!",
-		    this.graph_container!.nativeElement.clientWidth,
-		    this.graph_container!.nativeElement.clientHeight
-		   );
-
     }
 
     ngOnChanges() : void {
@@ -131,23 +120,26 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     c2sx(x : number, view : any, adj : number = 0) {
-	return view.x + this.view.width / 2 + view.scale * x + adj;
+	//	return view.x + this.view.width / 2 + view.scale * x + adj;
+	return this.view.c2s({x: x, y: 0}).x;
     }
 
     c2sy(y : number, view : any, adj : number = 0) {
-	return view.y + this.view.height / 2 + view.scale * y + adj;
+//	return view.y + this.view.height / 2 + view.scale * y + adj;
+	return this.view.c2s({x: 0, y: y}).y;
     }
 
     s2cx(x : number, view : any) {
-	return (x - view.x - this.view.width / 2) / view.scale;
+//	return (x - view.x - this.view.width / 2) / view.scale;
+	return this.view.s2c({x: x, y: 0}).x;
     }
 
     s2cy(y : number, view : any) {
-	return (y - view.y - this.view.height / 2) / view.scale;
+//	return (y - view.y - this.view.height / 2) / view.scale;
+	return this.view.s2c({x: 0, y: y}).y;
     }
 
     updateDimensions() {
-	console.log("GC", this.graph_container);
 	if (this.graph_container) {
 	    let ne = this.graph_container.nativeElement;
 	    this.width_subject.next(ne.clientWidth);
@@ -180,8 +172,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    this.selectedCanvas = true;
 	    this.selectedX = event.offsetX;
 	    this.selectedY = event.offsetY;
-	    this.prevX = this.view.x;
-	    this.prevY = this.view.y;
+	    this.prevX = this.view.cx;
+	    this.prevY = this.view.cy;
 	}
 	return false;
     }
@@ -197,20 +189,27 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
 	    this.simulator.restart();
 	}
+
 	if (this.selectedCanvas) {
-	    this.view.x = this.prevX + (event.offsetX - this.selectedX);
-	    this.view.y = this.prevY + (event.offsetY - this.selectedY);
+
+	    let dx = this.view.cdx(this.selectedX - event.offsetX);
+	    let dy = this.view.cdy(this.selectedY - event.offsetY);
+
+	    this.view.cx = this.prevX + dx;
+	    this.view.cy = this.prevY + dy;
+
 	}
+
     }
 
     svg_wheel(event: WheelEvent) {
 	var delta = Math.max(-1, Math.min(1, (event.deltaY)));
 	if (delta > 0) {
-	    if (this.view.scale < 0.002) return;
-	    this.view.scale = this.view.scale / 1.2;
+	    if (this.view.zoom < 0.002) return;
+	    this.view.zoom /= 1.2;
 	} else if(delta < 0) {
-	    if (this.view.scale > 20) return;
-	    this.view.scale = this.view.scale * 1.2;
+	    if (this.view.zoom > 20) return;
+	    this.view.zoom *= 1.2;
 	}
     }
 
