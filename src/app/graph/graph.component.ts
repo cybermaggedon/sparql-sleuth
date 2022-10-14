@@ -29,7 +29,24 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     links : any [] = [];
 
     tick() : void {
+
+	var x, y;
+
+	// If a node is selected, remember it's position
+	if (this.selectedNode) {
+	    x = this.selectedNode.x;
+	    y = this.selectedNode.y;
+	}
+
 	this.simulator.tick();
+
+	// If a node is selected, put it back where it was after simulation
+	// tick
+	if (this.selectedNode) {
+	    this.selectedNode.x = x;
+	    this.selectedNode.y = y;
+	}
+
     }
 
     constructor() {
@@ -155,6 +172,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     selectedNode? : any = undefined;
+//    selectedNodeX : number = 0;
+//    selectedNodeY : number = 0;
+
     selectedCanvas : boolean = false;
     selectedX : number = 0;
     selectedY : number = 0;
@@ -164,6 +184,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     node_pointer_down(ev : any, node : any) {
 	this.selectedNode = node;
 	this.selectedCanvas = false;
+
+//	this.selectedNodeX = this.selectedNode.x;
+//	this.selectedNodeY = this.selectedNode.y;
+
     }
 
     node_click(ev : any, node : any) {
@@ -189,8 +213,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	if (this.selectedNode) {
 	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
 	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
-	    this.simulator.alpha(0.02);
-	    this.simulator.restart();
+	    this.simulator.alpha(0.05);
+//	    this.simulator.restart();
 	}
 
 	if (this.selectedCanvas) {
