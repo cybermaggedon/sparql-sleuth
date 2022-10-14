@@ -95,7 +95,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    .force("link", d3.forceLink(this.links).distance(0.5))
 	    .force("center", d3.forceCenter(0, 0).strength(0.1));
 
-	interval(10).subscribe(val => this.tick());
+	interval(5).subscribe(val => this.tick());
 
     }
 
