@@ -90,6 +90,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .alpha(1)
+	    .alphaMin(0.05)
 	    .stop()
 	    .force("charge", d3.forceManyBody().strength(-20))
 	    .force("link", d3.forceLink(this.links).distance(0.5))
