@@ -1,9 +1,10 @@
 
 import {
-    Component, OnInit, Input, ViewChild, ElementRef, HostListener
+    Component, OnInit, AfterViewInit, OnChanges, Input, ViewChild,
+    ElementRef, HostListener
 } from '@angular/core';
 import * as d3 from 'd3';
-import { interval } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 import { take } from 'rxjs';
 import { Triple } from '../query.service';
 
@@ -12,7 +13,7 @@ import { Triple } from '../query.service';
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss']
 })
-export class GraphComponent implements OnInit {
+export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
     @ViewChild('box') private graph_container? : ElementRef;
 
@@ -42,9 +43,12 @@ export class GraphComponent implements OnInit {
     }
 
     constructor() {
+	this.width_subject.subscribe(w => this.view.width = w);
+	this.height_subject.subscribe(h => this.view.height = h);
+	this.data_subject.subscribe(data => this.draw(data));
     }
 
-    draw() {
+    draw(data: Triple[]) {
 
 	this.nodes = [];
 	this.links = [];
@@ -52,7 +56,7 @@ export class GraphComponent implements OnInit {
 	let node_map : { [ key : string ] : number } = {};
 	let link_map : { [ key : string ] : number } = {};
 	
-	for(let d of this.data) {
+	for(let d of data) {
 
 	    if (!(d.s in node_map)) {
 		node_map[d.s] = this.nodes.length;
@@ -84,23 +88,29 @@ export class GraphComponent implements OnInit {
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .stop()
-	    .force("charge", d3.forceManyBody())
-	    .force("link", d3.forceLink(this.links))
-	    .force("center", d3.forceCenter(0, 0));
+	    .force("charge", d3.forceManyBody().strength(-20))
+	    .force("link", d3.forceLink(this.links).distance(0.5))
+	    .force("center", d3.forceCenter(0, 0).strength(0.3));
 
 	interval(10).subscribe(val => this.tick());
 
     }
-    
+
+    width_subject = new Subject<number>();
+    height_subject = new Subject<number>();
+    data_subject = new Subject<Triple[]>();
+
     ngOnInit() : void {
-	this.draw();
+
     }
 
     ngAfterViewInit() : void {
-	if (this.graph_container) {
-	    this.view.width = this.graph_container.nativeElement.clientWidth;
-	    this.view.height = this.graph_container.nativeElement.clientHeight;
-	}
+	// FIXME: Why this hack?
+	setTimeout(this.updateDimensions, 1);
+    }
+
+    ngOnChanges() : void {
+	this.data_subject.next(this.data);
     }
 
     sx(x : number, view : any, adj : number = 0) {
@@ -119,11 +129,17 @@ export class GraphComponent implements OnInit {
 	return (y - view.y - this.view.height / 2) / view.scale;
     }
 
-    @HostListener('window:resize') onResize() {
+    updateDimensions() {
 	if (this.graph_container) {
-	    this.view.width = this.graph_container.nativeElement.clientWidth;
-	    this.view.height = this.graph_container.nativeElement.clientHeight;
+	    let ne = this.graph_container.nativeElement;
+	    this.width_subject.next(ne.clientWidth);
+	    this.height_subject.next(ne.clientHeight);
 	}
+    }
+
+
+    @HostListener('window:resize') onResize() {
+	this.updateDimensions();
     }
 
     selectedNode? : any = undefined;
