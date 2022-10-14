@@ -56,7 +56,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	this.view = new View();
 	this.view.centre({x: 0, y: 0});
-	this.view.setZoom(1);
+	this.view.setZoom(0.01);
 	this.view.setSppu(10);
 	this.view.setDimension(0, 0);
 
@@ -107,9 +107,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .alpha(1)
-	    .alphaMin(0.05)
-	    .stop()
-	    .force("charge", d3.forceManyBody().strength(-20))
+	    .alphaMin(0.15)
+	    .stop() // Simulation uses the tick method
+	    .force("charge", d3.forceManyBody().strength(-35))
 	    .force("link", d3.forceLink(this.links).distance(0.5))
 	    .force("center", d3.forceCenter(0, 0).strength(0.1));
 
@@ -214,7 +214,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
 	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
 	    this.simulator.alpha(0.05);
-//	    this.simulator.restart();
 	}
 
 	if (this.selectedCanvas) {
