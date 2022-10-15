@@ -12,20 +12,21 @@
 	    [attr.y1]="c2sy(l.source.y, view)"
 	    [attr.x2]="c2sx(l.target.x, view)"
 	    [attr.y2]="c2sy(l.target.y, view)"
-	    stroke="#8080c0">
+	    >
       </line>
       <text *ngFor="let n of nodes"
-	    [attr.x]="c2sx(n.x, view, 15)" [attr.y]="c2sy(n.y, view, 5)">
+	    [attr.x]="c2sx(n.x, view, 0)" [attr.y]="c2sy(n.y, view, 0)"
+	    >
 	{{n.label}}
       </text>
       <circle *ngFor="let n of nodes"
 	      [attr.cx]="c2sx(n.x, view)" [attr.cy]="c2sy(n.y, view)" r="10"
-	      style="fill: #e08040"
 	      (pointerdown)="node_pointer_down($event, n)"
+	      (pointerup)="node_pointer_up($event, n)"
 	      (click)="node_click($event, n)"
+	      class="node {{n==selectedNode ? 'selected' : ''}}"
+	      [attr.data-node-index]="n.index"
 	      >
-      </circle>
-      <circle [attr.cx]="c2sx(0, view)" [attr.cy]="c2sy(0, view)" r="5">
       </circle>
     </g>
   </svg>

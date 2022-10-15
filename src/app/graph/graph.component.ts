@@ -32,19 +32,19 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	var x, y;
 
-	// If a node is selected, remember it's position
-	if (this.selectedNode) {
-	    x = this.selectedNode.x;
-	    y = this.selectedNode.y;
+	// If a node is grabbed, remember it's position
+	if (this.grabbedNode) {
+	    x = this.grabbedNode.x;
+	    y = this.grabbedNode.y;
 	}
 
 	this.simulator.tick();
 
-	// If a node is selected, put it back where it was after simulation
+	// If a node is grabbed, put it back where it was after simulation
 	// tick
-	if (this.selectedNode) {
-	    this.selectedNode.x = x;
-	    this.selectedNode.y = y;
+	if (this.grabbedNode) {
+	    this.grabbedNode.x = x;
+	    this.grabbedNode.y = y;
 	}
 
     }
@@ -107,7 +107,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .alpha(1)
-	    .alphaTarget(0.002)
+	    .alphaTarget(0.02)
 	    .alphaMin(0.001)
 	    .stop() // Simulation uses the tick method
 	    .force("charge", d3.forceManyBody().strength(-50))
@@ -141,12 +141,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
     c2sx(x : number, view : any, adj : number = 0) {
 	//	return view.x + this.view.width / 2 + view.scale * x + adj;
-	return this.view.c2s({x: x, y: 0}).x;
+	return this.view.c2s({x: x + adj, y: 0}).x;
     }
 
     c2sy(y : number, view : any, adj : number = 0) {
 //	return view.y + this.view.height / 2 + view.scale * y + adj;
-	return this.view.c2s({x: 0, y: y}).y;
+	return this.view.c2s({x: 0, y: y + adj}).y;
     }
 
     s2cx(x : number, view : any) {
@@ -172,55 +172,67 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	this.updateDimensions();
     }
 
+    grabbedNode? : any = undefined;
     selectedNode? : any = undefined;
-//    selectedNodeX : number = 0;
-//    selectedNodeY : number = 0;
 
-    selectedCanvas : boolean = false;
-    selectedX : number = 0;
-    selectedY : number = 0;
+    grabbedCanvas : boolean = false;
+    grabbedX : number = 0;
+    grabbedY : number = 0;
     prevX : number = 0;
     prevY : number = 0;
 
     node_pointer_down(ev : any, node : any) {
-	this.selectedNode = node;
-	this.selectedCanvas = false;
+	this.grabbedNode = node;
+	this.grabbedCanvas = false;
+	ev.preventDefault();
+    }
 
-//	this.selectedNodeX = this.selectedNode.x;
-//	this.selectedNodeY = this.selectedNode.y;
-
+    node_pointer_up(ev : any, node : any) {
     }
 
     node_click(ev : any, node : any) {
     }
 
     svg_pointer_down(event : PointerEvent) {
-	if (this.selectedNode == undefined) {
-	    this.selectedCanvas = true;
-	    this.selectedX = event.offsetX;
-	    this.selectedY = event.offsetY;
+
+//	console.log("CLEAR");
+//	this.selectedNode = undefined;
+
+	if (this.grabbedNode == undefined) {
+	    this.grabbedCanvas = true;
+	    this.grabbedX = event.offsetX;
+	    this.grabbedY = event.offsetY;
 	    this.prevX = this.view.cx;
 	    this.prevY = this.view.cy;
 	}
-	return false;
+	event.preventDefault();
     }
 
     svg_pointer_up(ev : any) {
-	this.selectedNode = undefined;
-	this.selectedCanvas = false;
+	this.grabbedNode = undefined;
+	this.grabbedCanvas = false;
+    }
+
+    svg_click(ev : any) {
+	try {
+	    let ix = ev.target.attributes["data-node-index"].value;
+	    this.selectedNode = this.nodes[ix];
+	} catch (e : any) {
+	    this.selectedNode = undefined;
+	}
+	ev.preventDefault();
     }
 
     svg_pointer_move(event : PointerEvent) {
-	if (this.selectedNode) {
-	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
-	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
-//	    this.simulator.alpha(0.05);
+	if (this.grabbedNode) {
+	    this.grabbedNode.x = this.s2cx(event.offsetX, this.view);
+	    this.grabbedNode.y = this.s2cy(event.offsetY, this.view);
 	}
 
-	if (this.selectedCanvas) {
+	if (this.grabbedCanvas) {
 
-	    let dx = this.view.cdx(this.selectedX - event.offsetX);
-	    let dy = this.view.cdy(this.selectedY - event.offsetY);
+	    let dx = this.view.cdx(this.grabbedX - event.offsetX);
+	    let dy = this.view.cdy(this.grabbedY - event.offsetY);
 
 	    this.view.cx = this.prevX + dx;
 	    this.view.cy = this.prevY + dy;
@@ -238,9 +250,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    if (this.view.zoom > 20) return;
 	    this.view.zoom *= 1.2;
 	}
-    }
-
-    svg_click(ev : any) {
     }
 
 }

@@ -8,4 +8,28 @@ svg {
     border: 1px solid red;
     width: 100%;
     height: 40rem;
+    background: #423a40;
 }
+
+circle {
+    fill: #423a40;
+    stroke: #a0a0a0;
+    stroke-width: 2;
+}
+
+circle.selected {
+    fill: #800000;
+    stroke: #c04040;
+    stroke-width: 4;
+}
+
+line {
+    stroke: #a0a0a0;
+    stroke-width: 2;
+}
+
+text {
+    fill: #c0c0c0;
+    transform: translate(20px, 6px);
+}
+
