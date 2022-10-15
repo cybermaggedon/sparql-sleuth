@@ -107,10 +107,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	this.simulator = d3.forceSimulation(this.nodes)
 	    .alpha(1)
-	    .alphaMin(0.15)
+	    .alphaTarget(0.002)
+	    .alphaMin(0.001)
 	    .stop() // Simulation uses the tick method
-	    .force("charge", d3.forceManyBody().strength(-35))
-	    .force("link", d3.forceLink(this.links).distance(0.5))
+	    .force("charge", d3.forceManyBody().strength(-50))
+	    .force("link", d3.forceLink(this.links).distance(100).strength(function(x) { return 0.1; }))
 	    .force("center", d3.forceCenter(0, 0).strength(0.1));
 
 	interval(5).subscribe(val => this.tick());
@@ -213,7 +214,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	if (this.selectedNode) {
 	    this.selectedNode.x = this.s2cx(event.offsetX, this.view);
 	    this.selectedNode.y = this.s2cy(event.offsetY, this.view);
-	    this.simulator.alpha(0.05);
+//	    this.simulator.alpha(0.05);
 	}
 
 	if (this.selectedCanvas) {
