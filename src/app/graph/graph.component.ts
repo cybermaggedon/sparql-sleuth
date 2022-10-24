@@ -242,7 +242,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     svg_wheel(event: WheelEvent) {
+
 	var delta = Math.max(-1, Math.min(1, (event.deltaY)));
+
+        // Old position of location under mouse
+	var xold = this.s2cx(event.offsetX, this.view);
+	var yold = this.s2cy(event.offsetY, this.view);
+
 	if (delta > 0) {
 	    if (this.view.zoom < 0.002) return;
 	    this.view.zoom /= 1.2;
@@ -250,6 +256,16 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	    if (this.view.zoom > 20) return;
 	    this.view.zoom *= 1.2;
 	}
+
+        // New position of location under mouse, post zoom
+	var xnew = this.s2cx(event.offsetX, this.view);
+	var ynew = this.s2cy(event.offsetY, this.view);
+
+        // Move centre to keep mouse position under mouse.
+	this.view.cx += xold - xnew;
+	this.view.cy += yold - ynew;
+
+
     }
 
 }
