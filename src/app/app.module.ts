@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { QueryTableComponent } from './query-table/query-table.component';
 import { QueryGraphComponent } from './query-graph/query-graph.component';
 import { GraphComponent } from './graph/graph.component';
+import { TechExplorerComponent } from './tech-explorer/tech-explorer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     QueryTableComponent,
     QueryGraphComponent,
-    GraphComponent
+    GraphComponent,
+    TechExplorerComponent
   ],
   imports: [
     BrowserModule,
