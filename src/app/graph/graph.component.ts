@@ -69,6 +69,35 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
+    randomX() : number {
+        return (Math.random() - 0.5) * 100000;
+    }
+
+    randomY() : number {
+        return (Math.random() - 0.5) * 100000;
+    }
+
+    randomVX() : number {
+        return (Math.random() - 0.5) * 10000;
+    }
+
+    randomVY() : number {
+        return (Math.random() - 0.5) * 10000;
+    }
+
+    newNode(label : string) : any {
+
+	if (label.startsWith("http://")) {
+	    label = label.substr(label.lastIndexOf("/") + 1);
+	}
+
+        return {
+	    x: this.randomX(), y: this.randomY(),
+	    vx: this.randomVX(), vy: this.randomVY(),
+	    label: label
+	}
+    }
+
     draw(data: Triple[]) {
 
 	this.nodes = [];
@@ -81,16 +110,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 
 	    if (!(d.s in node_map)) {
 		node_map[d.s] = this.nodes.length;
-		this.nodes.push({
-		    x: 0, y: 0, vx: 0, vy: 0, label: d.s
-		});
+		this.nodes.push(this.newNode(d.s));
 	    }
 
 	    if (!(d.o.value in node_map)) {
 		node_map[d.o.value] = this.nodes.length;
-		this.nodes.push({
-		    x: 0, y: 0, vx: 0, vy: 0, label: d.o.value
-		});
+   		this.nodes.push(this.newNode(d.o.value));
 	    }
 
 	    let lid = d.s + " " + d.p + " " + d.o.value;
@@ -250,10 +275,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnChanges {
 	var yold = this.s2cy(event.offsetY, this.view);
 
 	if (delta > 0) {
-	    if (this.view.zoom < 0.002) return;
+	    if (this.view.zoom < 0.00002) return;
 	    this.view.zoom /= 1.2;
 	} else if(delta < 0) {
-	    if (this.view.zoom > 20) return;
+	    if (this.view.zoom > 2000) return;
 	    this.view.zoom *= 1.2;
 	}
 
