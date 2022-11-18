@@ -7,9 +7,6 @@ import {
 
 import { Triple } from '../query.service';
 
-import { interval, timer } from 'rxjs';
-import { take, delay } from 'rxjs/operators';
-
 @Component({
     selector: 'graph',
     templateUrl: './graph.component.html',
@@ -22,73 +19,29 @@ export class GraphComponent implements OnInit {
     @Input("data") data : Triple[] = [];
 
     public network: any = null;
+    edges : any = new DataSet([]);
+    nodes : any = new DataSet([]);
 
-    treeData : any = null;
+    treeData : any = {
+	edges: this.edges,
+	nodes: this.nodes,
+    }
 
     constructor() {
-	interval(2000).pipe(
-	    take(1)
-	).subscribe(() => {
-
-	    this.tweakIt();
-
-	});
-
     }
 
     ngOnInit() {
     }
     
     ngAfterViewInit() {
-    }
-
-    tweakIt() {
-
-	    console.log("UPDATE");
-
-	    this.treeData.nodes.add({
-		id: "x1", label: "x1",
-	    });
-
-	    if (this.network) {
-		console.log("NETWORK IS SET");
-		//this.network.redraw();
-//		this.network.setData(this.treeData);
-	    }
-
+	this.initVis();
     }
 
     ngOnChanges() {
-	console.log("CHANGES");
-
-	// this.treeData = this.getTreeData(this.data);
-	//	this.loadVisTree(this.treeData);
-
-	this.treeData = {
-	    nodes: new DataSet([
-		{ id: "n1", label: "bunch1" },
-		{ id: "n2", label: "bunch2" },
-		{ id: "n3", label: "bunch3" },
-	    ]),
-	    edges: new DataSet([
-		{ from: "n1", to: "n3", id: "1-3", label: "cliche" },
-		{ from: "n1", to: "n2", id: "1-2", arrows: "to"},
-		{ from: "n2", to: "n3", id: "2-3" },
-	    ])
-	};
-
-	this.loadVisTree(this.treeData);
-
+	this.update(this.data);
     }
 
-    loadVisTree(treedata : any) {
-
-	console.log("load:", treedata);
-
-	if (this.network) {
-	    delete this.network;
-	    this.network = null;
-	}
+    initVis() {
 
 	var options = {
 	    interaction: {
@@ -97,17 +50,14 @@ export class GraphComponent implements OnInit {
 	};
 
 	var container = this.networkContainer?.nativeElement;
-
-	if (!container) return;
 	
-	this.network = new Network(container, treedata, options);
+	this.network = new Network(container, this.treeData, options);
 
 	this.network.on("selectNode", function (params : any) {
 	    console.log("Node:", params.nodes[0]);
 	    return true;
 	});
 
-	var that = this;
     }
 
     newNode(id : any, label : string) : any {
@@ -122,33 +72,36 @@ export class GraphComponent implements OnInit {
        }
     }
 
-    getTreeData(data : any) {
 
-	var edges : any = [];
-	var nodes : any = [];
+    update(data : any) {
 
-	let node_map : { [ key : string ] : number } = {};
-	let link_map : { [ key : string ] : number } = {};
+	this.edges.clear();
+	this.nodes.clear();
+
+	let node_map : { [ key : string ] : string } = {};
+	let link_map : { [ key : string ] : string } = {};
        
 	for(let d of data) {
 
             if (!(d.s in node_map)) {
-		node_map[d.s] = nodes.length;
-		let node = this.newNode(nodes.length, d.s);
-		nodes.add(node);
+		let id = "n" + this.nodes.length;
+		node_map[d.s] = id;
+		let node = this.newNode(id, d.s);
+		this.nodes.add(node);
             }
 
            if (!(d.o.value in node_map)) {
-               node_map[d.o.value] = nodes.length;
-	       let node = this.newNode(nodes.length, d.o.value)
-               nodes.add(node);
+	       let id = "n" + this.nodes.length;
+               node_map[d.o.value] = id;
+	       let node = this.newNode(id, d.o.value)
+               this.nodes.add(node);
            }
 
            let lid = d.s + " " + d.p + " " + d.o.value;
 
            if (!(lid in link_map)) {
-               link_map[lid] = edges.length;
-               edges.add({
+               link_map[lid] = lid;
+               this.edges.add({
                    from: node_map[d.s],
                    to: node_map[d.o.value],
 		   id: lid,
@@ -156,13 +109,6 @@ export class GraphComponent implements OnInit {
 	   }
 
 	}
-
-	var treeData = {
-	    nodes: nodes,
-	    edges: edges
-	};
-
-	return treeData;
 
     }
 
