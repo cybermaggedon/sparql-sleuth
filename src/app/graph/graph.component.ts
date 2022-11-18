@@ -1,10 +1,14 @@
-import * as vis from 'vis-network';
+import { Network, DataSet } from 'vis-network/standalone';
 
 import {
     Component, OnInit, ViewChild, Input, AfterViewInit, OnChanges,
+    ElementRef,
 } from '@angular/core';
-import { ElementRef, Renderer2 } from '@angular/core';
+
 import { Triple } from '../query.service';
+
+import { interval, timer } from 'rxjs';
+import { take, delay } from 'rxjs/operators';
 
 @Component({
     selector: 'graph',
@@ -22,6 +26,14 @@ export class GraphComponent implements OnInit {
     treeData : any = null;
 
     constructor() {
+	interval(2000).pipe(
+	    take(1)
+	).subscribe(() => {
+
+	    this.tweakIt();
+
+	});
+
     }
 
     ngOnInit() {
@@ -30,14 +42,48 @@ export class GraphComponent implements OnInit {
     ngAfterViewInit() {
     }
 
+    tweakIt() {
+
+	    console.log("UPDATE");
+
+	    this.treeData.nodes.add({
+		id: "x1", label: "x1",
+	    });
+
+	    if (this.network) {
+		console.log("NETWORK IS SET");
+		//this.network.redraw();
+//		this.network.setData(this.treeData);
+	    }
+
+    }
+
     ngOnChanges() {
-	this.treeData = this.getTreeData(this.data);
+	console.log("CHANGES");
+
+	// this.treeData = this.getTreeData(this.data);
+	//	this.loadVisTree(this.treeData);
+
+	this.treeData = {
+	    nodes: new DataSet([
+		{ id: "n1", label: "bunch1" },
+		{ id: "n2", label: "bunch2" },
+		{ id: "n3", label: "bunch3" },
+	    ]),
+	    edges: new DataSet([
+		{ from: "n1", to: "n3", id: "1-3", label: "cliche" },
+		{ from: "n1", to: "n2", id: "1-2", arrows: "to"},
+		{ from: "n2", to: "n3", id: "2-3" },
+	    ])
+	};
+
 	this.loadVisTree(this.treeData);
+
     }
 
     loadVisTree(treedata : any) {
 
-	console.log(treedata);
+	console.log("load:", treedata);
 
 	if (this.network) {
 	    delete this.network;
@@ -54,7 +100,7 @@ export class GraphComponent implements OnInit {
 
 	if (!container) return;
 	
-	this.network = new vis.Network(container, treedata, options);
+	this.network = new Network(container, treedata, options);
 
 	this.network.on("selectNode", function (params : any) {
 	    console.log("Node:", params.nodes[0]);
@@ -89,20 +135,20 @@ export class GraphComponent implements OnInit {
             if (!(d.s in node_map)) {
 		node_map[d.s] = nodes.length;
 		let node = this.newNode(nodes.length, d.s);
-		nodes.push(node);
+		nodes.add(node);
             }
 
            if (!(d.o.value in node_map)) {
                node_map[d.o.value] = nodes.length;
 	       let node = this.newNode(nodes.length, d.o.value)
-               nodes.push(node);
+               nodes.add(node);
            }
 
            let lid = d.s + " " + d.p + " " + d.o.value;
 
            if (!(lid in link_map)) {
                link_map[lid] = edges.length;
-               edges.push({
+               edges.add({
                    from: node_map[d.s],
                    to: node_map[d.o.value],
 		   id: lid,
