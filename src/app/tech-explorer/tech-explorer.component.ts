@@ -11,7 +11,7 @@ import {
 })
 export class TechExplorerComponent implements OnInit {
 
-    states = ["hold", "assess", "trial", "adopt", "exhaust"];
+    states = ["unvoted", "hold", "assess", "trial", "adopt", "exhaust"];
 
     labels : { [key : string] : string } = {
 	hold: "Hold",
@@ -19,11 +19,24 @@ export class TechExplorerComponent implements OnInit {
 	trial: "Trial",
 	adopt: "Adopt",
 	exhaust: "Exhaust",
+	unvoted: "Not voted",
     };
 
     items : { [key : string] : string[] } = {
-	hold: ['Carrots', 'Tomatoes', 'Onions', 'Apples', 'Avocados'],
-	assess: ['Oranges', 'Bananas', 'Cucumbers'],
+	unvoted: [
+	    "Cryptocurrency", "Fusion energy", "Hydrogen heating",
+	    "Autonomous vehicles", "EV delivery", "EV freight",
+	    "Virtual reality", "Air polutant removal", "CO2 sinks",
+	    "Artificial Intelligence",  "Generative AI",
+	    "Synthetic data", "Transparent security",
+	    "Passwordless authentication", "Homomorphic encryption",
+	    "Digital ethics", "AIASE", "Digital twin", "IoT platform",
+	    "Self-supervised learning", "Multimodal UI", "LCAP",
+	    "Collaborative ecosystem", "Virtual assistants",
+	    "6G", "Hyperscale edge computing",
+	],
+	hold: [],
+	assess: [],
 	trial: [],
 	adopt: [],
 	exhaust: [],
