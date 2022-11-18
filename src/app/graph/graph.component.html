@@ -1,33 +1,3 @@
-<div #box class="box">
-  <svg
-    (pointerdown)="svg_pointer_down($event)"
-    (pointerup)="svg_pointer_up($event)"
-    (pointermove)="svg_pointer_move($event)"
-    (wheel)="svg_wheel($event)"
-    (click)="svg_click($event)"
-    >
-    <g>
-      <line *ngFor="let l of links"
-	    [attr.x1]="c2sx(l.source.x, view)"
-	    [attr.y1]="c2sy(l.source.y, view)"
-	    [attr.x2]="c2sx(l.target.x, view)"
-	    [attr.y2]="c2sy(l.target.y, view)"
-	    >
-      </line>
-      <text *ngFor="let n of nodes"
-	    [attr.x]="c2sx(n.x, view, 0)" [attr.y]="c2sy(n.y, view, 0)"
-	    >
-	{{n.label}}
-      </text>
-      <circle *ngFor="let n of nodes"
-	      [attr.cx]="c2sx(n.x, view)" [attr.cy]="c2sy(n.y, view)" r="10"
-	      (pointerdown)="node_pointer_down($event, n)"
-	      (pointerup)="node_pointer_up($event, n)"
-	      (click)="node_click($event, n)"
-	      class="node {{n==selectedNode ? 'selected' : ''}}"
-	      [attr.data-node-index]="n.index"
-	      >
-      </circle>
-    </g>
-  </svg>
-</div>
+
+<div id="mynetwork" #siteConfigNetwork></div>
+

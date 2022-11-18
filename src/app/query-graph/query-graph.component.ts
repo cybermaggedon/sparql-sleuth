@@ -29,20 +29,19 @@ export class QueryGraphComponent implements OnInit {
 
 	//	let res = this.query.query(undefined, undefined, undefined);
 
-	/*
 	  let res = this.query.query(
 	  undefined, "http://pivotlabs.vc/challenges/p#has-source",
 	  "http://pivotlabs.vc/challenges/s/ktn",
 	  25
 	  );
-	*/
 
+/*
 	let res = this.query.query(
 	    undefined, "http://pivotlabs.vc/challenges/p#has-topic",
 	    undefined,
 	    250
 	);
-
+*/
 	this.data = res;
 
     }
