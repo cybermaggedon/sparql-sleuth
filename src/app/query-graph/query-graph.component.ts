@@ -29,11 +29,13 @@ export class QueryGraphComponent implements OnInit {
 
 	//	let res = this.query.query(undefined, undefined, undefined);
 
-	  let res = this.query.query(
-	  undefined, "http://pivotlabs.vc/challenges/p#has-source",
-	  "http://pivotlabs.vc/challenges/s/ktn",
-	  25
-	  );
+	this.query.query(
+	    undefined, "http://pivotlabs.vc/challenges/p#has-source",
+	    "http://pivotlabs.vc/challenges/s/ktn",
+	    25
+	).subscribe(
+	    data => this.data = data
+	);
 
 /*
 	let res = this.query.query(
@@ -42,7 +44,7 @@ export class QueryGraphComponent implements OnInit {
 	    250
 	);
 */
-	this.data = res;
+//	this.data = res;
 
     }
 

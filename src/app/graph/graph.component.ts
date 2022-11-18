@@ -1,7 +1,7 @@
 import * as vis from 'vis-network';
 
 import {
-    Component, OnInit, ViewChild, Input, AfterViewInit
+    Component, OnInit, ViewChild, Input, AfterViewInit, OnChanges,
 } from '@angular/core';
 import { ElementRef, Renderer2 } from '@angular/core';
 import { Triple } from '../query.service';
@@ -17,26 +17,32 @@ export class GraphComponent implements OnInit {
 
     @Input("data") data : Triple[] = [];
 
-    public network: any;
+    public network: any = null;
 
-    treeData : any;
+    treeData : any = null;
 
     constructor() {
     }
 
     ngOnInit() {
-	this.treeData = this.getTreeData();
     }
-
     
     ngAfterViewInit() {
-//	console.log(this.data);
-	// RENDER STANDARD NODES WITH TEXT LABEL
+    }
+
+    ngOnChanges() {
+	this.treeData = this.getTreeData(this.data);
 	this.loadVisTree(this.treeData);
-	console.log(this.treeData);
     }
 
     loadVisTree(treedata : any) {
+
+	console.log(treedata);
+
+	if (this.network) {
+	    delete this.network;
+	    this.network = null;
+	}
 
 	var options = {
 	    interaction: {
@@ -45,6 +51,9 @@ export class GraphComponent implements OnInit {
 	};
 
 	var container = this.networkContainer?.nativeElement;
+
+	if (!container) return;
+	
 	this.network = new vis.Network(container, treedata, options);
 
 	this.network.on("selectNode", function (params : any) {
@@ -67,24 +76,7 @@ export class GraphComponent implements OnInit {
        }
     }
 
-    getTreeData() {
-	/*
-	var nodes =[
-            {id: 1, label: 'Node 1', title: 'I am node 1!'},
-            {id: 2, label: 'Node 2', title: 'I am node 2!'},
-            {id: 3, label: 'Node 3'},
-            {id: 4, label: 'Node 4'},
-            {id: 5, label: 'Node 5'}
-	];
-
-	// create an array with edges
-	var edges = [
-            {from: 1, to: 3, id: 'a'},
-            {from: 1, to: 2, id: 'b'},
-            {from: 2, to: 4, id: 'c'},
-            {from: 2, to: 5, id: 'd'}
-	    ];
-	*/
+    getTreeData(data : any) {
 
 	var edges : any = [];
 	var nodes : any = [];
@@ -92,7 +84,7 @@ export class GraphComponent implements OnInit {
 	let node_map : { [ key : string ] : number } = {};
 	let link_map : { [ key : string ] : number } = {};
        
-	for(let d of this.data) {
+	for(let d of data) {
 
             if (!(d.s in node_map)) {
 		node_map[d.s] = nodes.length;
@@ -118,9 +110,6 @@ export class GraphComponent implements OnInit {
 	   }
 
 	}
-
-	console.log(nodes);
-	console.log(edges);
 
 	var treeData = {
 	    nodes: nodes,

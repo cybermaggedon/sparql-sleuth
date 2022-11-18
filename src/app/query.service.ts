@@ -1,6 +1,9 @@
 
 import { Injectable } from '@angular/core';
 import { DataTriples, data } from './data';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 type Uri = string;
 
@@ -33,7 +36,7 @@ export class QueryService {
 
     data : DataTriples;
 
-    constructor() {
+    constructor(private httpClient : HttpClient) {
 	this.data = data;
     }
 
@@ -41,53 +44,74 @@ export class QueryService {
 	s : string | undefined, p : string | undefined,
 	o : Uri | string | undefined,
 	limit : number = 100
-    ) : Triple[] {
+    ) : Observable<Triple[]> {
 
-        let result : Triple[] = [];
+	let query = "SELECT ?s ?p ?o WHERE {\n";
+	query += "  ?s ?p ?o .\n";
 
-	let count = 0;
+	if (s) {
+	    if (s.startsWith("http://"))
+		query += "  FILTER(?s = <" + s + ">) .\n";
+	    else
+		query += "  FILTER(?s = \"" + s + "\") .\n";
+	}
 
-	for (let it_s in this.data) {
+	if (p) {
+	    if (p.startsWith("http://"))
+		query += "  FILTER(?p = <" + p + ">) .\n";
+	    else
+		query += "  FILTER(?p = \"" + p + "\") .\n";
+	}
 
-	    let dim_s = this.data[it_s];
+	if (o) {
+	    if (o.startsWith("http://"))
+		query += "  FILTER(?o = <" + o + ">) .\n";
+	    else
+		query += "  FILTER(?o = \"" + o + "\") .\n";
+	}
 
-	    if (s != undefined && s != it_s) continue;
+	query += "}\n";
+	query += "LIMIT " + limit + "\n";
 
-	    for (let it_p in dim_s) {
+	query = encodeURIComponent(query);
+	let body = "query=" + query + "&output=json";
 
-		let dim_p = dim_s[it_p];
+	return this.httpClient.post(
+	    "/sparql",
+	    body,
+	    {},
+	).pipe(
+	    map((res : any) => {
 
-		if (p != undefined && p != it_p) continue;
+		let triples : Triple[] = [];
 
-		for (let it_o in dim_p) {
+		for (let row of res.results.bindings) {
 
-		    let dim_o = dim_p[it_o];
+		    let s = row.s.value;
 
-		    if (o != undefined && o != dim_o.value) continue;
+		    let p = row.p.value;
 
-		    if (dim_o.type == "literal") {
-			result.push(new Triple(
-			    it_s, it_p, new Value(dim_o.value, false)
-			));
-		    } else {
-			result.push(new Triple(
-			    it_s, it_p, new Value(dim_o.value, true)
-			));
-		    }
+		    let o;
 
-		    count += 1;
+		    if (row.o.type == "uri")
+			o = new Value(row.o.value, true);
+		    else
+			o = new Value(row.o.value, false);
 
-		    if (count >= limit) return result;
+		    let triple = new Triple(s, p, o);
+
+		    triples.push(triple);
 
 		}
 
-	    }
+		return triples;
 
-	}
-
-	return result;
+	    })
+	);
 
     }
 
 }
+
+
 
