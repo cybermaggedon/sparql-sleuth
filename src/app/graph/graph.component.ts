@@ -86,9 +86,10 @@ export class GraphComponent implements OnInit {
 	
 	this.network = new Network(container, this.treeData, options);
 
+	let cmp = this;
+
 	this.network.on("selectNode", function (params : any) {
-	    console.log("Node:", params.nodes[0]);
-	    return true;
+	    cmp.graph.select(params.nodes[0]);
 	});
 
     }

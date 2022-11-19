@@ -34,6 +34,10 @@ export class RemoveEdgeEvent {
     id : string = "";
 };
 
+export class NodeSelectEvent {
+    id : string = "";
+};
+
 @Injectable({
     providedIn: 'root'
 })
@@ -43,11 +47,13 @@ export class GraphService {
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
     private addEdgeSubject = new Subject<AddEdgeEvent>;
     private removeEdgeSubject = new Subject<RemoveEdgeEvent>;
+    private nodeSelectSubject = new Subject<NodeSelectEvent>;
 
     addNodeEvents() { return this.addNodeSubject; }
     removeNodeEvents() { return this.removeNodeSubject; }
     addEdgeEvents() { return this.addEdgeSubject; }
     removeEdgeEvents() { return this.removeEdgeSubject; }
+    nodeSelectEvents() { return this.nodeSelectSubject; }
 
     addNode(node : Node) {
 	let ev = new AddNodeEvent();
@@ -71,6 +77,12 @@ export class GraphService {
 	let ev = new RemoveEdgeEvent();
 	ev.id = id;
 	this.removeEdgeSubject.next(ev);
+    }
+
+    select(id : string) {
+	let ev = new NodeSelectEvent();
+	ev.id = id;
+	this.nodeSelectSubject.next(ev);
     }
 
     constructor() {

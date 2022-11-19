@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { DataTriples, data } from './data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, retry } from 'rxjs/operators';
 import { Triple, Value, Uri } from './triple';
 
 @Injectable({
@@ -62,6 +62,7 @@ export class QueryService {
 	    body,
 	    {},
 	).pipe(
+	    retry(3),
 	    map((res : any) => {
 
 		let triples : Triple[] = [];

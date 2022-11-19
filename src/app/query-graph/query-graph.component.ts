@@ -19,6 +19,13 @@ export class QueryGraphComponent implements OnInit {
     ngOnInit(): void {
 
 	this.runQuery();
+
+	this.graph.nodeSelectEvents().subscribe(
+	    ev => {
+		console.log("Selected", ev.id);
+	    }
+	);
+
     }
 
     makeLabel(label : string) {
