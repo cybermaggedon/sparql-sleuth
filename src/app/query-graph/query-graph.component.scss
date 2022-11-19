@@ -4,3 +4,17 @@
     padding: 0.3rem;
     margin: 1rem;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #c0c0c0;
+    padding: 0.3rem 0.6rem 0.3rem 0.6rem;
+}
+
+.key {
+    color: white;
+    background-color: #204080;
+}

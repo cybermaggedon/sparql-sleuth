@@ -53,7 +53,6 @@ export class QueryGraphComponent implements OnInit {
 
 	if (this.selected == undefined) return;
 
-	this.properties = {};
 	this.selectedLink = undefined;
 
 	this.query.query(
@@ -63,6 +62,8 @@ export class QueryGraphComponent implements OnInit {
 	    10
 	).subscribe(
 	    res => {
+
+		let properties : { [key : string] : string } = {};
 
 		try {
 		    for (let row of res) {
@@ -83,12 +84,15 @@ export class QueryGraphComponent implements OnInit {
 				} catch {
 				    label = this.makeLabel(row.p);
 				}
-				this.properties[label] = row.o.value;
+				properties[label] = row.o.value;
 			    }
 			);
 
 		    }
+
+		    this.properties = properties;
 		} catch {
+		    this.properties = {};
 		}
 	    }
 	);
