@@ -67,6 +67,54 @@ export class QueryGraphComponent implements OnInit {
 
     }
 
+    addNode(id : string) {
+
+	let n = new Node();
+	n.id = id;
+
+	this.query.query(
+	    id,
+	    "http://www.w3.org/2000/01/rdf-schema#label",
+	    undefined,
+	    4 // FIXME: only need 1
+	).subscribe(
+	    ev => {
+		try {
+		    n.label = ev[0].o.value;
+		} catch {
+		    n.label = this.makeLabel(id);
+		}
+		this.graph.addNode(n);
+	    }
+	);
+	
+    }
+
+    addEdge(from : string, rel : string, to : string) {
+
+	let link = new Edge();
+	link.id = from + "//" + rel + "//" + to;
+	link.from = from;
+	link.to = to;
+
+	this.query.query(
+	    rel,
+	    "http://www.w3.org/2000/01/rdf-schema#label",
+	    undefined,
+	    4 // FIXME: Only need 1
+	).subscribe(
+	    ev => {
+		try {
+		    link.label = ev[0].o.value;
+		} catch {
+		    link.label = this.makeLabel(rel);
+		}
+		this.graph.addEdge(link);
+	    }
+	);
+
+    }
+
     runQuery() {
 
 	// http://pivotlabs.vc/challenges/c/019f2ff9af32dfac3a0dcc473cb089ebbf26ade8
@@ -86,66 +134,10 @@ export class QueryGraphComponent implements OnInit {
 
 		for (let edge of result) {
 
-		    let src = new Node();
-		    src.id = edge.s;
-		    src.label = this.makeLabel(edge.s);
-
-		    this.query.query(
-			src.id,
-			"http://www.w3.org/2000/01/rdf-schema#label",
-			undefined,
-			10
-		    ).subscribe(
-			ev => {
-			    try {
-				src.label = ev[0].o.value;
-			    } catch {
-			    }
-			    this.graph.addNode(src);
-			}
-		    );
-
-		    let dest = new Node();
-		    dest.id = edge.o.value;
-		    dest.label = this.makeLabel(edge.o.value);
-
-		    this.query.query(
-			dest.id,
-			"http://www.w3.org/2000/01/rdf-schema#label",
-			undefined,
-			10
-		    ).subscribe(
-			ev => {
-			    try {
-				dest.label = ev[0].o.value;
-			    } catch {
-			    }
-			    this.graph.addNode(dest);
-			}
-		    );
-
-		    let link = new Edge();
-		    link.id = edge.s + "//" + edge.p + "//" + edge.o.value;
-		    link.label = this.makeLabel(edge.p);
-		    link.from = src.id;
-		    link.to = dest.id;
-
-		    this.query.query(
-			edge.p,
-			"http://www.w3.org/2000/01/rdf-schema#label",
-			undefined,
-			10
-		    ).subscribe(
-			ev => {
-			    try {
-				link.label = ev[0].o.value;
-			    } catch {
-			    }
-			    this.graph.addEdge(link);
-			}
-		    );
-
-		    
+		    this.addNode(edge.s);
+		    this.addNode(edge.o.value);
+		    this.addEdge(edge.s, edge.p, edge.o.value);
+	    
 		}
 
 	    }
@@ -154,11 +146,49 @@ export class QueryGraphComponent implements OnInit {
     }
 
     expandIn() {
-	console.log(this.selected);
+
+	this.query.query(
+	    undefined,
+	    undefined,
+	    this.selected,
+	    25
+	).subscribe(
+	    result => {
+
+		for (let edge of result) {
+
+		    this.addNode(edge.s);
+		    this.addNode(edge.o.value);
+		    this.addEdge(edge.s, edge.p, edge.o.value);
+	    
+		}
+
+	    }
+	);
+
     }
 
     expandOut() {
-	console.log(this.selected);
+
+	this.query.query(
+	    this.selected,
+	    undefined,
+	    undefined,
+	    25
+	).subscribe(
+	    result => {
+
+		for (let edge of result) {
+
+		    this.addNode(edge.s);
+		    this.addNode(edge.o.value);
+		    this.addEdge(edge.s, edge.p, edge.o.value);
+	    
+		}
+
+	    }
+	);
+
     }
 
 }
