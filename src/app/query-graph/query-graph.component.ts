@@ -115,6 +115,27 @@ export class QueryGraphComponent implements OnInit {
 
     }
 
+    addTriples(triples : Triple[]) {
+
+	for (let triple of triples) {
+
+	    if (triple.o.uri) {
+
+		// Edge points to object
+		this.addNode(triple.s);
+		this.addNode(triple.o.value);
+		this.addEdge(triple.s, triple.p, triple.o.value);
+
+	    } else {
+
+		// Just a property, do nothing.
+
+	    }
+	    
+	}
+	
+    }
+
     runQuery() {
 
 	// http://pivotlabs.vc/challenges/c/019f2ff9af32dfac3a0dcc473cb089ebbf26ade8
@@ -124,6 +145,7 @@ export class QueryGraphComponent implements OnInit {
 
 	//	let res = this.query.query(undefined, undefined, undefined);
 
+	/*
 	this.query.query(
 	    undefined,
 	    "http://pivotlabs.vc/challenges/p#has-source",
@@ -131,17 +153,12 @@ export class QueryGraphComponent implements OnInit {
 	    25
 	).subscribe(
 	    result => {
-
-		for (let edge of result) {
-
-		    this.addNode(edge.s);
-		    this.addNode(edge.o.value);
-		    this.addEdge(edge.s, edge.p, edge.o.value);
-	    
-		}
-
+		this.addTriples(result);
 	    }
-	);
+	    );
+	*/
+
+	this.addNode("http://pivotlabs.vc/challenges/t#source");
 
     }
 
@@ -154,15 +171,7 @@ export class QueryGraphComponent implements OnInit {
 	    25
 	).subscribe(
 	    result => {
-
-		for (let edge of result) {
-
-		    this.addNode(edge.s);
-		    this.addNode(edge.o.value);
-		    this.addEdge(edge.s, edge.p, edge.o.value);
-	    
-		}
-
+		this.addTriples(result);
 	    }
 	);
 
@@ -177,20 +186,24 @@ export class QueryGraphComponent implements OnInit {
 	    25
 	).subscribe(
 	    result => {
-
-		for (let edge of result) {
-
-		    this.addNode(edge.s);
-		    this.addNode(edge.o.value);
-		    this.addEdge(edge.s, edge.p, edge.o.value);
-	    
-		}
-
+		this.addTriples(result);
 	    }
 	);
 
     }
 
-}
+    recentre() {
 
+	let id = this.selected;
+
+	if (id) {
+	    this.graph.reset();
+	    this.addNode(id);
+	    this.selectedLabel = undefined;
+	    this.selected = undefined;
+	}
+
+    }
+
+}
 

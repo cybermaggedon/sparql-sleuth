@@ -70,6 +70,15 @@ export class GraphComponent implements OnInit {
 	    }
 	)
 
+	this.graph.resetEvents().subscribe(
+	    ev => {
+
+		this.nodes.clear();
+		this.edges.clear();
+		
+	    }
+	)
+
     }
 
     ngOnInit() {
