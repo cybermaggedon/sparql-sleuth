@@ -59,17 +59,19 @@ export class QueryGraphComponent implements OnInit {
 	    this.selected,
 	    undefined,
 	    undefined,
-	    10
+	    100
 	).subscribe(
 	    res => {
 
 		let properties : { [key : string] : string } = {};
 
 		try {
-		    for (let row of res) {
 
-			if (row.p == RELATION)
+		    for (let row of res) {
+			
+			if (row.p == RELATION) {
 			    this.selectedLink = row.o.value;
+			}
 
 			if (row.o.uri) continue;
 
@@ -242,7 +244,7 @@ export class QueryGraphComponent implements OnInit {
 	    undefined,
 	    undefined,
 	    this.selected,
-	    25
+	    50,
 	).subscribe(
 	    result => {
 		this.addTriples(result);
@@ -257,7 +259,7 @@ export class QueryGraphComponent implements OnInit {
 	    this.selected,
 	    undefined,
 	    undefined,
-	    25
+	    50,
 	).subscribe(
 	    result => {
 		this.addTriples(result);
