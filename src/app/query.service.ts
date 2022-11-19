@@ -23,7 +23,11 @@ export class QueryService {
 	limit : number = 100
     ) : Observable<Triple[]> {
 
-	let query = "SELECT ?s ?p ?o WHERE {\n";
+	let query = "";
+
+	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
+
+	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
 	query += "  ?s ?p ?o .\n";
 
 	if (s) {

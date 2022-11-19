@@ -47,7 +47,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    undefined, "http://pivotlabs.vc/challenges/p#has-source",
-	    "http://pivotlabs.vc/challenges/s/ktn",
+	    "http://pivotlabs.vc/challenges/s/ncsc",
 	    25
 	).subscribe(
 	    result => {
