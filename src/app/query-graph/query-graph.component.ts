@@ -11,6 +11,9 @@ import { GraphService, Node, Edge } from '../graph.service';
 })
 export class QueryGraphComponent implements OnInit {
 
+    selected : string | undefined;
+    selectedLabel : string | undefined;
+
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
@@ -22,7 +25,28 @@ export class QueryGraphComponent implements OnInit {
 
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
-		console.log("Selected", ev.id);
+		this.selected = ev.id;
+		this.query.query(
+		    ev.id,
+		    "http://www.w3.org/2000/01/rdf-schema#label",
+		    undefined,
+		    10
+		).subscribe(
+		    res => {
+			try {
+			    this.selectedLabel = res[0].o.value ;
+			} catch {
+			    this.selectedLabel = ev.id;
+			}
+		    }
+		);
+	    }
+	);
+
+	this.graph.nodeDeselectEvents().subscribe(
+	    ev => {
+		this.selected = undefined;
+		this.selectedLabel = undefined;
 	    }
 	);
 
@@ -129,5 +153,14 @@ export class QueryGraphComponent implements OnInit {
 
     }
 
+    expandIn() {
+	console.log(this.selected);
+    }
+
+    expandOut() {
+	console.log(this.selected);
+    }
+
 }
+
 

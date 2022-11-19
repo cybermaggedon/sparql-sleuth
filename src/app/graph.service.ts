@@ -48,12 +48,14 @@ export class GraphService {
     private addEdgeSubject = new Subject<AddEdgeEvent>;
     private removeEdgeSubject = new Subject<RemoveEdgeEvent>;
     private nodeSelectSubject = new Subject<NodeSelectEvent>;
+    private nodeDeselectSubject = new Subject<null>;
 
     addNodeEvents() { return this.addNodeSubject; }
     removeNodeEvents() { return this.removeNodeSubject; }
     addEdgeEvents() { return this.addEdgeSubject; }
     removeEdgeEvents() { return this.removeEdgeSubject; }
     nodeSelectEvents() { return this.nodeSelectSubject; }
+    nodeDeselectEvents() { return this.nodeDeselectSubject; }
 
     addNode(node : Node) {
 	let ev = new AddNodeEvent();
@@ -83,6 +85,10 @@ export class GraphService {
 	let ev = new NodeSelectEvent();
 	ev.id = id;
 	this.nodeSelectSubject.next(ev);
+    }
+
+    deselect() {
+	this.nodeDeselectSubject.next(null);
     }
 
     constructor() {

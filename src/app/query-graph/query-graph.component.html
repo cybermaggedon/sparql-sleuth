@@ -1,3 +1,14 @@
 
-<graph>
-</graph>
+<div class="box">
+  <graph></graph>
+</div>
+
+<div class="box" id="selection" *ngIf="selected">
+  <div>
+    Selected: {{selectedLabel}}
+  </div>
+  <div>
+    <button id="expandin" (click)="expandIn()">Expand inbound</button>
+    <button id="expandout" (click)="expandOut()">Expand outbound</button>
+  </div>
+</div>

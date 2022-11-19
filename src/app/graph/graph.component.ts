@@ -92,6 +92,10 @@ export class GraphComponent implements OnInit {
 	    cmp.graph.select(params.nodes[0]);
 	});
 
+	this.network.on("deselectNode", function (params : any) {
+	    cmp.graph.deselect();
+	});
+
     }
 
 }
