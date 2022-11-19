@@ -25,7 +25,7 @@ export class QueryService {
 
 	let query = "";
 
-	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
+//	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
 
 	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
 	query += "  ?s ?p ?o .\n";

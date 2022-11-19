@@ -46,7 +46,8 @@ export class QueryGraphComponent implements OnInit {
 	//	let res = this.query.query(undefined, undefined, undefined);
 
 	this.query.query(
-	    undefined, "http://pivotlabs.vc/challenges/p#has-source",
+	    undefined,
+	    "http://pivotlabs.vc/challenges/p#has-source",
 	    "http://pivotlabs.vc/challenges/s/ncsc",
 	    25
 	).subscribe(
@@ -58,13 +59,39 @@ export class QueryGraphComponent implements OnInit {
 		    src.id = edge.s;
 		    src.label = this.makeLabel(edge.s);
 
-		    this.graph.addNode(src);
+		    this.query.query(
+			src.id,
+			"http://www.w3.org/2000/01/rdf-schema#label",
+			undefined,
+			10
+		    ).subscribe(
+			ev => {
+			    try {
+				src.label = ev[0].o.value;
+			    } catch {
+			    }
+			    this.graph.addNode(src);
+			}
+		    );
 
 		    let dest = new Node();
 		    dest.id = edge.o.value;
 		    dest.label = this.makeLabel(edge.o.value);
 
-		    this.graph.addNode(dest);
+		    this.query.query(
+			dest.id,
+			"http://www.w3.org/2000/01/rdf-schema#label",
+			undefined,
+			10
+		    ).subscribe(
+			ev => {
+			    try {
+				dest.label = ev[0].o.value;
+			    } catch {
+			    }
+			    this.graph.addNode(dest);
+			}
+		    );
 
 		    let link = new Edge();
 		    link.id = edge.s + "//" + edge.p + "//" + edge.o.value;
@@ -72,7 +99,21 @@ export class QueryGraphComponent implements OnInit {
 		    link.from = src.id;
 		    link.to = dest.id;
 
-		    this.graph.addEdge(link);
+		    this.query.query(
+			edge.p,
+			"http://www.w3.org/2000/01/rdf-schema#label",
+			undefined,
+			10
+		    ).subscribe(
+			ev => {
+			    try {
+				link.label = ev[0].o.value;
+			    } catch {
+			    }
+			    this.graph.addEdge(link);
+			}
+		    );
+
 		    
 		}
 
