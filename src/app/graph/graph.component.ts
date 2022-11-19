@@ -57,6 +57,7 @@ export class GraphComponent implements OnInit {
 			label: ev.edge.label,
 			from: ev.edge.from,
 			to: ev.edge.to,
+			arrows: "to",
 		    });
 		}
 	    }

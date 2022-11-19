@@ -61,7 +61,7 @@ export class QueryGraphComponent implements OnInit {
             label = label.substr(label.lastIndexOf("#") + 1);
 
 	if (label.length > 20)
-	    label = label.substring(20);
+	    label = label.substring(0, 30);
 
 	return label;
 
