@@ -4,6 +4,9 @@ import { Triple } from '../triple';
 import { QueryService } from '../query.service';
 import { GraphService, Node, Edge } from '../graph.service';
 
+const RELATION = "http://purl.org/dc/elements/1.1/relation";
+const LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+
 @Component({
     selector: 'query-graph',
     templateUrl: './query-graph.component.html',
@@ -13,11 +16,84 @@ export class QueryGraphComponent implements OnInit {
 
     selected : string | undefined;
     selectedLabel : string | undefined;
+    selectedLink : string | undefined;
 
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
     ) { }
+
+    updateSelectedLabel() {
+
+	if (this.selected == undefined) return;
+
+	this.query.query(
+	    this.selected,
+	    LABEL,
+	    undefined,
+	    4 // FIXME: only need 1
+	).subscribe(
+	    res => {
+		try {
+		    this.selectedLabel = res[0].o.value ;
+		} catch {
+		    if (this.selected)
+			this.selectedLabel = this.makeLabel(this.selected);
+		    else
+			this.selectedLabel = "n/a";
+		}
+	    }
+	);
+
+    }
+
+    properties : { [key : string] : string } = {};
+
+    updateProperties() {
+
+	if (this.selected == undefined) return;
+
+	this.properties = {};
+	this.selectedLink = undefined;
+
+	this.query.query(
+	    this.selected,
+	    undefined,
+	    undefined,
+	    10
+	).subscribe(
+	    res => {
+
+		try {
+		    for (let row of res) {
+
+			if (row.p == RELATION)
+			    this.selectedLink = row.o.value;
+
+			if (row.o.uri) continue;
+
+			this.query.query(
+			    row.p, LABEL, undefined,
+			    4 // FIXME: only need 1
+			).subscribe(
+			    res => {
+				let label;
+				try{
+				    label = res[0].o.value;
+				} catch {
+				    label = this.makeLabel(row.p);
+				}
+				this.properties[label] = row.o.value;
+			    }
+			);
+
+		    }
+		} catch {
+		}
+	    }
+	);
+
+    }
 
     ngOnInit(): void {
 
@@ -26,20 +102,9 @@ export class QueryGraphComponent implements OnInit {
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
 		this.selected = ev.id;
-		this.query.query(
-		    ev.id,
-		    "http://www.w3.org/2000/01/rdf-schema#label",
-		    undefined,
-		    10
-		).subscribe(
-		    res => {
-			try {
-			    this.selectedLabel = res[0].o.value ;
-			} catch {
-			    this.selectedLabel = ev.id;
-			}
-		    }
-		);
+		this.updateSelectedLabel();
+		this.updateProperties();
+
 	    }
 	);
 
@@ -47,6 +112,7 @@ export class QueryGraphComponent implements OnInit {
 	    ev => {
 		this.selected = undefined;
 		this.selectedLabel = undefined;
+		this.selectedLink = undefined;
 	    }
 	);
 
@@ -74,7 +140,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    id,
-	    "http://www.w3.org/2000/01/rdf-schema#label",
+	    LABEL,
 	    undefined,
 	    4 // FIXME: only need 1
 	).subscribe(
@@ -91,7 +157,7 @@ export class QueryGraphComponent implements OnInit {
     }
 
     addEdge(from : string, rel : string, to : string) {
-
+	
 	let link = new Edge();
 	link.id = from + "//" + rel + "//" + to;
 	link.from = from;
@@ -99,7 +165,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    rel,
-	    "http://www.w3.org/2000/01/rdf-schema#label",
+	    LABEL,
 	    undefined,
 	    4 // FIXME: Only need 1
 	).subscribe(
@@ -122,6 +188,10 @@ export class QueryGraphComponent implements OnInit {
 	    if (triple.o.uri) {
 
 		// Edge points to object
+
+		// Ignore relation links, point to e.g. a web resource
+		if (triple.p == RELATION) continue;
+
 		this.addNode(triple.s);
 		this.addNode(triple.o.value);
 		this.addEdge(triple.s, triple.p, triple.o.value);

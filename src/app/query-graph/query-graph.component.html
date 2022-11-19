@@ -11,6 +11,11 @@
     {{selectedLabel}}
   </div>
   <div>
+    <div *ngFor="let prop of properties | keyvalue">
+      {{prop.key}}: {{prop.value}}
+    </div>
+  </div>
+  <div>
     <button id="expandin" (click)="expandIn()">Expand inbound</button>
     <button id="expandout" (click)="expandOut()">Expand outbound</button>
     <button id="centre" (click)="recentre()">Re-centre</button>
