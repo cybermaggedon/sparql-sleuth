@@ -44,10 +44,34 @@ export class GraphService {
     private addEdgeSubject = new Subject<AddEdgeEvent>;
     private removeEdgeSubject = new Subject<RemoveEdgeEvent>;
 
-    addNode() { return this.addNodeSubject; }
-    removeNode() { return this.removeNodeSubject; }
-    addEdge() { return this.addEdgeSubject; }
-    removeEdge() { return this.removeEdgeSubject; }
+    addNodeEvents() { return this.addNodeSubject; }
+    removeNodeEvents() { return this.removeNodeSubject; }
+    addEdgeEvents() { return this.addEdgeSubject; }
+    removeEdgeEvents() { return this.removeEdgeSubject; }
+
+    addNode(node : Node) {
+	let ev = new AddNodeEvent();
+	ev.node = node;
+	this.addNodeSubject.next(ev);
+    }
+
+    removeNode(id : string) {
+	let ev = new RemoveNodeEvent();
+	ev.id = id;
+	this.removeNodeSubject.next(ev);
+    }
+
+    addEdge(edge : Edge) {
+	let ev = new AddEdgeEvent();
+	ev.edge = edge;
+	this.addEdgeSubject.next(ev);
+    }
+
+    removeEdge(id : string) {
+	let ev = new RemoveEdgeEvent();
+	ev.id = id;
+	this.removeEdgeSubject.next(ev);
+    }
 
     constructor() {
     }

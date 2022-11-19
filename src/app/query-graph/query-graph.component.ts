@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Triple } from '../triple';
 import { QueryService } from '../query.service';
-import { GraphService } from '../graph.service';
+import { GraphService, Node, Edge } from '../graph.service';
 
 @Component({
     selector: 'query-graph',
@@ -11,18 +11,32 @@ import { GraphService } from '../graph.service';
 })
 export class QueryGraphComponent implements OnInit {
 
-    data : Triple[] = [];
-
     constructor(
-	private query : QueryService
+	private query : QueryService,
+	private graph : GraphService,
     ) { }
 
     ngOnInit(): void {
 
-	this.run_query();
+	this.runQuery();
     }
 
-    run_query() {
+    makeLabel(label : string) {
+
+	if (label.startsWith("http://"))
+            label = label.substr(label.lastIndexOf("/") + 1);
+
+	if (label.lastIndexOf("#") >= 0)
+            label = label.substr(label.lastIndexOf("#") + 1);
+
+	if (label.length > 20)
+	    label = label.substring(20);
+
+	return label;
+
+    }
+
+    runQuery() {
 
 	// http://pivotlabs.vc/challenges/c/019f2ff9af32dfac3a0dcc473cb089ebbf26ade8
 	// https://pivotlabs.vc/challenges/p#has-topic
@@ -36,7 +50,33 @@ export class QueryGraphComponent implements OnInit {
 	    "http://pivotlabs.vc/challenges/s/ktn",
 	    25
 	).subscribe(
-	    data => this.data = data
+	    result => {
+
+		for (let edge of result) {
+
+		    let src = new Node();
+		    src.id = edge.s;
+		    src.label = this.makeLabel(edge.s);
+
+		    this.graph.addNode(src);
+
+		    let dest = new Node();
+		    dest.id = edge.o.value;
+		    dest.label = this.makeLabel(edge.o.value);
+
+		    this.graph.addNode(dest);
+
+		    let link = new Edge();
+		    link.id = edge.s + "//" + edge.p + "//" + edge.o.value;
+		    link.label = this.makeLabel(edge.p);
+		    link.from = src.id;
+		    link.to = dest.id;
+
+		    this.graph.addEdge(link);
+		    
+		}
+
+	    }
 	);
 
     }

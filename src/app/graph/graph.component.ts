@@ -7,6 +7,7 @@ import {
 import { Network, DataSet } from 'vis-network/standalone';
 
 import { Triple } from '../triple';
+import { GraphService } from '../graph.service';
 
 @Component({
     selector: 'graph',
@@ -15,9 +16,7 @@ import { Triple } from '../triple';
 })
 export class GraphComponent implements OnInit {
 
-    @ViewChild("siteConfigNetwork") networkContainer: ElementRef | undefined;
-
-    @Input("data") data : Triple[] = [];
+    @ViewChild("network") networkContainer: ElementRef | undefined;
 
     public network: any = null;
     edges : any = new DataSet([]);
@@ -28,21 +27,54 @@ export class GraphComponent implements OnInit {
 	nodes: this.nodes,
     }
 
-    constructor() {
+    constructor(
+	private graph : GraphService
+    ) {
+
+	this.graph.addNodeEvents().subscribe(
+	    ev => {
+		if (this.nodes.get(ev.node.id) == null) {
+		    this.nodes.add({
+			id: ev.node.id,
+			label: ev.node.label,
+		    });
+		}
+	    }
+	)
+
+	this.graph.removeNodeEvents().subscribe(
+	    ev => {
+		if (this.nodes.get(ev.id))
+		    this.nodes.remove(ev.id);
+	    }
+	)
+
+	this.graph.addEdgeEvents().subscribe(
+	    ev => {
+		if (this.edges.get(ev.edge.id) == null) {
+		    this.edges.add({
+			id: ev.edge.id,
+			label: ev.edge.label,
+			from: ev.edge.from,
+			to: ev.edge.to,
+		    });
+		}
+	    }
+	)
+
+	this.graph.removeEdgeEvents().subscribe(
+	    ev => {
+		if (this.edges.get(ev.id))
+		    this.edges.remove(ev.id);
+	    }
+	)
+
     }
 
     ngOnInit() {
     }
     
     ngAfterViewInit() {
-	this.initVis();
-    }
-
-    ngOnChanges() {
-	this.update(this.data);
-    }
-
-    initVis() {
 
 	var options = {
 	    interaction: {
@@ -59,6 +91,10 @@ export class GraphComponent implements OnInit {
 	    return true;
 	});
 
+    }
+/*
+    ngOnChanges() {
+	this.update(this.data);
     }
 
     newNode(id : any, label : string) : any {
@@ -111,6 +147,6 @@ export class GraphComponent implements OnInit {
 	}
 
     }
-
+*/
 }
 
