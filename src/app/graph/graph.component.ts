@@ -1,11 +1,12 @@
-import { Network, DataSet } from 'vis-network/standalone';
 
 import {
     Component, OnInit, ViewChild, Input, AfterViewInit, OnChanges,
     ElementRef,
 } from '@angular/core';
 
-import { Triple } from '../query.service';
+import { Network, DataSet } from 'vis-network/standalone';
+
+import { Triple } from '../triple';
 
 @Component({
     selector: 'graph',
@@ -71,7 +72,6 @@ export class GraphComponent implements OnInit {
 	    label: label,
        }
     }
-
 
     update(data : any) {
 

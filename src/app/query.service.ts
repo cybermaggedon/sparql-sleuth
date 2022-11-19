@@ -4,30 +4,7 @@ import { DataTriples, data } from './data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-type Uri = string;
-
-class Value {
-
-    value : string = "";
-    uri : boolean = false;
-
-    constructor(value : string = "", is_uri : boolean = false) {
-	this.value = value;
-	this.uri = is_uri;
-    }
-    is_uri() : boolean { return this.uri; }
-    is_literal() : boolean { return !this.uri; }
-};
-
-export class Triple {
-    constructor(s : Uri, p : Uri, o : Value) {
-	this.s = s; this.p = p; this.o = o;
-    }
-    s : Uri = "";
-    p : Uri = "";
-    o : Value = new Value();
-};
+import { Triple, Value, Uri } from './triple';
 
 @Injectable({
     providedIn: 'root'

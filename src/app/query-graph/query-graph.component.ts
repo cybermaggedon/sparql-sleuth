@@ -1,6 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
-import { QueryService, Triple } from '../query.service';
+import { Triple } from '../triple';
+import { QueryService } from '../query.service';
+import { GraphService } from '../graph.service';
 
 @Component({
     selector: 'query-graph',
@@ -37,15 +39,7 @@ export class QueryGraphComponent implements OnInit {
 	    data => this.data = data
 	);
 
-/*
-	let res = this.query.query(
-	    undefined, "http://pivotlabs.vc/challenges/p#has-topic",
-	    undefined,
-	    250
-	);
-*/
-//	this.data = res;
-
     }
 
 }
+
