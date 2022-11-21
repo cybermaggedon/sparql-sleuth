@@ -6,6 +6,7 @@ import { GraphService, Node, Edge } from '../graph.service';
 
 const RELATION = "http://purl.org/dc/elements/1.1/relation";
 const LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+const IS_A = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
 @Component({
     selector: 'query-graph',
@@ -47,7 +48,25 @@ export class QueryGraphComponent implements OnInit {
 		try {
 
 		    for (let row of res) {
-			
+
+			if (row.p == LABEL) {
+			    this.selectedLabel = row.o.value;
+			}
+
+			if (row.p == IS_A) {
+			    this.query.query(
+				row.o.value, LABEL, undefined,
+				4 // FIXME: only need 1
+			    ).subscribe(
+				res => {
+				    try{
+					properties["class"] = res[0].o.value;
+				    } catch {
+				    }
+				}
+			    );
+			}
+
 			if (row.p == RELATION) {
 			    this.selectedLink = row.o.value;
 			}
@@ -59,18 +78,13 @@ export class QueryGraphComponent implements OnInit {
 			    4 // FIXME: only need 1
 			).subscribe(
 			    res => {
+
 				let label;
 
 				try{
 				    label = res[0].o.value;
 				} catch {
 				    label = this.makeLabel(row.p);
-				}
-
-				// Update selectedLabel also
-				if (label == "label") {
-				    console.log(label);
-				    this.selectedLabel = row.o.value;
 				}
 
 				properties[label] = row.o.value;

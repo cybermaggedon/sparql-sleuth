@@ -27,6 +27,13 @@ export class GraphComponent implements OnInit {
 	nodes: this.nodes,
     }
 
+    wrap(s : string | null) : string {
+	if (s == null) return "";
+	return s.replace(
+	    /(?![^\n]{1,32}$)([^\n]{1,32})\s/g, '$1\n'
+	);
+    }
+
     constructor(
 	private graph : GraphService
     ) {
@@ -36,7 +43,7 @@ export class GraphComponent implements OnInit {
 		if (this.nodes.get(ev.node.id) == null) {
 		    this.nodes.add({
 			id: ev.node.id,
-			label: ev.node.label,
+			label: this.wrap(ev.node.label),
 		    });
 		}
 	    }
@@ -54,7 +61,7 @@ export class GraphComponent implements OnInit {
 		if (this.edges.get(ev.edge.id) == null) {
 		    this.edges.add({
 			id: ev.edge.id,
-			label: ev.edge.label,
+			label: this.wrap(ev.edge.label),
 			from: ev.edge.from,
 			to: ev.edge.to,
 			arrows: "to",
