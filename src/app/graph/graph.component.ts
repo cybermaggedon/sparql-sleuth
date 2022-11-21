@@ -88,7 +88,6 @@ export class GraphComponent implements OnInit {
 
 	var options = {
 	    interaction: {
-//		hover: true,
 	    }
 	};
 
@@ -102,8 +101,12 @@ export class GraphComponent implements OnInit {
 	    cmp.graph.select(params.nodes[0]);
 	});
 
-	this.network.on("deselectNode", function (params : any) {
-	    cmp.graph.deselect();
+	// Bug in visjs?  Dragging selects a node but doesn't cause a
+	// select event.
+	this.network.on("dragStart", function (params : any) {
+	    if (params.nodes.length == 1) {
+		cmp.graph.select(params.nodes[0]);
+	    }
 	});
 
     }

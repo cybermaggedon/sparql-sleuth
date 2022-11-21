@@ -3,7 +3,7 @@
   <graph></graph>
 </div>
 
-<div class="box" id="selection" *ngIf="selected">
+<div class="box" id="selection" *ngIf="selected; else nothingselected">
   <h2>{{selectedLabel}}</h2>
   <div>
     <a href="{{selectedLink}}">{{selectedLink}}</a>
@@ -20,6 +20,13 @@
     <button id="expandin" (click)="expandIn()">Expand inbound</button>
     <button id="expandout" (click)="expandOut()">Expand outbound</button>
     <button id="centre" (click)="recentre()">Re-centre</button>
+    <button id="schema" (click)="schema()">Schema</button>
   </div>
 </div>
+
+<ng-template #nothingselected>
+  <div class="box" id="noselect">
+    <button id="schema" (click)="schema()">Schema</button>
+  </div>
+</ng-template>
 

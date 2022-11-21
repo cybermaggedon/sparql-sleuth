@@ -23,31 +23,9 @@ export class QueryGraphComponent implements OnInit {
 	private graph : GraphService,
     ) { }
 
-    updateSelectedLabel() {
-
-	if (this.selected == undefined) return;
-
-	this.query.query(
-	    this.selected,
-	    LABEL,
-	    undefined,
-	    4 // FIXME: only need 1
-	).subscribe(
-	    res => {
-		try {
-		    this.selectedLabel = res[0].o.value ;
-		} catch {
-		    if (this.selected)
-			this.selectedLabel = this.makeLabel(this.selected);
-		    else
-			this.selectedLabel = "n/a";
-		}
-	    }
-	);
-
-    }
-
     properties : { [key : string] : string } = {};
+
+    fetchEdges = 25;
 
     updateProperties() {
 
@@ -59,11 +37,12 @@ export class QueryGraphComponent implements OnInit {
 	    this.selected,
 	    undefined,
 	    undefined,
-	    100
+	    this.fetchEdges,
 	).subscribe(
 	    res => {
 
 		let properties : { [key : string] : string } = {};
+		let title = "n/a";
 
 		try {
 
@@ -81,11 +60,19 @@ export class QueryGraphComponent implements OnInit {
 			).subscribe(
 			    res => {
 				let label;
+
 				try{
 				    label = res[0].o.value;
 				} catch {
 				    label = this.makeLabel(row.p);
 				}
+
+				// Update selectedLabel also
+				if (label == "label") {
+				    console.log(label);
+				    this.selectedLabel = row.o.value;
+				}
+
 				properties[label] = row.o.value;
 			    }
 			);
@@ -93,7 +80,10 @@ export class QueryGraphComponent implements OnInit {
 		    }
 
 		    this.properties = properties;
-		} catch {
+
+		} catch (e) {
+		    console.log(e);
+		    this.selectedLabel = "n/a";
 		    this.properties = {};
 		}
 	    }
@@ -107,8 +97,8 @@ export class QueryGraphComponent implements OnInit {
 
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
+		if (ev.id == this.selected) return;
 		this.selected = ev.id;
-		this.updateSelectedLabel();
 		this.updateProperties();
 
 	    }
@@ -116,6 +106,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.graph.nodeDeselectEvents().subscribe(
 	    ev => {
+		if (this.selected == undefined) return;
 		this.selected = undefined;
 		this.selectedLabel = undefined;
 		this.selectedLink = undefined;
@@ -214,27 +205,17 @@ export class QueryGraphComponent implements OnInit {
 
     runQuery() {
 
-	// http://pivotlabs.vc/challenges/c/019f2ff9af32dfac3a0dcc473cb089ebbf26ade8
-	// https://pivotlabs.vc/challenges/p#has-topic
-
-	//	let res = this.query.query("http://pivotlabs.vc/challenges/c/019f2ff9af32dfac3a0dcc473cb089ebbf26ade8", undefined, undefined);
-
-	//	let res = this.query.query(undefined, undefined, undefined);
-
-	/*
+	// Get all sources
 	this.query.query(
 	    undefined,
-	    "http://pivotlabs.vc/challenges/p#has-source",
-	    "http://pivotlabs.vc/challenges/s/ncsc",
-	    25
+	    undefined,
+	    "http://pivotlabs.vc/challenges/t#source",
+	    this.fetchEdges,
 	).subscribe(
 	    result => {
 		this.addTriples(result);
 	    }
-	    );
-	*/
-
-	this.addNode("http://pivotlabs.vc/challenges/t#source");
+	);
 
     }
 
@@ -244,7 +225,7 @@ export class QueryGraphComponent implements OnInit {
 	    undefined,
 	    undefined,
 	    this.selected,
-	    50,
+	    this.fetchEdges,
 	).subscribe(
 	    result => {
 		this.addTriples(result);
@@ -259,7 +240,7 @@ export class QueryGraphComponent implements OnInit {
 	    this.selected,
 	    undefined,
 	    undefined,
-	    50,
+	    this.fetchEdges,
 	).subscribe(
 	    result => {
 		this.addTriples(result);
@@ -278,6 +259,36 @@ export class QueryGraphComponent implements OnInit {
 	    this.selectedLabel = undefined;
 	    this.selected = undefined;
 	}
+
+    }
+
+    schema() {
+
+	this.graph.reset();
+
+	// Add classes
+	this.query.query(
+	    undefined,
+	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+	    "http://www.w3.org/2000/01/rdf-schema#Class",
+	    50,
+	).subscribe(
+	    result => {
+		this.addTriples(result);
+	    }
+	);
+
+	// Add properties
+	this.query.query(
+	    undefined,
+	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+	    "http://www.w3.org/2000/01/rdf-schema#Property",
+	    50,
+	).subscribe(
+	    result => {
+		this.addTriples(result);
+	    }
+	);
 
     }
 
