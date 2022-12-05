@@ -102,7 +102,7 @@ func main() {
 
 		}
 
-		if true {
+		if false {
 
 			path := r.URL.Path
 
@@ -122,7 +122,6 @@ func main() {
 
 			defer resp.Body.Close()
 			copyHeader(w.Header(), resp.Header)
-//			w.Header().Set("Content-Type", "text/javascript")
 			w.WriteHeader(resp.StatusCode)
 			io.Copy(w, resp.Body)
 			return
