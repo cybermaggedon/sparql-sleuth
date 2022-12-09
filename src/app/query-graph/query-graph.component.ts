@@ -31,7 +31,7 @@ export class QueryGraphComponent implements OnInit {
 
     properties : { [key : string] : string } = {};
 
-    fetchEdges = 250;
+    fetchEdges = 40;
 
     updateProperties() {
 
