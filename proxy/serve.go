@@ -47,8 +47,8 @@ func main() {
 	var woffPath = regexp.MustCompile("^/.*\\.woff2$")
 	var svgPath = regexp.MustCompile("^/.*\\.svg$")
 	var sparqlPath = regexp.MustCompile("^/sparql")
+	var appPath = regexp.MustCompile("^/graph")
 
-	// Catch all that path navigation junk that spews to the logs
 	var sketchy = regexp.MustCompile("\\.\\.")
 
 	listen := ":8080"
@@ -75,6 +75,8 @@ func main() {
 
 	s.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		
+		fmt.Println(r.URL.Path)
+
 		if m := sparqlPath.FindStringSubmatch(r.URL.Path); m != nil {
 
 			path := r.URL.Path[7:]
@@ -102,36 +104,28 @@ func main() {
 
 		}
 
-		if false {
-
-			path := r.URL.Path
-
-			r.URL.Path = path
-			r.URL.Host = "localhost:4200"
-			r.URL.Scheme = "http"
-			r.Host = "localhost:4200"
-
-			resp, err := http.DefaultTransport.RoundTrip(r)
-
-			if err != nil {
-				log.Printf("503: %s", err.Error())
-				http.Error(w, err.Error(),
-					http.StatusServiceUnavailable)
-				return
-			}
-
-			defer resp.Body.Close()
-			copyHeader(w.Header(), resp.Header)
-			w.WriteHeader(resp.StatusCode)
-			io.Copy(w, resp.Body)
+		// Root URL just returns index.html
+		if r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "text/html")
+			filename := base + "/index.html"
+			data, _ := ioutil.ReadFile(filename)
+			w.Write(data)
 			return
-
 		}
 
-		if r.URL.Path == "/" { r.URL.Path = "/index.html" }
+		// /graph URLs return index.html also.  This is an Angular
+		// app, Angular will deal with the URLs.
+		if m := appPath.FindStringSubmatch(r.URL.Path); m != nil {
+			w.Header().Set("Content-Type", "text/html")
+			filename := base + "/index.html"
+			data, _ := ioutil.ReadFile(filename)
+			w.Write(data)
+			return
+		}
 
-		fmt.Println(r.URL.Path)
-
+		// Catch all that path navigation junk that spews to the logs,
+		// while also preventing navigation out of the web
+		// directory.
 		if m := sketchy.FindStringSubmatch(r.URL.Path); m != nil {
 			http.NotFound(w, r)
 			return
@@ -203,8 +197,10 @@ func main() {
 
 		http.NotFound(w, r)
 		return
+
 	})
 
 	log.Fatal(http.ListenAndServe(listen, &s))
 
 }
+
