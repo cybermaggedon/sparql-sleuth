@@ -18,22 +18,6 @@ func copyHeader(dst, src http.Header) {
 	}
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	filename := r.URL.Path[1:]
-	fmt.Println(filename)
-	data, err := ioutil.ReadFile(filename)
-
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	
-	w.Header().Set("Content-Type", "text/html")
-	w.Write(data)
-
-}
-
 func main() {
 
 	var s http.ServeMux
@@ -79,6 +63,7 @@ func main() {
 
 		if m := sparqlPath.FindStringSubmatch(r.URL.Path); m != nil {
 
+			// The bit of the path after /sparql
 			path := r.URL.Path[7:]
 
 			r.URL.Path = path
@@ -133,7 +118,7 @@ func main() {
 
 		if m := cssPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/css")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -141,7 +126,7 @@ func main() {
 
 		if m := pngPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "image/png")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -149,7 +134,7 @@ func main() {
 
 		if m := gifPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "image/gif")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -157,7 +142,7 @@ func main() {
 
 		if m := htmlPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/html")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -165,7 +150,7 @@ func main() {
 
 		if m := jsPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/javascript")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -173,7 +158,7 @@ func main() {
 
 		if m := jsonPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/javascript")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -181,7 +166,7 @@ func main() {
 
 		if m := woffPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/plain")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
@@ -189,7 +174,7 @@ func main() {
 
 		if m := svgPath.FindStringSubmatch(r.URL.Path); m != nil {
 			w.Header().Set("Content-Type", "text/xml+svg")
-			filename := base + r.URL.Path[1:]
+			filename := base + r.URL.Path
 			data, _ := ioutil.ReadFile(filename)
 			w.Write(data)
 			return
