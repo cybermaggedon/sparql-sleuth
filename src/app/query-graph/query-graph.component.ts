@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Triple } from '../triple';
-import { QueryService } from '../query.service';
+import { QueryService, Query } from '../query.service';
 import { GraphService, Node, Edge } from '../graph.service';
 
 const RELATION = "http://purl.org/dc/elements/1.1/relation";
@@ -22,11 +22,36 @@ export class QueryGraphComponent implements OnInit {
     selectedThumbnail : string | undefined;
     selectedLink : string | undefined;
 
+    info1 : string = "";
+    info2 : string = "";
+
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
 	private router : Router,
     ) {
+	
+	this.query.progress().subscribe(
+
+	    (res : Set<Query>) => {
+
+		let a = Array.from(res.values());
+
+		if (a.length > 0)
+		    this.info1 = a[0].desc + " ...";
+		else
+		    this.info1 = "";
+
+		if (a.length > 1)
+		    this.info2 = a[1].desc + " ...";
+		else
+		    this.info2 = "";
+
+	    }
+
+	);
+
+
     }
 
     properties : { [key : string] : string } = {};
@@ -42,10 +67,13 @@ export class QueryGraphComponent implements OnInit {
 	this.selectedThumbnail = undefined;
 
 	this.query.query(
-	    this.selected,
-	    undefined,
-	    undefined,
-	    this.fetchEdges,
+	    new Query(
+		"Fetch " + this.selected,
+		this.selected,
+		undefined,
+		undefined,
+		this.fetchEdges,
+	    )
 	).subscribe(
 	    res => {
 
@@ -67,8 +95,11 @@ export class QueryGraphComponent implements OnInit {
 
 			if (row.p == IS_A) {
 			    this.query.query(
-				row.o.value, LABEL, undefined,
-				4 // FIXME: only need 1
+				new Query(
+				    "Label " + row.o.value,
+				    row.o.value, LABEL, undefined,
+				    4 // FIXME: only need 1
+				)
 			    ).subscribe(
 				res => {
 				    try{
@@ -86,8 +117,11 @@ export class QueryGraphComponent implements OnInit {
 			if (row.o.uri) continue;
 
 			this.query.query(
-			    row.p, LABEL, undefined,
-			    4 // FIXME: only need 1
+			    new Query(
+				"Label " + row.p,
+				row.p, LABEL, undefined,
+				4 // FIXME: only need 1
+			    )
 			).subscribe(
 			    res => {
 
@@ -148,10 +182,13 @@ export class QueryGraphComponent implements OnInit {
 			ev.expand == "true") {
 
 			this.query.query(
-			    undefined,
-			    undefined,
-			    ev.id,
-			    this.fetchEdges,
+			    new Query(
+				"Fetch " + ev.id,
+				undefined,
+				undefined,
+				ev.id,
+				this.fetchEdges,
+			    )
 			).subscribe(
 			    result => {
 				this.addTriples(result);
@@ -164,10 +201,13 @@ export class QueryGraphComponent implements OnInit {
 			ev.expand == "true") {
 
 			this.query.query(
-			    ev.id,
-			    undefined,
-			    undefined,
-			    this.fetchEdges,
+			    new Query(
+				"Fetch " + ev.id,
+				ev.id,
+				undefined,
+				undefined,
+				this.fetchEdges,
+			    )
 			).subscribe(
 			    result => {
 				this.addTriples(result);
@@ -176,6 +216,30 @@ export class QueryGraphComponent implements OnInit {
 			
 		    }
 		}
+	    }
+	);
+
+	this.graph.schemaEvents().subscribe(
+	    ev => {
+
+		console.log("SCHEMA");
+		
+		//	    this.graph.reset();
+		
+		// Add classes
+		this.query.query(
+		    new Query(
+			"Acquire schema",
+			undefined,
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+			"http://www.w3.org/2000/01/rdf-schema#Class",
+			50,
+		    )
+		).subscribe(
+		    result => {
+			this.addTriples(result);
+		    }
+		);
 	    }
 	);
 
@@ -201,13 +265,14 @@ export class QueryGraphComponent implements OnInit {
 	let n = new Node();
 	n.id = id;
 
-	console.log("NEW ", id);
-
 	this.query.query(
-	    id,
-	    LABEL,
-	    undefined,
-	    4 // FIXME: only need 1
+	    new Query(
+		"Label " + id,
+		id,
+		LABEL,
+		undefined,
+		4 // FIXME: only need 1
+	    )
 	).subscribe(
 	    ev => {
 		try {
@@ -229,10 +294,13 @@ export class QueryGraphComponent implements OnInit {
 	link.to = to;
 
 	this.query.query(
-	    rel,
-	    LABEL,
-	    undefined,
-	    4 // FIXME: Only need 1
+	    new Query(
+		"Label " + rel,
+		rel,
+		LABEL,
+		undefined,
+		4 // FIXME: Only need 1
+	    )
 	).subscribe(
 	    ev => {
 		try {
@@ -296,10 +364,13 @@ export class QueryGraphComponent implements OnInit {
     expandIn() {
 
 	this.query.query(
-	    undefined,
-	    undefined,
-	    this.selected,
-	    this.fetchEdges,
+	    new Query(
+		"Expand in " + this.selected,
+		undefined,
+		undefined,
+		this.selected,
+		this.fetchEdges,
+	    )
 	).subscribe(
 	    result => {
 		this.addTriples(result);
@@ -311,10 +382,13 @@ export class QueryGraphComponent implements OnInit {
     expandOut() {
 
 	this.query.query(
-	    this.selected,
-	    undefined,
-	    undefined,
-	    this.fetchEdges,
+	    new Query(
+		"Expand out " + this.selected,
+		this.selected,
+		undefined,
+		undefined,
+		this.fetchEdges,
+	    )
 	).subscribe(
 	    result => {
 		this.addTriples(result);
@@ -341,34 +415,8 @@ export class QueryGraphComponent implements OnInit {
 
     schema() {
 
-	this.graph.reset();
+	this.graph.schema();
 
-	// Add classes
-	this.query.query(
-	    undefined,
-	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-	    "http://www.w3.org/2000/01/rdf-schema#Class",
-	    50,
-	).subscribe(
-	    result => {
-		this.addTriples(result);
-	    }
-	);
-// Properties don't make sense on the graph, since they don't appear as
-// nodes.
-/*
-	// Add properties
-	this.query.query(
-	    undefined,
-	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-	    "http://www.w3.org/2000/01/rdf-schema#Property",
-	    50,
-	).subscribe(
-	    result => {
-		this.addTriples(result);
-	    }
-	);
-*/
     }
 
 }

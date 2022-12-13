@@ -1,8 +1,28 @@
 
+.container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.graph {
+    flex-grow: 1;
+}
+
+.controls {
+    height: 4rem;
+    display: flex;
+}
+
+.info {
+    height: 24rem;
+    overflow: scroll;
+}
+
 .box {
     border: 1px solid #e0e0e0;
-    padding: 0.3rem;
-    margin: 1rem;
+    padding: 0.1rem;
+    margin: 0.1rem;
 }
 
 table {

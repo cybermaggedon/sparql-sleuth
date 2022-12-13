@@ -1,95 +1,194 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, retry } from 'rxjs/operators';
+import { Observable, Subject, Subscriber, of } from 'rxjs';
+import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { Triple, Value, Uri } from './triple';
+import { LRUCache } from 'typescript-lru-cache';
+
+export class Query {
+    constructor(
+	desc : string,
+	s? : string,
+	p? : string,
+	o? : Uri | string,
+	limit : number = 100
+    ) {
+	this.s = s;
+	this.p = p;
+	this.o = o;
+	this.desc = desc;
+	this.limit = limit;
+    }
+    s? : string;
+    p? : string;
+    o? : Uri | string;
+    desc : string;
+    limit : number = 100;
+}
+
+class QueryRequest {
+    constructor(q : Query, ret : Subscriber<any>) {
+	this.q = q;
+	this.ret = ret;
+    }
+    q : Query;
+    ret : Subscriber<any>;
+}
 
 @Injectable({
     providedIn: 'root'
 })
 export class QueryService {
 
+    cache = new LRUCache<string, Triple[]>(
+	{
+	    maxSize: 250,
+	}
+    );
+    
+    queries = new Subject<QueryRequest>;
+
+    activeQueries = new Set<Query>;
+
+    progressSub = new Subject<Set<Query>>;
+
+    progress() { return this.progressSub; }
+
     constructor(private httpClient : HttpClient) {
+
+	let svc = this;
+
+	// This limits number of concurrent queries
+	this.queries.pipe(
+	    mergeMap(
+		(qry : QueryRequest) => {
+		    return this.directQuery(qry);
+		},
+		undefined,
+		4,
+	    )
+
+	).subscribe(
+	    () => {}
+	);
+
     }
 
-    query(
-	s : string | undefined, p : string | undefined,
-	o : Uri | string | undefined,
-	limit : number = 100
-    ) : Observable<Triple[]> {
+    getQueryString(q : Query) : string {
 
 	let query = "";
-
-//	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
 
 	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
 	query += "  ?s ?p ?o .\n";
 
-	if (s) {
-	    if (s.startsWith("http://"))
-		query += "  FILTER(?s = <" + s + ">) .\n";
+	if (q.s) {
+	    if (q.s.startsWith("http://"))
+		query += "  FILTER(?s = <" + q.s + ">) .\n";
 	    else
-		query += "  FILTER(?s = \"" + s + "\") .\n";
+		query += "  FILTER(?s = \"" + q.s + "\") .\n";
 	}
 
-	if (p) {
-	    if (p.startsWith("http://"))
-		query += "  FILTER(?p = <" + p + ">) .\n";
+	if (q.p) {
+	    if (q.p.startsWith("http://"))
+		query += "  FILTER(?p = <" + q.p + ">) .\n";
 	    else
-		query += "  FILTER(?p = \"" + p + "\") .\n";
+		query += "  FILTER(?p = \"" + q.p + "\") .\n";
 	}
 
-	if (o) {
-	    if (o.startsWith("http://"))
-		query += "  FILTER(?o = <" + o + ">) .\n";
+	if (q.o) {
+	    if (q.o.startsWith("http://"))
+		query += "  FILTER(?o = <" + q.o + ">) .\n";
 	    else
-		query += "  FILTER(?o = \"" + o + "\") .\n";
+		query += "  FILTER(?o = \"" + q.o + "\") .\n";
 	}
 
 	query += "}\n";
-	query += "LIMIT " + limit + "\n";
+	query += "LIMIT " + q.limit + "\n";
 
 	query = encodeURIComponent(query);
-	let body = "query=" + query + "&output=json";
+	return "query=" + query + "&output=json";
+
+    }
+
+    decodeTriples(res : any) : Triple[] {
+
+	let triples : Triple[] = [];
+	
+	for (let row of res.results.bindings) {
+
+	    let s = row.s.value;
+
+	    let p = row.p.value;
+
+	    let o;
+
+	    if (row.o.type == "uri")
+		o = new Value(row.o.value, true);
+	    else
+		o = new Value(row.o.value, false);
+
+	    let triple = new Triple(s, p, o);
+
+	    triples.push(triple);
+
+	}
+
+	return triples;
+	
+    }
+
+    executeQuery(q : Query) : Observable<Triple[]> {
+
+	let query = this.getQueryString(q);
 
 	return this.httpClient.post(
 	    "/sparql",
-	    body,
+	    query,
 	    {},
 	).pipe(
 	    retry(3),
-	    map((res : any) => {
+	    map(this.decodeTriples)
+	);
 
-		let triples : Triple[] = [];
+    }
 
-		for (let row of res.results.bindings) {
+    directQuery(q : QueryRequest) : Observable<Triple[]> {
+		this.activeQueries.add(q.q);
+		this.progressSub.next(this.activeQueries);
+	return this.executeQuery(q.q).pipe(
+	    tap(
+		res => {
+		    let k = q.q.s + " " + q.q.p + " " + q.q.o + " " + q.q.limit;
 
-		    let s = row.s.value;
-
-		    let p = row.p.value;
-
-		    let o;
-
-		    if (row.o.type == "uri")
-			o = new Value(row.o.value, true);
-		    else
-			o = new Value(row.o.value, false);
-
-		    let triple = new Triple(s, p, o);
-
-		    triples.push(triple);
-
+		    this.cache.set(k, res);
+		    q.ret.next(res);
+		    this.activeQueries.delete(q.q);
+		    this.progressSub.next(this.activeQueries);
 		}
+	    )
+	);
+    }
 
-		return triples;
+    query(q : Query) : Observable<Triple[]> {
 
-	    })
+	let k = q.s + " " + q.p + " " + q.o + " " + q.limit;
+	let cached = this.cache.get(k);
+
+	if (cached) {
+	    return of(cached);
+	}
+
+	return new Observable<Triple[]>(
+
+	    sub => {
+		let qr = new QueryRequest(q, sub);
+		this.queries.next(qr);
+	    }
+
 	);
 
     }
 
 }
-
-
 
