@@ -1,9 +1,10 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, Subscriber } from 'rxjs';
+import { Observable, Subject, Subscriber, of } from 'rxjs';
 import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { Triple, Value, Uri } from './triple';
+import { LRUCache } from 'typescript-lru-cache';
 
 export class Query {
     constructor(
@@ -39,6 +40,12 @@ class QueryRequest {
     providedIn: 'root'
 })
 export class QueryService {
+
+    cache = new LRUCache<string, Triple[]>(
+	{
+	    maxSize: 250,
+	}
+    );
     
     queries = new Subject<QueryRequest>;
 
@@ -152,6 +159,9 @@ export class QueryService {
 	return this.executeQuery(q.q).pipe(
 	    tap(
 		res => {
+		    let k = q.q.s + " " + q.q.p + " " + q.q.o + " " + q.q.limit;
+
+		    this.cache.set(k, res);
 		    q.ret.next(res);
 		    this.activeQueries.delete(q.q);
 		    this.progressSub.next(this.activeQueries);
@@ -161,6 +171,13 @@ export class QueryService {
     }
 
     query(q : Query) : Observable<Triple[]> {
+
+	let k = q.s + " " + q.p + " " + q.o + " " + q.limit;
+	let cached = this.cache.get(k);
+
+	if (cached) {
+	    return of(cached);
+	}
 
 	return new Observable<Triple[]>(
 
