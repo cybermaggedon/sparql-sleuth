@@ -30,7 +30,6 @@ export class QueryGraphComponent implements OnInit {
 	private graph : GraphService,
 	private router : Router,
     ) {
-
 	
 	this.query.progress().subscribe(
 
@@ -39,12 +38,12 @@ export class QueryGraphComponent implements OnInit {
 		let a = Array.from(res.values());
 
 		if (a.length > 0)
-		    this.info1 = a[0].toString();
+		    this.info1 = a[0].desc;
 		else
 		    this.info1 = "";
 
 		if (a.length > 1)
-		    this.info2 = a[1].toString();
+		    this.info2 = a[1].desc;
 		else
 		    this.info2 = "";
 
@@ -69,6 +68,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Fetch " + this.selected,
 		this.selected,
 		undefined,
 		undefined,
@@ -96,6 +96,7 @@ export class QueryGraphComponent implements OnInit {
 			if (row.p == IS_A) {
 			    this.query.query(
 				new Query(
+				    "Label " + row.o.value,
 				    row.o.value, LABEL, undefined,
 				    4 // FIXME: only need 1
 				)
@@ -117,6 +118,7 @@ export class QueryGraphComponent implements OnInit {
 
 			this.query.query(
 			    new Query(
+				"Label " + row.p,
 				row.p, LABEL, undefined,
 				4 // FIXME: only need 1
 			    )
@@ -181,6 +183,7 @@ export class QueryGraphComponent implements OnInit {
 
 			this.query.query(
 			    new Query(
+				"Fetch " + ev.id,
 				undefined,
 				undefined,
 				ev.id,
@@ -199,6 +202,7 @@ export class QueryGraphComponent implements OnInit {
 
 			this.query.query(
 			    new Query(
+				"Fetch " + ev.id,
 				ev.id,
 				undefined,
 				undefined,
@@ -239,6 +243,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Label " + id,
 		id,
 		LABEL,
 		undefined,
@@ -266,6 +271,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Label " + rel,
 		rel,
 		LABEL,
 		undefined,
@@ -335,6 +341,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Expand in " + this.selected,
 		undefined,
 		undefined,
 		this.selected,
@@ -352,6 +359,7 @@ export class QueryGraphComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Expand out " + this.selected,
 		this.selected,
 		undefined,
 		undefined,
@@ -388,6 +396,7 @@ export class QueryGraphComponent implements OnInit {
 	// Add classes
 	this.query.query(
 	    new Query(
+		"Acquire schema",
 		undefined,
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
 		"http://www.w3.org/2000/01/rdf-schema#Class",

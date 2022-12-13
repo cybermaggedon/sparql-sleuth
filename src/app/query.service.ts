@@ -7,6 +7,7 @@ import { Triple, Value, Uri } from './triple';
 
 export class Query {
     constructor(
+	desc : string,
 	s? : string,
 	p? : string,
 	o? : Uri | string,
@@ -15,11 +16,13 @@ export class Query {
 	this.s = s;
 	this.p = p;
 	this.o = o;
+	this.desc = desc;
 	this.limit = limit;
     }
     s? : string;
     p? : string;
     o? : Uri | string;
+    desc : string;
     limit : number = 100;
 }
 
@@ -56,7 +59,7 @@ export class QueryService {
 		    return this.directQuery(qry);
 		},
 		undefined,
-		2,
+		4,
 	    )
 
 	).subscribe(

@@ -28,6 +28,7 @@ export class QueryTableComponent implements OnInit {
 
 	this.query.query(
 	    new Query(
+		"Lookup some stuff FIXME",
 		undefined, "http://whatever.domain.blah", undefined,
 		250
 	    )
