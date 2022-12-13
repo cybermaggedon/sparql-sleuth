@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, Subscriber } from 'rxjs';
-import { map, retry } from 'rxjs/operators';
+import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { Triple, Value, Uri } from './triple';
 
 export class Query {
@@ -39,30 +39,28 @@ export class QueryService {
     
     queries = new Subject<QueryRequest>;
 
+    activeQueries = new Set<Query>;
+
+    progressSub = new Subject<Set<Query>>;
+
+    progress() { return this.progressSub; }
+
     constructor(private httpClient : HttpClient) {
 
-	this.queries.subscribe(
-	    (qry : QueryRequest) => {
+	let svc = this;
 
-		console.log("Query...");
+	// This limits number of concurrent queries
+	this.queries.pipe(
+	    mergeMap(
+		(qry : QueryRequest) => {
+		    return this.directQuery(qry);
+		},
+		undefined,
+		2,
+	    )
 
-		let query = this.getQueryString(qry.q);
-
-		this.httpClient.post(
-		    "/sparql",
-		    query,
-		    {},
-		).pipe(
-		    retry(3),
-		    map(this.decodeTriples)
-		).subscribe(
-		    res => {
-			console.log("result.");
-			qry.ret.next(res);
-		    }
-		);
-
-	    }
+	).subscribe(
+	    () => {}
 	);
 
     }
@@ -145,37 +143,27 @@ export class QueryService {
 
     }
 
-    dirQuery(q : Query) : Observable<Triple[]> {
-
-	return this.executeQuery(q);
-
+    directQuery(q : QueryRequest) : Observable<Triple[]> {
+		this.activeQueries.add(q.q);
+		this.progressSub.next(this.activeQueries);
+	return this.executeQuery(q.q).pipe(
+	    tap(
+		res => {
+		    q.ret.next(res);
+		    this.activeQueries.delete(q.q);
+		    this.progressSub.next(this.activeQueries);
+		}
+	    )
+	);
     }
 
     query(q : Query) : Observable<Triple[]> {
 
-	
-	//	return this.executeQuery(q);
-
 	return new Observable<Triple[]>(
 
 	    sub => {
-
 		let qr = new QueryRequest(q, sub);
-
 		this.queries.next(qr);
-
-		
-
-/*
-		this.dirQuery(q).subscribe(
-		    res => {
-			sub.next(res);
-		    }
-		    )
-*/
-
-		
-
 	    }
 
 	);

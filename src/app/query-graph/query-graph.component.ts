@@ -30,6 +30,29 @@ export class QueryGraphComponent implements OnInit {
 	private graph : GraphService,
 	private router : Router,
     ) {
+
+	
+	this.query.progress().subscribe(
+
+	    (res : Set<Query>) => {
+
+		let a = Array.from(res.values());
+
+		if (a.length > 0)
+		    this.info1 = a[0].toString();
+		else
+		    this.info1 = "";
+
+		if (a.length > 1)
+		    this.info2 = a[1].toString();
+		else
+		    this.info2 = "";
+
+	    }
+
+	);
+
+
     }
 
     properties : { [key : string] : string } = {};
