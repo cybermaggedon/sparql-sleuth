@@ -354,7 +354,9 @@ export class QueryGraphComponent implements OnInit {
 		this.addTriples(result);
 	    }
 	);
-
+// Properties don't make sense on the graph, since they don't appear as
+// nodes.
+/*
 	// Add properties
 	this.query.query(
 	    undefined,
@@ -366,7 +368,7 @@ export class QueryGraphComponent implements OnInit {
 		this.addTriples(result);
 	    }
 	);
-
+*/
     }
 
 }
