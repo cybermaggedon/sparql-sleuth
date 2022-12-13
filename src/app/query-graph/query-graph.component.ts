@@ -38,12 +38,12 @@ export class QueryGraphComponent implements OnInit {
 		let a = Array.from(res.values());
 
 		if (a.length > 0)
-		    this.info1 = a[0].desc;
+		    this.info1 = a[0].desc + " ...";
 		else
 		    this.info1 = "";
 
 		if (a.length > 1)
-		    this.info2 = a[1].desc;
+		    this.info2 = a[1].desc + " ...";
 		else
 		    this.info2 = "";
 
