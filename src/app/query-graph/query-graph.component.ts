@@ -22,6 +22,9 @@ export class QueryGraphComponent implements OnInit {
     selectedThumbnail : string | undefined;
     selectedLink : string | undefined;
 
+    info1 : string = "";
+    info2 : string = "";
+
     constructor(
 	private query : QueryService,
 	private graph : GraphService,

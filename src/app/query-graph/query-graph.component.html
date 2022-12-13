@@ -1,34 +1,42 @@
 
-<div class="box">
-  <graph></graph>
+<div class="container">
+  
+  <div class="box graph">
+    <graph></graph>
+  </div>
+
+  <div class="box controls" id="selection">
+    <div>
+      <button *ngIf="selected" id="expandin" (click)="expandIn()">Expand inbound</button>
+      <button *ngIf="selected" id="expandout" (click)="expandOut()">Expand outbound</button>
+      <button *ngIf="selected" id="centre" (click)="recentre()">Re-centre</button>
+      <button id="schema" (click)="schema()">Schema</button>
+    </div>
+    <div>
+      {{info1}}
+      <br>
+      {{info2}}
+    </div>
+  </div>
+
+  <div class="box info" id="selection">
+    <h2>{{selectedLabel}}</h2>
+    <div>
+      <a href="{{selectedLink}}">{{selectedLink}}</a>
+    </div>
+    <img *ngIf="selectedThumbnail"
+	 class="icon" src="{{selectedThumbnail}}"/>
+    <div>
+      <table *ngIf="properties !== {}">
+	<tr *ngFor="let prop of properties | keyvalue">
+	  <td class="key">{{prop.key}}</td>
+	  <td class="value">{{prop.value}}</td>
+	</tr>
+      </table>
+    </div>
+  </div>
+
+
 </div>
 
-<div class="box" id="selection" *ngIf="selected; else nothingselected">
-  <h2>{{selectedLabel}}</h2>
-  <div>
-    <a href="{{selectedLink}}">{{selectedLink}}</a>
-  </div>
-  <img *ngIf="selectedThumbnail"
-       class="icon" src="{{selectedThumbnail}}"/>
-  <div>
-    <table *ngIf="properties !== {}">
-      <tr *ngFor="let prop of properties | keyvalue">
-	<td class="key">{{prop.key}}</td>
-	<td class="value">{{prop.value}}</td>
-      </tr>
-    </table>
-  </div>
-  <div>
-    <button id="expandin" (click)="expandIn()">Expand inbound</button>
-    <button id="expandout" (click)="expandOut()">Expand outbound</button>
-    <button id="centre" (click)="recentre()">Re-centre</button>
-    <button id="schema" (click)="schema()">Schema</button>
-  </div>
-</div>
-
-<ng-template #nothingselected>
-  <div class="box" id="noselect">
-    <button id="schema" (click)="schema()">Schema</button>
-  </div>
-</ng-template>
 
