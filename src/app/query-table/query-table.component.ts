@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { QueryService } from '../query.service';
+import { QueryService, Query } from '../query.service';
 
 @Component({
   selector: 'query-table',
@@ -27,9 +27,10 @@ export class QueryTableComponent implements OnInit {
     run_query() {
 
 	this.query.query(
-	    undefined, "http://whatever.domain.blah",
-	    undefined,
-	    250
+	    new Query(
+		undefined, "http://whatever.domain.blah", undefined,
+		250
+	    )
 	).subscribe(
 	    res => {
 

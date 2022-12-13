@@ -1,95 +1,186 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, Subscriber } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Triple, Value, Uri } from './triple';
+
+export class Query {
+    constructor(
+	s? : string,
+	p? : string,
+	o? : Uri | string,
+	limit : number = 100
+    ) {
+	this.s = s;
+	this.p = p;
+	this.o = o;
+	this.limit = limit;
+    }
+    s? : string;
+    p? : string;
+    o? : Uri | string;
+    limit : number = 100;
+}
+
+class QueryRequest {
+    constructor(q : Query, ret : Subscriber<any>) {
+	this.q = q;
+	this.ret = ret;
+    }
+    q : Query;
+    ret : Subscriber<any>;
+}
 
 @Injectable({
     providedIn: 'root'
 })
 export class QueryService {
+    
+    queries = new Subject<QueryRequest>;
 
     constructor(private httpClient : HttpClient) {
+
+	this.queries.subscribe(
+	    (qry : QueryRequest) => {
+
+		console.log("Query...");
+
+		let query = this.getQueryString(qry.q);
+
+		this.httpClient.post(
+		    "/sparql",
+		    query,
+		    {},
+		).pipe(
+		    retry(3),
+		    map(this.decodeTriples)
+		).subscribe(
+		    res => {
+			console.log("result.");
+			qry.ret.next(res);
+		    }
+		);
+
+	    }
+	);
+
     }
 
-    query(
-	s : string | undefined, p : string | undefined,
-	o : Uri | string | undefined,
-	limit : number = 100
-    ) : Observable<Triple[]> {
+    getQueryString(q : Query) : string {
 
 	let query = "";
-
-//	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
 
 	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
 	query += "  ?s ?p ?o .\n";
 
-	if (s) {
-	    if (s.startsWith("http://"))
-		query += "  FILTER(?s = <" + s + ">) .\n";
+	if (q.s) {
+	    if (q.s.startsWith("http://"))
+		query += "  FILTER(?s = <" + q.s + ">) .\n";
 	    else
-		query += "  FILTER(?s = \"" + s + "\") .\n";
+		query += "  FILTER(?s = \"" + q.s + "\") .\n";
 	}
 
-	if (p) {
-	    if (p.startsWith("http://"))
-		query += "  FILTER(?p = <" + p + ">) .\n";
+	if (q.p) {
+	    if (q.p.startsWith("http://"))
+		query += "  FILTER(?p = <" + q.p + ">) .\n";
 	    else
-		query += "  FILTER(?p = \"" + p + "\") .\n";
+		query += "  FILTER(?p = \"" + q.p + "\") .\n";
 	}
 
-	if (o) {
-	    if (o.startsWith("http://"))
-		query += "  FILTER(?o = <" + o + ">) .\n";
+	if (q.o) {
+	    if (q.o.startsWith("http://"))
+		query += "  FILTER(?o = <" + q.o + ">) .\n";
 	    else
-		query += "  FILTER(?o = \"" + o + "\") .\n";
+		query += "  FILTER(?o = \"" + q.o + "\") .\n";
 	}
 
 	query += "}\n";
-	query += "LIMIT " + limit + "\n";
+	query += "LIMIT " + q.limit + "\n";
 
 	query = encodeURIComponent(query);
-	let body = "query=" + query + "&output=json";
+	return "query=" + query + "&output=json";
+
+    }
+
+    decodeTriples(res : any) : Triple[] {
+
+	let triples : Triple[] = [];
+	
+	for (let row of res.results.bindings) {
+
+	    let s = row.s.value;
+
+	    let p = row.p.value;
+
+	    let o;
+
+	    if (row.o.type == "uri")
+		o = new Value(row.o.value, true);
+	    else
+		o = new Value(row.o.value, false);
+
+	    let triple = new Triple(s, p, o);
+
+	    triples.push(triple);
+
+	}
+
+	return triples;
+	
+    }
+
+    executeQuery(q : Query) : Observable<Triple[]> {
+
+	let query = this.getQueryString(q);
 
 	return this.httpClient.post(
 	    "/sparql",
-	    body,
+	    query,
 	    {},
 	).pipe(
 	    retry(3),
-	    map((res : any) => {
+	    map(this.decodeTriples)
+	);
 
-		let triples : Triple[] = [];
+    }
 
-		for (let row of res.results.bindings) {
+    dirQuery(q : Query) : Observable<Triple[]> {
 
-		    let s = row.s.value;
+	return this.executeQuery(q);
 
-		    let p = row.p.value;
+    }
 
-		    let o;
+    query(q : Query) : Observable<Triple[]> {
 
-		    if (row.o.type == "uri")
-			o = new Value(row.o.value, true);
-		    else
-			o = new Value(row.o.value, false);
+	
+	//	return this.executeQuery(q);
 
-		    let triple = new Triple(s, p, o);
+	return new Observable<Triple[]>(
 
-		    triples.push(triple);
+	    sub => {
 
-		}
+		let qr = new QueryRequest(q, sub);
 
-		return triples;
+		this.queries.next(qr);
 
-	    })
+		
+
+/*
+		this.dirQuery(q).subscribe(
+		    res => {
+			sub.next(res);
+		    }
+		    )
+*/
+
+		
+
+	    }
+
 	);
 
     }
 
 }
-
-
 
