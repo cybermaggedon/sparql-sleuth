@@ -95,6 +95,11 @@ export class GraphComponent implements OnInit {
 
 	var options = {
 	    interaction: {
+	    },
+	    physics: {
+		barnesHut: {
+		    gravitationalConstant: -3000,
+		}
 	    }
 	};
 
