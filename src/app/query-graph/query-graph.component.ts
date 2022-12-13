@@ -219,6 +219,30 @@ export class QueryGraphComponent implements OnInit {
 	    }
 	);
 
+	this.graph.schemaEvents().subscribe(
+	    ev => {
+
+		console.log("SCHEMA");
+		
+		//	    this.graph.reset();
+		
+		// Add classes
+		this.query.query(
+		    new Query(
+			"Acquire schema",
+			undefined,
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+			"http://www.w3.org/2000/01/rdf-schema#Class",
+			50,
+		    )
+		).subscribe(
+		    result => {
+			this.addTriples(result);
+		    }
+		);
+	    }
+	);
+
     }
 
     makeLabel(label : string) {
@@ -391,37 +415,8 @@ export class QueryGraphComponent implements OnInit {
 
     schema() {
 
-	this.graph.reset();
+	this.graph.schema();
 
-	// Add classes
-	this.query.query(
-	    new Query(
-		"Acquire schema",
-		undefined,
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-		"http://www.w3.org/2000/01/rdf-schema#Class",
-		50,
-	    )
-	).subscribe(
-	    result => {
-		this.addTriples(result);
-	    }
-	);
-// Properties don't make sense on the graph, since they don't appear as
-// nodes.
-/*
-	// Add properties
-	this.query.query(
-	    undefined,
-	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-	    "http://www.w3.org/2000/01/rdf-schema#Property",
-	    50,
-	).subscribe(
-	    result => {
-		this.addTriples(result);
-	    }
-	);
-*/
     }
 
 }

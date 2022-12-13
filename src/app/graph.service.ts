@@ -57,6 +57,7 @@ export class GraphService {
     private recentreSubject = new BehaviorSubject<RecentreEvent>(
        new RecentreEvent()
     );
+    private schemaSubject = new Subject<null>;
 
     addNodeEvents() { return this.addNodeSubject; }
     removeNodeEvents() { return this.removeNodeSubject; }
@@ -66,6 +67,7 @@ export class GraphService {
     nodeDeselectEvents() { return this.nodeDeselectSubject; }
     resetEvents() { return this.resetSubject; }
     recentreEvents() { return this.recentreSubject; }
+    schemaEvents() { return this.schemaSubject; }
 
     addNode(node : Node) {
 	let ev = new AddNodeEvent();
@@ -110,6 +112,11 @@ export class GraphService {
 	ev.id = id;
 	ev.expand = expand;
 	this.recentreSubject.next(ev);
+    }
+
+    schema() {
+        console.log("SCHMAE?!");
+	this.schemaSubject.next(null);
     }
 
     constructor() {
