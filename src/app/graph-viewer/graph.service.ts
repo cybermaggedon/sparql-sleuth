@@ -1,11 +1,11 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, forkJoin } from 'rxjs';
 
 import { Triple, Value, Uri } from '../triple';
 import { QueryService, Query } from '../query.service';
-import { RELATION, THUMBNAIL, LABEL } from '../rdf';
+import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 import { CommandService, Direction } from './command.service';
 
@@ -102,6 +102,10 @@ export class GraphService {
     select(n : Node) {
 	let ev = new NodeSelectEvent();
 	ev.node = n;
+
+	console.log("SELECT FIXME");
+	this.getProperties(n);
+	
 	this.nodeSelectSubject.next(ev);
     }
 
@@ -343,5 +347,209 @@ export class GraphService {
 
     }
 
+    getProperties(node : Node) {
+
+	this.query.query(
+	    new Query(
+		"Fetch " + node.id,
+		node.id,
+		undefined,
+		undefined,
+		this.fetchEdges,
+	    )
+	).subscribe(
+	    res => {
+
+		let properties : { [key : string] : string } = {};
+
+		properties["_title"] = "n/a";
+
+		let todo : { [key : string] : any } = {};
+
+
+		for (let row of res) {
+
+		    todo[row.p] = new Observable<string[]>(
+			sub => {
+
+			    if (row.p == LABEL) {
+
+				// Label
+				sub.next(["label", row.o.value]);
+				sub.complete();
+				return;
+
+			    } else if (row.p == THUMBNAIL) {
+
+				// thumbnail
+				sub.next(["thumbnail", row.o.value]);
+				sub.complete();
+				return;
+
+			    } else if (row.p == RELATION) {
+
+				// link
+				sub.next(["link", row.o.value]);
+				sub.complete();
+				return;
+
+			    } else if (row.p == IS_A) {
+
+				// IS_A relationship, work out the class name
+				this.query.query(
+				    new Query(
+					"Label " + row.o.value,
+					row.o.value, LABEL, undefined,
+					4 // FIXME: only need 1
+				    )
+				).subscribe(
+				    res => {
+
+					if (res.length > 0) {
+					    sub.next([
+						"class", res[0].o.value
+					    ]);
+					    sub.complete();
+					    return;
+					} else {
+					    sub.next(
+						["class", row.o.value]
+					    );
+					    sub.complete();
+					    return;
+					}
+
+				    }
+
+				);
+
+			    } else if (row.o.uri) {
+
+				// Property we're not interested in.
+				// Indicate nothing to return.
+				sub.next([]);
+				sub.complete();
+				return;
+
+			    } else {
+
+				// 'o' is a literal, just need the
+				// human-readable property name.
+
+				this.query.query(
+				    new Query(
+					"Label " + row.p,
+					row.p, LABEL, undefined,
+					4 // FIXME: only need 1
+				    )
+				).subscribe(
+				    res => {
+
+					if (res.length > 0) {
+					    sub.next([
+						res[0].o.value, row.o.value
+					    ]);
+					    sub.complete();
+					    return;
+					} else {
+					    sub.next([
+						this.makeLabel(row.p),
+						row.o.value
+					    ]);
+					    sub.complete();
+					    return;
+					}
+				    }
+
+				)
+
+			    }
+			}
+		    );
+
+		}
+
+		console.log(todo);
+
+		// forkJoin on empty set is bad
+		if (todo === {})
+		    return;
+
+		forkJoin(todo).subscribe(
+		    (res : { [key : string] : any }) => {
+			console.log("FORKJOIN DONE");
+			for (let i in res) {
+			    console.log(res[i][0], res[i][1]);
+			}
+		    }
+		);
+
+
+
+
+			/*
+			if (row.p == LABEL) {
+			    this.selectedLabel = row.o.value;
+			}
+
+			if (row.p == THUMBNAIL) {
+			    this.selectedThumbnail = row.o.value;
+			    continue;
+			}
+
+			if (row.p == IS_A) {
+			    this.query.query(
+				new Query(
+				    "Label " + row.o.value,
+				    row.o.value, LABEL, undefined,
+				    4 // FIXME: only need 1
+				)
+			    ).subscribe(
+				res => {
+				    try{
+					properties["class"] = res[0].o.value;
+				    } catch {
+				    }
+				}
+			    );
+			}
+
+			if (row.p == RELATION) {
+			    this.selectedLink = row.o.value;
+			}
+
+			if (row.o.uri) continue;
+
+			this.query.query(
+			    new Query(
+				"Label " + row.p,
+				row.p, LABEL, undefined,
+				4 // FIXME: only need 1
+			    )
+			).subscribe(
+			    res => {
+
+				let label;
+
+				try{
+				    label = res[0].o.value;
+				} catch {
+				    label = this.makeLabel(row.p);
+				}
+
+				properties[label] = row.o.value;
+			    }
+			);
+*/
+
+
+	    //		    this.properties = properties;
+
+	    }
+
+	)
+
+    }
+    
 }
 
