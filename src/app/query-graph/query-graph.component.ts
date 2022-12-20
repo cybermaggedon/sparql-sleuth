@@ -1,6 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+
 import { Triple } from '../triple';
 import { QueryService, Query } from '../query.service';
 import { GraphService, Node, Edge } from '../graph.service';
@@ -29,6 +31,7 @@ export class QueryGraphComponent implements OnInit {
 	private query : QueryService,
 	private graph : GraphService,
 	private router : Router,
+	private route : ActivatedRoute,
     ) {
 	
 	this.query.progress().subscribe(
@@ -155,6 +158,34 @@ export class QueryGraphComponent implements OnInit {
 
 	this.runQuery();
 
+	this.route.queryParams.subscribe(
+	    params => {
+
+		if (params["node"]) {
+
+		    // Perhaps recentre should be a different event.
+
+		    const id = params["node"];
+
+		    let expand = "no";
+		    
+		    if (params["expand"]) {
+			expand = params["expand"];
+		    }
+
+		    if (id) {
+			this.graph.recentre(id, expand);
+		    }
+
+		} else {
+
+		    this.graph.schema();
+
+		}
+
+	    }
+	);
+
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
 		if (ev.id == this.selected) return;
@@ -222,10 +253,6 @@ export class QueryGraphComponent implements OnInit {
 	this.graph.schemaEvents().subscribe(
 	    ev => {
 
-		console.log("SCHEMA");
-		
-		//	    this.graph.reset();
-		
 		// Add classes
 		this.query.query(
 		    new Query(
@@ -406,6 +433,15 @@ export class QueryGraphComponent implements OnInit {
 
     }
 
+    restart() {
+
+	console.log("RESTART");
+	this.router.navigate(
+	    ["/"]
+	);
+
+    }
+
     recentreOn(id : string) {
 	this.graph.reset();
 	this.addNode(id);
@@ -414,7 +450,7 @@ export class QueryGraphComponent implements OnInit {
     }
 
     schema() {
-
+	this.graph.reset();
 	this.graph.schema();
 
     }

@@ -115,7 +115,6 @@ export class GraphService {
     }
 
     schema() {
-        console.log("SCHMAE?!");
 	this.schemaSubject.next(null);
     }
 
