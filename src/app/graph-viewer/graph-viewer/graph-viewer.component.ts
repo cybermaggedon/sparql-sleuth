@@ -37,99 +37,6 @@ export class GraphViewerComponent implements OnInit {
 
     fetchEdges = 25;
 
-    updateProperties() {
-
-	if (this.selected == undefined) return;
-
-	this.selectedLink = undefined;
-	this.selectedLabel = undefined
-	this.selectedThumbnail = undefined;
-
-	this.query.query(
-	    new Query(
-		"Fetch " + this.selected,
-		this.selected,
-		undefined,
-		undefined,
-		this.fetchEdges,
-	    )
-	).subscribe(
-	    res => {
-
-		let properties : { [key : string] : string } = {};
-		let title = "n/a";
-
-		try {
-
-		    for (let row of res) {
-
-			if (row.p == LABEL) {
-			    this.selectedLabel = row.o.value;
-			}
-
-			if (row.p == THUMBNAIL) {
-			    this.selectedThumbnail = row.o.value;
-			    continue;
-			}
-
-			if (row.p == IS_A) {
-			    this.query.query(
-				new Query(
-				    "Label " + row.o.value,
-				    row.o.value, LABEL, undefined,
-				    4 // FIXME: only need 1
-				)
-			    ).subscribe(
-				res => {
-				    try{
-					properties["class"] = res[0].o.value;
-				    } catch {
-				    }
-				}
-			    );
-			}
-
-			if (row.p == RELATION) {
-			    this.selectedLink = row.o.value;
-			}
-
-			if (row.o.uri) continue;
-
-			this.query.query(
-			    new Query(
-				"Label " + row.p,
-				row.p, LABEL, undefined,
-				4 // FIXME: only need 1
-			    )
-			).subscribe(
-			    res => {
-
-				let label;
-
-				try{
-				    label = res[0].o.value;
-				} catch {
-				    label = this.makeLabel(row.p);
-				}
-
-				properties[label] = row.o.value;
-			    }
-			);
-
-		    }
-
-		    this.properties = properties;
-
-		} catch (e) {
-		    console.log(e);
-		    this.selectedLabel = "n/a";
-		    this.properties = {};
-		}
-	    }
-	);
-
-    }
-
     ngOnInit(): void {
 
 	this.route.queryParams.subscribe(
@@ -161,9 +68,13 @@ export class GraphViewerComponent implements OnInit {
 
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
-		if (ev.node.id == this.selected) return;
+
 		this.selected = ev.node.id;
-		this.updateProperties();
+
+		if (ev.node.label)
+		    this.selectedLabel = ev.node.label;
+		else
+		    this.selectedLabel = "-- undefined --";
 
 	    }
 	);
@@ -174,6 +85,24 @@ export class GraphViewerComponent implements OnInit {
 		this.selected = undefined;
 		this.selectedLabel = undefined;
 		this.selectedLink = undefined;
+	    }
+	);
+
+	this.graph.propertiesEvents().subscribe(
+	    ev => {
+
+		this.properties = {};
+		this.selectedThumbnail = undefined;
+		this.selectedLink = undefined;
+
+		for (let key in ev.properties) {
+		    if (key == "thumbnail")
+			this.selectedThumbnail = ev.properties[key];
+		    if (key == "link")
+			this.selectedLink = ev.properties[key];
+		    else
+			this.properties[key] = ev.properties[key];
+		}
 	    }
 	);
 
