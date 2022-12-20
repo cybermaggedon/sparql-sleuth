@@ -5,19 +5,8 @@
     <graph></graph>
   </div>
 
-  <div class="box controls" id="selection">
-    <div>
-      <button (click)="restart()">Restart</button>
-      <button *ngIf="selected" id="expandin" (click)="expandIn()">Expand inbound</button>
-      <button *ngIf="selected" id="expandout" (click)="expandOut()">Expand outbound</button>
-      <button *ngIf="selected" id="centre" (click)="recentre()">Re-centre</button>
-      <button id="schema" (click)="schema()">Schema</button>
-    </div>
-    <div>
-      {{info1}}
-      <br>
-      {{info2}}
-    </div>
+  <div>
+    <controls></controls>
   </div>
 
   <div class="box info" id="selection">

@@ -24,36 +24,12 @@ export class GraphViewerComponent implements OnInit {
     selectedThumbnail : string | undefined;
     selectedLink : string | undefined;
 
-    info1 : string = "";
-    info2 : string = "";
-
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
 	private router : Router,
 	private route : ActivatedRoute,
     ) {
-	
-	this.query.progress().subscribe(
-
-	    (res : Set<Query>) => {
-
-		let a = Array.from(res.values());
-
-		if (a.length > 0)
-		    this.info1 = a[0].desc + " ...";
-		else
-		    this.info1 = "";
-
-		if (a.length > 1)
-		    this.info2 = a[1].desc + " ...";
-		else
-		    this.info2 = "";
-
-	    }
-
-	);
-
 
     }
 
@@ -178,8 +154,7 @@ export class GraphViewerComponent implements OnInit {
 		    }
 
 		} else {
-
-		    this.graph.schema();
+//		    this.graph.schema();
 
 		}
 
@@ -247,26 +222,6 @@ export class GraphViewerComponent implements OnInit {
 			
 		    }
 		}
-	    }
-	);
-
-	this.graph.schemaEvents().subscribe(
-	    ev => {
-
-		// Add classes
-		this.query.query(
-		    new Query(
-			"Acquire schema",
-			undefined,
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-			"http://www.w3.org/2000/01/rdf-schema#Class",
-			50,
-		    )
-		).subscribe(
-		    result => {
-			this.addTriples(result);
-		    }
-		);
 	    }
 	);
 

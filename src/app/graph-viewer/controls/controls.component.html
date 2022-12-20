@@ -1,0 +1,31 @@
+<div class="box controls" id="selection">
+  <div>
+
+    <button (click)="restart()">Restart</button>
+
+    <button *ngIf="selection" (click)="expandIn()">
+      Expand inbound
+    </button>
+
+    <button *ngIf="selection" (click)="expandOut()">
+      Expand outbound
+    </button>
+
+    <button *ngIf="selection" (click)="recentre()">
+      Re-centre
+    </button>
+
+    <button (click)="schema()">
+      Schema
+    </button>
+
+  </div>
+
+  <div>
+    {{info1}}
+    <br>
+    {{info2}}
+
+  </div>
+
+</div>
