@@ -1,0 +1,19 @@
+
+<div class="box info" id="selection">
+  <h2>{{selectedLabel}}</h2>
+  <div>
+    <a href="{{selectedLink}}">{{selectedLink}}</a>
+  </div>
+  <img *ngIf="selectedThumbnail"
+       class="icon" src="{{selectedThumbnail}}"/>
+  <div>
+    <table *ngIf="properties !== {}">
+      <tr *ngFor="let prop of properties | keyvalue">
+	<td class="key">{{prop.key}}</td>
+	<td class="value">{{prop.value}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
