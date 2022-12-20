@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
-import { GraphService } from '../graph.service';
+import { GraphService, Node } from '../graph.service';
 import { QueryService, Query } from '../../query.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { QueryService, Query } from '../../query.service';
 })
 export class ControlsComponent implements OnInit {
 
-    selection : string = "";
+    selection : Node | null = null;
 
     info1 : string = "";
     info2 : string = "";
@@ -37,11 +37,11 @@ export class ControlsComponent implements OnInit {
 	);
 */
 	this.graph.nodeSelectEvents().subscribe(
-	    ev => this.selection = ev.id
+	    ev => this.selection = ev.node
 	);
 
 	this.graph.nodeDeselectEvents().subscribe(
-	    () => this.selection = ""
+	    () => this.selection = null
 	);
 
 	this.query.progress().subscribe(
@@ -71,12 +71,12 @@ export class ControlsComponent implements OnInit {
 
     expandIn() {
 	if (this.selection)
-	    this.command.expand(Direction.IN, this.selection);
+	    this.command.expand(Direction.IN, this.selection.id);
     }
 
     expandOut() {
 	if (this.selection)
-	    this.command.expand(Direction.OUT, this.selection);
+	    this.command.expand(Direction.OUT, this.selection.id);
     }
 
     restart() {
@@ -87,7 +87,7 @@ export class ControlsComponent implements OnInit {
 
     recentre() {
 	if (this.selection)
-	    this.command.recentre(this.selection);
+	    this.command.recentre(this.selection.id);
     }
 
     schema() {

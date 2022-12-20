@@ -38,7 +38,7 @@ export class RemoveEdgeEvent {
 };
 
 export class NodeSelectEvent {
-    id : string = "";
+    node : Node = new Node();
 };
 
 export class RecentreEvent {
@@ -99,9 +99,9 @@ export class GraphService {
 	this.removeEdgeSubject.next(ev);
     }
 
-    select(id : string) {
+    select(n : Node) {
 	let ev = new NodeSelectEvent();
-	ev.id = id;
+	ev.node = n;
 	this.nodeSelectSubject.next(ev);
     }
 

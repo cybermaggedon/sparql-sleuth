@@ -43,6 +43,7 @@ export class GraphComponent implements OnInit {
 		if (this.nodes.get(ev.node.id) == null) {
 		    this.nodes.add({
 			id: ev.node.id,
+			node: ev.node,
 			label: this.wrap(ev.node.label),
 		    });
 		}
@@ -61,6 +62,7 @@ export class GraphComponent implements OnInit {
 		if (this.edges.get(ev.edge.id) == null) {
 		    this.edges.add({
 			id: ev.edge.id,
+			edge: ev.edge,
 			label: this.wrap(ev.edge.label),
 			from: ev.edge.from,
 			to: ev.edge.to,
@@ -110,14 +112,18 @@ export class GraphComponent implements OnInit {
 	let cmp = this;
 
 	this.network.on("selectNode", function (params : any) {
-	    cmp.graph.select(params.nodes[0]);
+	    let id = params.nodes[0];
+	    let node = cmp.nodes.get(id).node;
+	    cmp.graph.select(node);
 	});
 
 	// Bug in visjs?  Dragging selects a node but doesn't cause a
 	// select event.
 	this.network.on("dragStart", function (params : any) {
 	    if (params.nodes.length == 1) {
-		cmp.graph.select(params.nodes[0]);
+	        let id = params.nodes[0];
+		let node = cmp.nodes.get(id).node;
+		cmp.graph.select(node);
 	    }
 	});
 

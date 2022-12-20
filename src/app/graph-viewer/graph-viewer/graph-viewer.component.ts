@@ -163,8 +163,8 @@ export class GraphViewerComponent implements OnInit {
 
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
-		if (ev.id == this.selected) return;
-		this.selected = ev.id;
+		if (ev.node.id == this.selected) return;
+		this.selected = ev.node.id;
 		this.updateProperties();
 
 	    }
