@@ -1,23 +1,17 @@
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { QueryTableComponent } from './query-table/query-table.component';
-import { QueryGraphComponent } from './query-graph/query-graph.component';
-import { GraphComponent } from './graph/graph.component';
-import { TechExplorerComponent } from './tech-explorer/tech-explorer.component';
+import { AppRoutingModule } from './app-routing.module';
+import { GraphViewerModule } from './graph-viewer/graph-viewer.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    QueryTableComponent,
-    QueryGraphComponent,
-    GraphComponent,
-    TechExplorerComponent
   ],
   imports: [
     BrowserModule,
@@ -25,6 +19,9 @@ import { TechExplorerComponent } from './tech-explorer/tech-explorer.component';
     BrowserAnimationsModule,
     DragDropModule,
     HttpClientModule,
+
+    GraphViewerModule,
+
   ],
   providers: [],
   bootstrap: [

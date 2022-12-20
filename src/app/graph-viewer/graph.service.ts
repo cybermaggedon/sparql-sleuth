@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
-import { Triple, Value, Uri } from './triple';
+import { Triple, Value, Uri } from '../triple';
 
 export class Node {
     id : string = "";

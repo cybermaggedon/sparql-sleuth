@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
-import { Triple } from '../triple';
-import { QueryService, Query } from '../query.service';
+import { Triple } from '../../triple';
+import { QueryService, Query } from '../../query.service';
 import { GraphService, Node, Edge } from '../graph.service';
 
 const RELATION = "http://purl.org/dc/elements/1.1/relation";
@@ -13,11 +13,11 @@ const THUMBNAIL = "http://dbpedia.org/ontology/thumbnail";
 const IS_A = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
 @Component({
-    selector: 'query-graph',
-    templateUrl: './query-graph.component.html',
-    styleUrls: ['./query-graph.component.scss']
+    selector: 'graph-viewer',
+    templateUrl: './graph-viewer.component.html',
+    styleUrls: ['./graph-viewer.component.scss']
 })
-export class QueryGraphComponent implements OnInit {
+export class GraphViewerComponent implements OnInit {
 
     selected : string | undefined;
     selectedLabel : string | undefined;
