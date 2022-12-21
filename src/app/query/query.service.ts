@@ -7,7 +7,7 @@ import { LRUCache } from 'typescript-lru-cache';
 
 import { Query } from './query';
 import { Triple, Value, Uri } from './triple';
-import { ProgressService, Activity } from './progress.service';
+import { ProgressService, Activity } from '../progress.service';
 
 class QueryRequest {
     constructor(q : Query, ret : Subscriber<any>) {

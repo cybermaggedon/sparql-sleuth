@@ -6,10 +6,10 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Triple, Value, Uri } from '../triple';
-import { QueryService } from '../query.service';
-import { TripleQuery } from '../triple-query';
-import { ExpansionsQuery } from '../expansion-query';
+import { Triple, Value, Uri } from '../query/triple';
+import { QueryService } from '../query/query.service';
+import { TripleQuery } from '../query/triple-query';
+import { ExpansionsQuery } from '../query/expansion-query';
 import { CommandService, Direction } from './command.service';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
