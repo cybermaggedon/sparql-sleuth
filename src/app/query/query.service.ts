@@ -89,6 +89,7 @@ export class QueryService {
 
 		    this.cache.set(k, res);
 		    q.ret.next(res);
+		    q.ret.complete();
 		    this.progress.delete(q.description());
 		}
 	    )

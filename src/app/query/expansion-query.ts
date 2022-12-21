@@ -31,7 +31,7 @@ export class ExpansionsQuery implements Query {
 	let query = "";
 
 	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-	query += "SELECT DISTINCT ?pred ?label WHERE {\n";
+	query += "SELECT DISTINCT ?pred WHERE {\n";
 
 	if (this.inward)
 	    query += "  ?s ?pred <" + this.id + "> . \n";
@@ -43,9 +43,6 @@ export class ExpansionsQuery implements Query {
 	    query += "  FILTER(isIRI(?o)) .\n";
 	}
 
-	query += "  OPTIONAL {\n";
-	query += "    ?pred rdfs:label ?label .\n";
-	query += "  }\n";
 	query += "}\n";
 	query += "LIMIT " + this.limit + "\n";
 
@@ -57,12 +54,11 @@ export class ExpansionsQuery implements Query {
 
     decode(res : any) : any {
 
-	let values : Value[][] = [];
+	let values : Value[] = [];
 
 	for (let row of res.results.bindings) {
 	    let pred = new Value(row.pred.value, true);
-	    let label = new Value(row.label.value, true);
-	    values.push([pred, label]);
+	    values.push(pred);
 	}
 
 	return values;

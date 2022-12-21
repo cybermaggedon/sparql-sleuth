@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-    BehaviorSubject, Subject, Observable, forkJoin, Subscriber, combineLatest
+    BehaviorSubject, Subject, Observable, forkJoin, Subscriber
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -557,13 +557,11 @@ export class GraphService {
 
 	return qry.pipe(
 	    map(
-		(v : Value[][]) =>
+		(v : Value[]) =>
 		v.map(
-		    v => v.map(v => v.value)
+		    v => v.value
 		).filter(
-		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
-		).map(
-		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
+		    v => ((v != RELATION) && v != THUMBNAIL)
 		)
 	    )
 	);
@@ -580,58 +578,75 @@ export class GraphService {
 
 	return qry.pipe(
 	    map(
-		(v : Value[][]) =>
+		(v : Value[]) =>
 		v.map(
-		    v => v.map(v => v.value)
+		    v => v.value
 		).filter(
-		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
-		).map(
-		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
+		    v => ((v != RELATION) && v != THUMBNAIL)
 		)
 	    )
 	);
 
     }
 
-    getExpansions(node : Node) {
+    getExpansionPreds(node : Node) {
 
 	return new Observable<any>(
-	    
+
 	    sub => {
 
-		combineLatest({
-		    "in": this.getExpansionsIn(node),
-		    "out": this.getExpansionsOut(node)
-		}).subscribe(
-		    (res : any) => {
+		let inw = this.getExpansionsIn(node).pipe(
+		    map(v => v.map(v => [v, "FIXME"]))
+		);
+
+		let outw = this.getExpansionsOut(node).pipe(
+		    map(v => v.map(v => [v, "FIXME"]))
+		);
+	    
+		// combineLatest maybe?
+
+		forkJoin({
+		    "in": inw,
+		    "out": outw,
+		}).pipe(
+		    map(
+			(res : any) => {
+
+			    console.log(res);
 			
-			let exps : Expansion[] = [];
+			    let exps : Expansion[] = [];
+			    
+			    for (let i of res["in"]) {
+				let exp = new Expansion();
+				exp.id = i[0];
+				exp.name = i[1];
+				exp.inward = true;
+				exps.push(exp);
+			    }
 
-			for (let i of res["in"]) {
-			    let exp = new Expansion();
-			    exp.id = i[0];
-			    exp.name = i[1];
-			    exp.inward = true;
-			    exps.push(exp);
+			    for (let i of res["out"]) {
+				let exp = new Expansion();
+				exp.id = i[0];
+				exp.name = i[1];
+				exp.inward = false;
+				exps.push(exp);
+			    }
+
+			    return exps;
+
 			}
-
-			for (let i of res["out"]) {
-			    let exp = new Expansion();
-			    exp.id = i[0];
-			    exp.name = i[1];
-			    exp.inward = false;
-			    exps.push(exp);
-			}
-
-			sub.next(exps);
-
-		    }
-
-		)
+		    )
+		).subscribe(
+		    exps => sub.next(exps)
+		);
 
 	    }
 	);
 
+    }
+
+    getExpansions(node : Node) {
+	return this.getExpansionPreds(node);
     }
 
 }
