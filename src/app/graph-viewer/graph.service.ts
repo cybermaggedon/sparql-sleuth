@@ -134,6 +134,9 @@ export class GraphService {
 
     fetchEdges = 25;
 
+    // FIXME: this was previously set to 4, was there an issue?
+    fetchLabelEdges = 1;
+
     private addNodeSubject = new Subject<AddNodeEvent>;
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
     private addEdgeSubject = new Subject<AddEdgeEvent>;
@@ -280,7 +283,7 @@ export class GraphService {
 		id,
 		LABEL,
 		undefined,
-		4 // FIXME: only need 1
+		this.fetchLabelEdges,
 	    )
 	).subscribe(
 	    ev => {
@@ -308,7 +311,7 @@ export class GraphService {
 		rel,
 		LABEL,
 		undefined,
-		4 // FIXME: Only need 1
+		this.fetchLabelEdges,
 	    )
 	).subscribe(
 	    ev => {
@@ -345,7 +348,7 @@ export class GraphService {
 	    new Query(
 		"Label " + id,
 		id, LABEL, undefined,
-		4 // FIXME: only need 1
+		this.fetchLabelEdges,
 	    )
 	).subscribe(
 	    res => {
@@ -376,7 +379,7 @@ export class GraphService {
 	    new Query(
 		"Label " + p,
 		p, LABEL, undefined,
-		4 // FIXME: only need 1
+		this.fetchLabelEdges,
 	    )
 	).subscribe(
 	    res => {
