@@ -546,52 +546,39 @@ export class GraphService {
 	)
 
     }
-    /*
-      FIXME: Cruft
-    getPredicatesIn(node : Node) {
-	return this.query.getExpansionsIn(node.id).pipe(
-	    map(
-		(v : Value[][]) =>
-		v.map(
-		    v => v.map(v => v.value)
-		).filter(
-		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
-		)
-	    )
-	);
-    }
 
-    getPredicatesOut(node : Node) {
-	return this.query.getExpansionsOut(node.id).pipe(
-	    map(
-		(v : Value[][]) =>
-		v.map(
-		    v => v.map(v => v.value)
-		).filter(
-		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
-		)
-	    )
-	);
-    }
-*/
-    getExpansions(node : Node) {
+    getExpansionsIn(node : Node) {
 
-	let inQry = this.query.query(
+	let qry = this.query.query(
 	    new ExpansionsQuery(
 		"Expand in " + node.id, node.id, true, this.expansionEdges
 	    )
 	);
 
-	let outQry = this.query.query(
+	return qry.pipe(
+	    map(
+		(v : Value[][]) =>
+		v.map(
+		    v => v.map(v => v.value)
+		).filter(
+		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
+		).map(
+		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
+		)
+	    )
+	);
+
+    }
+
+    getExpansionsOut(node : Node) {
+
+	let qry = this.query.query(
 	    new ExpansionsQuery(
 		"Expand out " + node.id, node.id, false, this.expansionEdges
 	    )
 	);
 
-//	return this.query(qry);
-//    }
-
-	let inw = inQry.pipe(
+	return qry.pipe(
 	    map(
 		(v : Value[][]) =>
 		v.map(
@@ -604,26 +591,20 @@ export class GraphService {
 	    )
 	);
 
-	let outw = outQry.pipe(
-	    map(
-		(v : Value[][]) =>
-		v.map(
-		    v => v.map(v => v.value)
-		).filter(
-		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
-		).map(
-		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
-		)
-	    )
-	);
+    }
+
+    getExpansions(node : Node) {
 
 	return new Observable<any>(
-
+	    
 	    sub => {
 
-		combineLatest({ "in": inw, "out": outw }).subscribe(
+		combineLatest({
+		    "in": this.getExpansionsIn(node),
+		    "out": this.getExpansionsOut(node)
+		}).subscribe(
 		    (res : any) => {
-
+			
 			let exps : Expansion[] = [];
 
 			for (let i of res["in"]) {
