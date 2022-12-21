@@ -63,13 +63,26 @@ export class ControlsComponent implements OnInit {
     }
 
     expandIn() {
-	if (this.selection)
-	    this.command.expand(Direction.IN, this.selection.id);
+
+	if (this.selection) {
+
+	    this.graph.getPredicatesIn(this.selection).subscribe(
+		ev => console.log(ev)
+	    );
+
+//	    this.command.expand(Direction.IN, this.selection.id);
+
+	}
     }
 
     expandOut() {
-	if (this.selection)
-	    this.command.expand(Direction.OUT, this.selection.id);
+	if (this.selection) {
+	    this.graph.getPredicatesOut(this.selection).subscribe(
+		ev => console.log(ev)
+	    );
+
+//	    this.command.expand(Direction.OUT, this.selection.id);
+	}
     }
 
     restart() {

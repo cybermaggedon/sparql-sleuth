@@ -4,9 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import {
     BehaviorSubject, Subject, Observable, forkJoin, Subscriber
 } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Triple, Value, Uri } from '../triple';
-import { QueryService, Query } from '../query.service';
+import { QueryService, TripleQuery } from '../query.service';
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 import { CommandService, Direction } from './command.service';
@@ -94,7 +95,7 @@ export class GraphService {
 
 		// Add classes
 		this.query.query(
-		    new Query(
+		    new TripleQuery(
 			"Acquire schema",
 			undefined,
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
@@ -162,7 +163,7 @@ export class GraphService {
     expandIn(id : string) {
 
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Expand in " + id,
 		undefined,
 		undefined,
@@ -180,7 +181,7 @@ export class GraphService {
     expandOut(id : string) {
     
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Expand out " + id,
 		id,
 		undefined,
@@ -195,12 +196,16 @@ export class GraphService {
 
     }
 
-    getExpansions(node : Node) {
-
-	this.query.getExpansionsIn(node.id).subscribe(
-	    res => console.log(res)
+    getPredicatesIn(node : Node) {
+	return this.query.getExpansionsIn(node.id).pipe(
+	    map((v : Value[]) => v.map(v => v.value))
 	);
+    }
 
+    getPredicatesOut(node : Node) {
+	return this.query.getExpansionsOut(node.id).pipe(
+	    map((v : Value[]) => v.map(v => v.value))
+	);
     }
 
     addNode(node : Node) {
@@ -286,7 +291,7 @@ export class GraphService {
 	n.id = id;
 
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Label " + id,
 		id,
 		LABEL,
@@ -314,7 +319,7 @@ export class GraphService {
 	link.to = to;
 
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Label " + rel,
 		rel,
 		LABEL,
@@ -353,7 +358,7 @@ export class GraphService {
 
 	// IS_A relationship, work out the class name
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Label " + id,
 		id, LABEL, undefined,
 		this.fetchLabelEdges,
@@ -384,7 +389,7 @@ export class GraphService {
     mapToLiteral(p : string, o : string, sub : Subscriber<string[]>) {
 	
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Label " + p,
 		p, LABEL, undefined,
 		this.fetchLabelEdges,
@@ -472,7 +477,7 @@ export class GraphService {
     getProperties(node : Node) {
 
 	this.query.query(
-	    new Query(
+	    new TripleQuery(
 		"Fetch " + node.id,
 		node.id,
 		undefined,

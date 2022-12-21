@@ -8,7 +8,14 @@ import { LRUCache } from 'typescript-lru-cache';
 import { Triple, Value, Uri } from './triple';
 import { ProgressService, Activity } from './progress.service';
 
-export class Query {
+export interface Query {
+    description() : string;
+    getQueryString() : string;
+    hash() : string;
+    decode(res : any) : any 
+};
+
+export class TripleQuery implements Query {
     constructor(
 	desc : string,
 	s? : string,
@@ -27,6 +34,137 @@ export class Query {
     o? : Uri | string;
     desc : string;
     limit : number = 100;
+    description() { return this.desc; }
+    hash() : string {
+	return "tq " +  this.s + " " + this.p + " " + this.o + " " +
+	    this.limit;
+    }
+
+    
+    // FIXME: This is injectable
+    // However, not using it against any sensitive data or stores, currently.
+    getQueryString() : string {
+
+	let query = "";
+
+	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
+	query += "  ?s ?p ?o .\n";
+
+	if (this.s) {
+	    if (this.s.startsWith("http://"))
+		query += "  FILTER(?s = <" + this.s + ">) .\n";
+	    else
+		query += "  FILTER(?s = \"" + this.s + "\") .\n";
+	}
+
+	if (this.p) {
+	    if (this.p.startsWith("http://"))
+		query += "  FILTER(?p = <" + this.p + ">) .\n";
+	    else
+		query += "  FILTER(?p = \"" + this.p + "\") .\n";
+	}
+
+	if (this.o) {
+	    if (this.o.startsWith("http://"))
+		query += "  FILTER(?o = <" + this.o + ">) .\n";
+	    else
+		query += "  FILTER(?o = \"" + this.o + "\") .\n";
+	}
+
+	query += "}\n";
+	query += "LIMIT " + this.limit + "\n";
+
+	query = encodeURIComponent(query);
+	return "query=" + query + "&output=json";
+
+    }
+
+    decode(res : any) : any{
+	
+	let triples : Triple[] = [];
+	
+	for (let row of res.results.bindings) {
+
+	    let s = row.s.value;
+
+	    let p = row.p.value;
+
+	    let o;
+
+	    if (row.o.type == "uri")
+		o = new Value(row.o.value, true);
+	    else
+		o = new Value(row.o.value, false);
+
+	    let triple = new Triple(s, p, o);
+
+	    triples.push(triple);
+
+	}
+
+	return triples;
+
+    }
+
+}
+
+export class ExpansionsQuery implements Query {
+    constructor(
+	desc : string,
+	id : string,
+	inward : boolean,
+	limit : number = 100
+    ) {
+	this.id = id;
+	this.inward = inward;
+	this.desc = desc;
+	this.limit = limit;
+    }
+    id : string;
+    inward : boolean;
+    desc : string;
+    limit : number = 100;
+    description() { return this.desc; }
+    hash() : string {
+	return "eq " +  this.id + " " + this.inward + " " + this.limit;
+    }
+
+    
+    // FIXME: This is injectable
+    // However, not using it against any sensitive data or stores, currently.
+    getQueryString() : string {
+
+	let query = "";
+
+	query += "SELECT DISTINCT ?p WHERE {\n";
+
+	if (this.inward)
+	    query += "  ?s ?p <" + this.id + "> . \n";
+	else
+	    query += "  <" + this.id + "> ?p ?o . \n";
+	
+	query += "}\n";
+	query += "LIMIT " + this.limit + "\n";
+
+	query = encodeURIComponent(query);
+
+	return "query=" + query + "&output=json";
+
+    }
+
+    decode(res : any) : any {
+
+	let values : Value[] = [];
+	
+	for (let row of res.results.bindings) {
+	    let val = new Value(row.p.value, true);
+	    values.push(val);
+	}
+
+	return values;
+
+    }
+	
 }
 
 class QueryRequest {
@@ -36,6 +174,8 @@ class QueryRequest {
     }
     q : Query;
     ret : Subscriber<any>;
+    hash() { return this.q.hash(); }
+    description() { return this.q.description(); }
 }
 
 @Injectable({
@@ -66,7 +206,7 @@ export class QueryService {
 
     }
 
-    cache = new LRUCache<string, Triple[]>(
+    cache = new LRUCache<string, any>(
 	{
 	    maxSize: 250,
 	}
@@ -75,44 +215,6 @@ export class QueryService {
     queries = new Subject<QueryRequest>;
 
     activeQueries = new Set<Query>;
-
-    // FIXME: This is injectable
-    // However, not using it against any sensitive data or stores, currently.
-    getQueryString(q : Query) : string {
-
-	let query = "";
-
-	query += "SELECT DISTINCT ?s ?p ?o WHERE {\n";
-	query += "  ?s ?p ?o .\n";
-
-	if (q.s) {
-	    if (q.s.startsWith("http://"))
-		query += "  FILTER(?s = <" + q.s + ">) .\n";
-	    else
-		query += "  FILTER(?s = \"" + q.s + "\") .\n";
-	}
-
-	if (q.p) {
-	    if (q.p.startsWith("http://"))
-		query += "  FILTER(?p = <" + q.p + ">) .\n";
-	    else
-		query += "  FILTER(?p = \"" + q.p + "\") .\n";
-	}
-
-	if (q.o) {
-	    if (q.o.startsWith("http://"))
-		query += "  FILTER(?o = <" + q.o + ">) .\n";
-	    else
-		query += "  FILTER(?o = \"" + q.o + "\") .\n";
-	}
-
-	query += "}\n";
-	query += "LIMIT " + q.limit + "\n";
-
-	query = encodeURIComponent(query);
-	return "query=" + query + "&output=json";
-
-    }
 
     decodeTriples(res : any) : Triple[] {
 
@@ -156,7 +258,7 @@ export class QueryService {
 
     executeQuery(q : Query) : Observable<Triple[]> {
 
-	let query = this.getQueryString(q);
+	let query = q.getQueryString();
 
 	return this.httpClient.post(
 	    "/sparql",
@@ -164,7 +266,7 @@ export class QueryService {
 	    {},
 	).pipe(
 	    retry(3),
-	    map(this.decodeTriples)
+	    map(q.decode)
 	);
 
     }
@@ -173,16 +275,17 @@ export class QueryService {
 
 	this.activeQueries.add(q.q);
 
-	this.progress.add(q.q.desc);
+	this.progress.add(q.description());
 
 	return this.executeQuery(q.q).pipe(
 	    tap(
 		res => {
-		    let k = q.q.s + " " + q.q.p + " " + q.q.o + " " + q.q.limit;
+
+		    let k = q.hash();
 
 		    this.cache.set(k, res);
 		    q.ret.next(res);
-		    this.progress.delete(q.q.desc);
+		    this.progress.delete(q.description());
 		}
 	    )
 	);
@@ -190,7 +293,7 @@ export class QueryService {
 
     query(q : Query) : Observable<Triple[]> {
 
-	let k = q.s + " " + q.p + " " + q.o + " " + q.limit;
+	let k = q.hash();
 	let cached = this.cache.get(k);
 
 	if (cached) {
@@ -208,28 +311,38 @@ export class QueryService {
 
     }
 
-    getExpansionsIn(id : string, limit : number = 100) {
+    predQuery(q : Query) : Observable<Value[]> {
 
-	let query = "";
+	let k = q.hash();
+	let cached = this.cache.get(k);
 
-	query += "SELECT DISTINCT ?p WHERE {\n";
-	query += "  <" + id + "> ?p ?o . \n";
-	query += "}\n";
-	query += "LIMIT " + limit + "\n";
+	if (cached) {
+	    return of(cached);
+	}
 
-	query = encodeURIComponent(query);
+	return new Observable<Value[]>(
 
-	query = "query=" + query + "&output=json";
+	    sub => {
+		let qr = new QueryRequest(q, sub);
+		this.queries.next(qr);
+	    }
 
-	return this.httpClient.post(
-	    "/sparql",
-	    query,
-	    {},
-	).pipe(
-	    retry(3),
-	    map(this.decodePredicates)
 	);
 
+    }
+
+    getExpansionsIn(id : string, limit : number = 100) : Observable<Value[]> {
+	let qry = new ExpansionsQuery(
+	    "Expand in " + id, id, true, limit
+	);
+	return this.predQuery(qry);
+    }
+
+    getExpansionsOut(id : string, limit : number = 100) : Observable<Value[]> {
+	let qry = new ExpansionsQuery(
+	    "Expand out " + id, id, false, limit
+	);
+	return this.predQuery(qry);
     }
 
 }
