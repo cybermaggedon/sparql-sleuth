@@ -86,12 +86,6 @@ export class ControlsComponent implements OnInit {
     closeExpansions() {
 	this.expansions = [];
     }
-    
-    restart() {
-	this.router.navigate(
-	    ["/"]
-	);
-    }
 
     recentre() {
 	if (this.selection)

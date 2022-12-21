@@ -102,6 +102,8 @@ export class GraphService {
 	this.command.showSchemaEvents().subscribe(
 	    ev => {
 
+		this.reset();
+
 		// Add classes
 		this.query.query(
 		    new TripleQuery(

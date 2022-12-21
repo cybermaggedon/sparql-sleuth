@@ -4,8 +4,6 @@
 
     <ng-container *ngIf="expansions.length == 0; else expansionControls">
 
-      <button (click)="restart()">Restart</button>
-
       <button *ngIf="selection" (click)="openExpansions()">
 	Expand
       </button>
