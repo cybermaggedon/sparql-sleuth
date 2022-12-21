@@ -25,9 +25,9 @@
 	back
       </button>
       <button *ngFor="let exp of expansions" (click)="expand(exp)">
-	<ng-container *ngIf="exp.inward">&lt;-</ng-container>
-	<ng-container *ngIf="!exp.inward">-&gt;</ng-container>
+	<ng-container *ngIf="exp.inward">&#x2b95;</ng-container>
 	{{exp.name}}
+	<ng-container *ngIf="!exp.inward">&#x2b95;</ng-container>
       </button>
     </ng-template>
 
