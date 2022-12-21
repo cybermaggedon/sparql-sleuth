@@ -5,6 +5,10 @@ button {
 
 
 .controls {
-    height: 4rem;
+    height: 100%;
     display: flex;
+}
+
+.box div {
+    margin: 0.8rem;
 }
