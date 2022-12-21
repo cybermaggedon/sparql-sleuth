@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-    BehaviorSubject, Subject, Observable, forkJoin, Subscriber
+    BehaviorSubject, Subject, Observable, forkJoin, Subscriber, combineLatest
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -51,6 +51,12 @@ export class RecentreEvent {
 
 export class Properties {
     properties : { [key : string] : string } = {};
+};
+
+export class Expansion {
+    name : string = "";
+    id : string = "";
+    inward : boolean = false;
 };
 
 @Injectable({
@@ -194,32 +200,6 @@ export class GraphService {
 	    }
 	);
 
-    }
-
-    getPredicatesIn(node : Node) {
-	return this.query.getExpansionsIn(node.id).pipe(
-	    map(
-		(v : Value[]) =>
-		v.map(
-		    v => v.value
-		).filter(
-		    v => ((v != RELATION) && v != THUMBNAIL)
-		)
-	    )
-	);
-    }
-
-    getPredicatesOut(node : Node) {
-	return this.query.getExpansionsOut(node.id).pipe(
-	    map(
-		(v : Value[]) =>
-		v.map(
-		    v => v.value
-		).filter(
-		    v => ((v != RELATION) && v != THUMBNAIL)
-		)
-	    )
-	);
     }
 
     addNode(node : Node) {
@@ -540,5 +520,95 @@ export class GraphService {
 
     }
     
+    getPredicatesIn(node : Node) {
+	return this.query.getExpansionsIn(node.id).pipe(
+	    map(
+		(v : Value[][]) =>
+		v.map(
+		    v => v.map(v => v.value)
+		).filter(
+		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
+		)
+	    )
+	);
+    }
+
+    getPredicatesOut(node : Node) {
+	return this.query.getExpansionsOut(node.id).pipe(
+	    map(
+		(v : Value[][]) =>
+		v.map(
+		    v => v.map(v => v.value)
+		).filter(
+		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
+		)
+	    )
+	);
+    }
+
+    getExpansions(node : Node) {
+
+	let inw = this.query.getExpansionsIn(node.id).pipe(
+	    map(
+		(v : Value[][]) =>
+		v.map(
+		    v => v.map(v => v.value)
+		).filter(
+		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
+		).map(
+		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
+		)
+	    )
+	);
+
+	let outw = this.query.getExpansionsOut(node.id).pipe(
+	    map(
+		(v : Value[][]) =>
+		v.map(
+		    v => v.map(v => v.value)
+		).filter(
+		    v => ((v[0] != RELATION) && v[0] != THUMBNAIL)
+		).map(
+		    v => v[1] ? v : [v[0], this.makeLabel(v[0])]
+		)
+	    )
+	);
+
+	return new Observable<any>(
+
+	    sub => {
+
+		combineLatest({ "in": inw, "out": outw }).subscribe(
+		    (res : any) => {
+
+			let exps : Expansion[] = [];
+
+			for (let i of res["in"]) {
+			    let exp = new Expansion();
+			    exp.id = i[0];
+			    exp.name = i[1];
+			    exp.inward = true;
+			    exps.push(exp);
+			}
+
+			for (let i of res["out"]) {
+			    let exp = new Expansion();
+			    exp.id = i[0];
+			    exp.name = i[1];
+			    exp.inward = false;
+			    exps.push(exp);
+			}
+
+			sub.next(exps);
+
+		    }
+
+		)
+
+	    }
+	);
+
+    }
+
 }
 

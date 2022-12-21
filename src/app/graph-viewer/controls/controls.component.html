@@ -1,23 +1,41 @@
 <div class="box controls" id="selection">
+
   <div>
 
-    <button (click)="restart()">Restart</button>
+    <ng-container *ngIf="expansions.length == 0; else expansionControls">
 
-    <button *ngIf="selection" (click)="expandIn()">
-      Expand inbound
-    </button>
+      <button (click)="restart()">Restart</button>
 
-    <button *ngIf="selection" (click)="expandOut()">
-      Expand outbound
-    </button>
+      <button *ngIf="selection" (click)="expand()">
+	Expand
+      </button>
 
-    <button *ngIf="selection" (click)="recentre()">
-      Re-centre
-    </button>
+      <button *ngIf="selection" (click)="expandIn()">
+	Expand inbound
+      </button>
+      
+      <button *ngIf="selection" (click)="expandOut()">
+	Expand outbound
+      </button>
 
-    <button (click)="schema()">
-      Schema
-    </button>
+      <button *ngIf="selection" (click)="recentre()">
+	Re-centre
+      </button>
+
+      <button (click)="schema()">
+	Schema
+      </button>
+
+    </ng-container>
+
+    <ng-template #expansionControls>
+      <button (click)="closeExpansions()">
+	back
+      </button>
+      <button *ngFor="let exp of expansions" (click)="expandWith(exp)">
+	{{exp.name}}
+      </button>
+    </ng-template>
 
   </div>
 
@@ -29,3 +47,4 @@
   </div>
 
 </div>
+

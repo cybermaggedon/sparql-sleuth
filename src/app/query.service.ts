@@ -136,18 +136,22 @@ export class ExpansionsQuery implements Query {
 
 	let query = "";
 
-	query += "SELECT DISTINCT ?p WHERE {\n";
+	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+	query += "SELECT DISTINCT ?pred ?label WHERE {\n";
 
 	if (this.inward)
-	    query += "  ?s ?p <" + this.id + "> . \n";
+	    query += "  ?s ?pred <" + this.id + "> . \n";
 	else {
-	    query += "  <" + this.id + "> ?p ?o . \n";
-
+	    query += "  <" + this.id + "> ?pred ?o . \n";
+	    
 	    // Only want links to URIs, not literals.
 	    // FIXME, filter out thumbnails and references?
 	    query += "  FILTER(isIRI(?o)) .\n";
 	}
-	
+
+	query += "  OPTIONAL {\n";
+	query += "    ?pred rdfs:label ?label .\n";
+	query += "  }\n";
 	query += "}\n";
 	query += "LIMIT " + this.limit + "\n";
 
@@ -159,11 +163,12 @@ export class ExpansionsQuery implements Query {
 
     decode(res : any) : any {
 
-	let values : Value[] = [];
-	
+	let values : Value[][] = [];
+
 	for (let row of res.results.bindings) {
-	    let val = new Value(row.p.value, true);
-	    values.push(val);
+	    let pred = new Value(row.pred.value, true);
+	    let label = new Value(row.label.value, true);
+	    values.push([pred, label]);
 	}
 
 	return values;
@@ -279,14 +284,16 @@ export class QueryService {
 
     }
 
-    getExpansionsIn(id : string, limit : number = 100) : Observable<Value[]> {
+    getExpansionsIn(id : string, limit : number = 100) :
+    Observable<Value[][]> {
 	let qry = new ExpansionsQuery(
 	    "Expand in " + id, id, true, limit
 	);
 	return this.query(qry);
     }
 
-    getExpansionsOut(id : string, limit : number = 100) : Observable<Value[]> {
+    getExpansionsOut(id : string, limit : number = 100) :
+    Observable<Value[][]> {
 	let qry = new ExpansionsQuery(
 	    "Expand out " + id, id, false, limit
 	);

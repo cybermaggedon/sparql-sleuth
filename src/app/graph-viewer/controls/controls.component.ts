@@ -1,10 +1,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
-import { GraphService, Node } from '../graph.service';
+import { GraphService, Node, Expansion } from '../graph.service';
 import { QueryService, Query } from '../../query.service';
 import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
 
@@ -30,11 +31,18 @@ export class ControlsComponent implements OnInit {
     ) {
 
 	this.graph.nodeSelectEvents().subscribe(
-	    ev => this.selection = ev.node
+	    ev => {
+		this.selection = ev.node;
+		this.expansions = [];
+	    }
+	    
 	);
 
 	this.graph.nodeDeselectEvents().subscribe(
-	    () => this.selection = null
+	    () => {
+		this.selection = null;
+		this.expansions = [];
+	    }
 	);
 
 	this.progress.progressEvents().subscribe(
@@ -83,6 +91,22 @@ export class ControlsComponent implements OnInit {
 	}
     }
 
+    expansions : Expansion[] = [];
+
+    expand() {
+
+	if (!this.selection) return;
+
+	this.graph.getExpansions(this.selection).subscribe(
+	    ev => this.expansions = ev
+	);
+
+    }
+
+    closeExpansions() {
+	this.expansions = [];
+    }
+    
     restart() {
 	this.router.navigate(
 	    ["/"]
@@ -92,6 +116,10 @@ export class ControlsComponent implements OnInit {
     recentre() {
 	if (this.selection)
 	    this.command.recentre(this.selection.id);
+    }
+
+    expandWith(exp : Expansion) {
+	console.log(exp);
     }
 
     schema() {
