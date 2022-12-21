@@ -54,7 +54,7 @@ export class QueryService {
 	this.queries.pipe(
 	    mergeMap(
 		(qry : QueryRequest) => {
-		    return this.directQuery(qry);
+		    return this.runQuery(qry);
 		},
 		undefined,
 		4,
@@ -76,6 +76,8 @@ export class QueryService {
 
     activeQueries = new Set<Query>;
 
+    // FIXME: This is injectable
+    // However, not using it against any sensitive data or stores, currently.
     getQueryString(q : Query) : string {
 
 	let query = "";
@@ -139,6 +141,19 @@ export class QueryService {
 	
     }
 
+    decodePredicates(res : any) : Value[] {
+
+	let values : Value[] = [];
+	
+	for (let row of res.results.bindings) {
+	    let val = new Value(row.p.value, true);
+	    values.push(val);
+	}
+
+	return values;
+	
+    }
+
     executeQuery(q : Query) : Observable<Triple[]> {
 
 	let query = this.getQueryString(q);
@@ -154,7 +169,7 @@ export class QueryService {
 
     }
 
-    directQuery(q : QueryRequest) : Observable<Triple[]> {
+    runQuery(q : QueryRequest) : Observable<Triple[]> {
 
 	this.activeQueries.add(q.q);
 
@@ -189,6 +204,30 @@ export class QueryService {
 		this.queries.next(qr);
 	    }
 
+	);
+
+    }
+
+    getExpansionsIn(id : string, limit : number = 100) {
+
+	let query = "";
+
+	query += "SELECT DISTINCT ?p WHERE {\n";
+	query += "  <" + id + "> ?p ?o . \n";
+	query += "}\n";
+	query += "LIMIT " + limit + "\n";
+
+	query = encodeURIComponent(query);
+
+	query = "query=" + query + "&output=json";
+
+	return this.httpClient.post(
+	    "/sparql",
+	    query,
+	    {},
+	).pipe(
+	    retry(3),
+	    map(this.decodePredicates)
 	);
 
     }

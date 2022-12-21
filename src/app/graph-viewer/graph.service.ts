@@ -195,6 +195,14 @@ export class GraphService {
 
     }
 
+    getExpansions(node : Node) {
+
+	this.query.getExpansionsIn(node.id).subscribe(
+	    res => console.log(res)
+	);
+
+    }
+
     addNode(node : Node) {
 	let ev = new AddNodeEvent();
 	ev.node = node;
