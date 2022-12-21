@@ -3,8 +3,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, Subscriber, of } from 'rxjs';
 import { map, retry, mergeMap, tap } from 'rxjs/operators';
-import { Triple, Value, Uri } from './triple';
 import { LRUCache } from 'typescript-lru-cache';
+
+import { Triple, Value, Uri } from './triple';
+import { ProgressService, Activity } from './progress.service';
 
 export class Query {
     constructor(
@@ -41,21 +43,10 @@ class QueryRequest {
 })
 export class QueryService {
 
-    cache = new LRUCache<string, Triple[]>(
-	{
-	    maxSize: 250,
-	}
-    );
-    
-    queries = new Subject<QueryRequest>;
-
-    activeQueries = new Set<Query>;
-
-    progressSub = new Subject<Set<Query>>;
-
-    progress() { return this.progressSub; }
-
-    constructor(private httpClient : HttpClient) {
+    constructor(
+	private httpClient : HttpClient,
+	private progress : ProgressService,
+    ) {
 
 	let svc = this;
 
@@ -74,6 +65,16 @@ export class QueryService {
 	);
 
     }
+
+    cache = new LRUCache<string, Triple[]>(
+	{
+	    maxSize: 250,
+	}
+    );
+    
+    queries = new Subject<QueryRequest>;
+
+    activeQueries = new Set<Query>;
 
     getQueryString(q : Query) : string {
 
@@ -154,8 +155,11 @@ export class QueryService {
     }
 
     directQuery(q : QueryRequest) : Observable<Triple[]> {
-		this.activeQueries.add(q.q);
-		this.progressSub.next(this.activeQueries);
+
+	this.activeQueries.add(q.q);
+
+	this.progress.add(q.q.desc);
+
 	return this.executeQuery(q.q).pipe(
 	    tap(
 		res => {
@@ -163,8 +167,7 @@ export class QueryService {
 
 		    this.cache.set(k, res);
 		    q.ret.next(res);
-		    this.activeQueries.delete(q.q);
-		    this.progressSub.next(this.activeQueries);
+		    this.progress.delete(q.q.desc);
 		}
 	    )
 	);

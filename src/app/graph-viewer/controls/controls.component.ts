@@ -6,6 +6,7 @@ import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
 import { GraphService, Node } from '../graph.service';
 import { QueryService, Query } from '../../query.service';
+import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
 
 @Component({
   selector: 'controls',
@@ -25,17 +26,9 @@ export class ControlsComponent implements OnInit {
 	private graph : GraphService,
 	private router : Router,
 	private query : QueryService,
+	private progress : ProgressService,
     ) {
 
-	/*
-	this.select.selectEvents().subscribe(
-	    ev => this.selection = ev.id
-	);
-
-	this.select.unselectEvents().subscribe(
-	    () => this.selection = ""
-	);
-*/
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => this.selection = ev.node
 	);
@@ -44,19 +37,19 @@ export class ControlsComponent implements OnInit {
 	    () => this.selection = null
 	);
 
-	this.query.progress().subscribe(
+	this.progress.progressEvents().subscribe(
 
-	    (res : Set<Query>) => {
+	    (res : ProgressEvent) => {
 
-		let a = Array.from(res.values());
+		let a = Array.from(res.progress.values());
 
 		if (a.length > 0)
-		    this.info1 = a[0].desc + " ...";
+		    this.info1 = a[0] + " ...";
 		else
 		    this.info1 = "";
 
 		if (a.length > 1)
-		    this.info2 = a[1].desc + " ...";
+		    this.info2 = a[1] + " ...";
 		else
 		    this.info2 = "";
 
