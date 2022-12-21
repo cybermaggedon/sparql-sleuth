@@ -62,52 +62,28 @@ export class GraphService {
 	private query : QueryService,
     ) {
 
-	this.command.recentreEvents().subscribe(
+	this.recentreEvents().subscribe(
+
 	    ev => {
+
 		if (ev.id) {
 
 		    this.reset();
 		    this.includeNode(ev.id);
 
-/*
 		    if (ev.expand == "in" || ev.expand == "yes" ||
-			ev.expand == "true") {
+			ev.expand == "both" || ev.expand == "true") {
 
-			this.query.query(
-			    new Query(
-				"Fetch " + ev.id,
-				undefined,
-				undefined,
-				ev.id,
-				this.fetchEdges,
-			    )
-			).subscribe(
-			    result => {
-				this.includeTriples(result);
-			    }
-			);
+			this.expandIn(ev.id);
 
 		    }
 
 		    if (ev.expand == "out" || ev.expand == "yes" ||
-			ev.expand == "true") {
+			ev.expand == "both" || ev.expand == "true") {
 
-			this.query.query(
-			    new Query(
-				"Fetch " + ev.id,
-				ev.id,
-				undefined,
-				undefined,
-				this.fetchEdges,
-			    )
-			).subscribe(
-			    result => {
-				this.includeTriples(result);
-			    }
-			);
+			this.expandOut(ev.id);
 			
 		    }
-				    */
 
 		}
 	    }
@@ -138,42 +114,13 @@ export class GraphService {
 
 		if ((ev.dir == Direction.IN) ||
 		    (ev.dir == Direction.BOTH)) {
-
-		    this.query.query(
-			new Query(
-			    "Expand in " + ev.id,
-			    undefined,
-			    undefined,
-			    ev.id,
-			    this.fetchEdges,
-			)
-		    ).subscribe(
-			result => {
-			    this.includeTriples(result);
-			}
-		    );
-
+		    this.expandIn(ev.id);
 		}
 
 		if ((ev.dir == Direction.OUT) ||
 		    (ev.dir == Direction.BOTH)) {
-
-		    this.query.query(
-			new Query(
-			    "Expand out " + ev.id,
-			    ev.id,
-			    undefined,
-			    undefined,
-			    this.fetchEdges,
-			)
-		    ).subscribe(
-			result => {
-			    this.includeTriples(result);
-			}
-		    );
-
+		    this.expandOut(ev.id);
 		}
-
 	    }
 	);
 
@@ -194,9 +141,7 @@ export class GraphService {
     private nodeSelectSubject = new Subject<NodeSelectEvent>;
     private nodeDeselectSubject = new Subject<null>;
     private resetSubject = new Subject<null>;
-    private recentreSubject = new BehaviorSubject<RecentreEvent>(
-       new RecentreEvent()
-    );
+    private recentreSubject = new Subject<RecentreEvent>;
     private schemaSubject = new Subject<null>;
     private propertiesSubject = new Subject<Properties>;
 
@@ -210,6 +155,42 @@ export class GraphService {
     recentreEvents() { return this.recentreSubject; }
     schemaEvents() { return this.schemaSubject; }
     propertiesEvents() { return this.propertiesSubject; }
+
+    expandIn(id : string) {
+
+	this.query.query(
+	    new Query(
+		"Expand in " + id,
+		undefined,
+		undefined,
+		id,
+		this.fetchEdges,
+	    )
+	).subscribe(
+	    result => {
+		this.includeTriples(result);
+	    }
+	);
+	
+    }
+
+    expandOut(id : string) {
+    
+	this.query.query(
+	    new Query(
+		"Expand out " + id,
+		id,
+		undefined,
+		undefined,
+		this.fetchEdges,
+	    )
+	).subscribe(
+	    result => {
+		this.includeTriples(result);
+	    }
+	);
+
+    }
 
     addNode(node : Node) {
 	let ev = new AddNodeEvent();

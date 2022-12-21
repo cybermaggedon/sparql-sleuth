@@ -21,6 +21,7 @@ export class GraphViewerComponent implements OnInit {
     ngOnInit(): void {
 
 	this.route.queryParams.subscribe(
+
 	    params => {
 
 		if (params["node"]) {

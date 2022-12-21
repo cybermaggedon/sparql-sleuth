@@ -1,6 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 export enum Direction {
   IN = 0,
@@ -24,6 +25,21 @@ export class ShowSchemaEvent {
     providedIn: 'root'
 })
 export class CommandService {
+
+    constructor(
+	private route : Router,
+    ) {
+
+	// We'll deal with the recentre events here, just re-route.
+	this.recentreEvents().subscribe(
+	    ev => 
+	    this.route.navigate(
+		['/graph'],
+		{ queryParams: { 'node': ev.id }}
+	    )
+	);
+
+    }
 
     private expandSubject = new Subject<ExpandEvent>;
     private recentreSubject = new Subject<RecentreEvent>;
@@ -49,9 +65,6 @@ export class CommandService {
     showSchema() {
 	let ev = new ShowSchemaEvent();
 	this.showSchemaSubject.next(ev);
-    }
-
-    constructor() {
     }
 
 }
