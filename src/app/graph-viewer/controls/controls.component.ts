@@ -69,8 +69,7 @@ export class ControlsComponent implements OnInit {
 	    this.graph.getPredicatesIn(this.selection).subscribe(
 		ev => console.log(ev)
 	    );
-
-//	    this.command.expand(Direction.IN, this.selection.id);
+	    this.command.expand(Direction.IN, this.selection.id);
 
 	}
     }
@@ -80,8 +79,7 @@ export class ControlsComponent implements OnInit {
 	    this.graph.getPredicatesOut(this.selection).subscribe(
 		ev => console.log(ev)
 	    );
-
-//	    this.command.expand(Direction.OUT, this.selection.id);
+	    this.command.expand(Direction.OUT, this.selection.id);
 	}
     }
 

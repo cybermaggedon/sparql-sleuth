@@ -140,8 +140,13 @@ export class ExpansionsQuery implements Query {
 
 	if (this.inward)
 	    query += "  ?s ?p <" + this.id + "> . \n";
-	else
+	else {
 	    query += "  <" + this.id + "> ?p ?o . \n";
+
+	    // Only want links to URIs, not literals.
+	    // FIXME, filter out thumbnails and references?
+	    query += "  FILTER(isIRI(?o)) .\n";
+	}
 	
 	query += "}\n";
 	query += "LIMIT " + this.limit + "\n";
@@ -216,47 +221,8 @@ export class QueryService {
 
     activeQueries = new Set<Query>;
 
-    decodeTriples(res : any) : Triple[] {
-
-	let triples : Triple[] = [];
-	
-	for (let row of res.results.bindings) {
-
-	    let s = row.s.value;
-
-	    let p = row.p.value;
-
-	    let o;
-
-	    if (row.o.type == "uri")
-		o = new Value(row.o.value, true);
-	    else
-		o = new Value(row.o.value, false);
-
-	    let triple = new Triple(s, p, o);
-
-	    triples.push(triple);
-
-	}
-
-	return triples;
-	
-    }
-
-    decodePredicates(res : any) : Value[] {
-
-	let values : Value[] = [];
-	
-	for (let row of res.results.bindings) {
-	    let val = new Value(row.p.value, true);
-	    values.push(val);
-	}
-
-	return values;
-	
-    }
-
-    executeQuery(q : Query) : Observable<Triple[]> {
+    // Use some interface stuff to get rid of the 'any'.
+    executeQuery(q : Query) : Observable<any> {
 
 	let query = q.getQueryString();
 
@@ -271,7 +237,8 @@ export class QueryService {
 
     }
 
-    runQuery(q : QueryRequest) : Observable<Triple[]> {
+    // Use some interface stuff to get rid of the 'any'.
+    runQuery(q : QueryRequest) : Observable<any> {
 
 	this.activeQueries.add(q.q);
 
@@ -291,7 +258,8 @@ export class QueryService {
 	);
     }
 
-    query(q : Query) : Observable<Triple[]> {
+    // Use some interface stuff to get rid of the 'any'.
+    query(q : Query) : Observable<any> {
 
 	let k = q.hash();
 	let cached = this.cache.get(k);
@@ -300,27 +268,7 @@ export class QueryService {
 	    return of(cached);
 	}
 
-	return new Observable<Triple[]>(
-
-	    sub => {
-		let qr = new QueryRequest(q, sub);
-		this.queries.next(qr);
-	    }
-
-	);
-
-    }
-
-    predQuery(q : Query) : Observable<Value[]> {
-
-	let k = q.hash();
-	let cached = this.cache.get(k);
-
-	if (cached) {
-	    return of(cached);
-	}
-
-	return new Observable<Value[]>(
+	return new Observable<any>(
 
 	    sub => {
 		let qr = new QueryRequest(q, sub);
@@ -335,14 +283,14 @@ export class QueryService {
 	let qry = new ExpansionsQuery(
 	    "Expand in " + id, id, true, limit
 	);
-	return this.predQuery(qry);
+	return this.query(qry);
     }
 
     getExpansionsOut(id : string, limit : number = 100) : Observable<Value[]> {
 	let qry = new ExpansionsQuery(
 	    "Expand out " + id, id, false, limit
 	);
-	return this.predQuery(qry);
+	return this.query(qry);
     }
 
 }

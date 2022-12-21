@@ -198,13 +198,27 @@ export class GraphService {
 
     getPredicatesIn(node : Node) {
 	return this.query.getExpansionsIn(node.id).pipe(
-	    map((v : Value[]) => v.map(v => v.value))
+	    map(
+		(v : Value[]) =>
+		v.map(
+		    v => v.value
+		).filter(
+		    v => ((v != RELATION) && v != THUMBNAIL)
+		)
+	    )
 	);
     }
 
     getPredicatesOut(node : Node) {
 	return this.query.getExpansionsOut(node.id).pipe(
-	    map((v : Value[]) => v.map(v => v.value))
+	    map(
+		(v : Value[]) =>
+		v.map(
+		    v => v.value
+		).filter(
+		    v => ((v != RELATION) && v != THUMBNAIL)
+		)
+	    )
 	);
     }
 
