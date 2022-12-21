@@ -117,18 +117,7 @@ export class GraphService {
 	);
 
 	this.command.expandEvents().subscribe(
-	    ev => {
-
-		if ((ev.dir == Direction.IN) ||
-		    (ev.dir == Direction.BOTH)) {
-		    this.expandIn(ev.id);
-		}
-
-		if ((ev.dir == Direction.OUT) ||
-		    (ev.dir == Direction.BOTH)) {
-		    this.expandOut(ev.id);
-		}
-	    }
+	    ev => this.expand(ev.node, ev.expansion)
 	);
 
 	this.nodeSelectEvents().subscribe(
@@ -182,6 +171,40 @@ export class GraphService {
 	    }
 	);
 	
+    }
+
+    expand(node : Node, exp : Expansion) {
+
+	if (exp.inward) {
+	    this.query.query(
+		new TripleQuery(
+		    "Expand in " + node.id,
+		    undefined,
+		    exp.id,
+		    node.id,
+		    this.fetchEdges,
+		)
+	    ).subscribe(
+		result => {
+		    this.includeTriples(result);
+		}
+	    );
+	} else {
+	    this.query.query(
+		new TripleQuery(
+		    "Expand out " + node.id,
+		    node.id,
+		    exp.id,
+		    undefined,
+		    this.fetchEdges,
+		)
+	    ).subscribe(
+		result => {
+		    this.includeTriples(result);
+		}
+	    );
+	}
+
     }
 
     expandOut(id : string) {

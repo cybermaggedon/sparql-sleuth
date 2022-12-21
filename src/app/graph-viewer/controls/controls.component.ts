@@ -70,30 +70,9 @@ export class ControlsComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    expandIn() {
-
-	if (this.selection) {
-
-	    this.graph.getPredicatesIn(this.selection).subscribe(
-		ev => console.log(ev)
-	    );
-	    this.command.expand(Direction.IN, this.selection.id);
-
-	}
-    }
-
-    expandOut() {
-	if (this.selection) {
-	    this.graph.getPredicatesOut(this.selection).subscribe(
-		ev => console.log(ev)
-	    );
-	    this.command.expand(Direction.OUT, this.selection.id);
-	}
-    }
-
     expansions : Expansion[] = [];
 
-    expand() {
+    openExpansions() {
 
 	if (!this.selection) return;
 
@@ -118,8 +97,12 @@ export class ControlsComponent implements OnInit {
 	    this.command.recentre(this.selection.id);
     }
 
-    expandWith(exp : Expansion) {
-	console.log(exp);
+    expand(exp : Expansion) {
+
+	if (!this.selection) return;
+
+	this.command.expand(this.selection, exp);
+
     }
 
     schema() {

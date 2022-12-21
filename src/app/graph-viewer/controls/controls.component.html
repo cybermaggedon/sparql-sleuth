@@ -6,16 +6,8 @@
 
       <button (click)="restart()">Restart</button>
 
-      <button *ngIf="selection" (click)="expand()">
+      <button *ngIf="selection" (click)="openExpansions()">
 	Expand
-      </button>
-
-      <button *ngIf="selection" (click)="expandIn()">
-	Expand inbound
-      </button>
-      
-      <button *ngIf="selection" (click)="expandOut()">
-	Expand outbound
       </button>
 
       <button *ngIf="selection" (click)="recentre()">
@@ -32,7 +24,9 @@
       <button (click)="closeExpansions()">
 	back
       </button>
-      <button *ngFor="let exp of expansions" (click)="expandWith(exp)">
+      <button *ngFor="let exp of expansions" (click)="expand(exp)">
+	<ng-container *ngIf="exp.inward">&lt;-</ng-container>
+	<ng-container *ngIf="!exp.inward">-&gt;</ng-container>
 	{{exp.name}}
       </button>
     </ng-template>

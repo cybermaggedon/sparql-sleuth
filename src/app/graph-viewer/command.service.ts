@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { Expansion, Node } from './graph.service';
 
 export enum Direction {
   IN = 0,
@@ -10,8 +11,10 @@ export enum Direction {
 }
 
 export class ExpandEvent {
-    dir : Direction = Direction.IN;
-    id : string = "";
+    node : Node = new Node();
+    expansion : Expansion = new Expansion();
+//    dir : Direction = Direction.IN;
+//    id : string = "";
 };
 
 export class RecentreEvent {
@@ -49,10 +52,10 @@ export class CommandService {
     recentreEvents() { return this.recentreSubject; }
     showSchemaEvents() { return this.showSchemaSubject; }
 
-    expand(dir : Direction, id : string) {
+    expand(node : Node, exp : Expansion) {
 	let ev = new ExpandEvent;
-	ev.dir = dir;
-	ev.id = id;
+	ev.node = node;
+	ev.expansion = exp;
 	this.expandSubject.next(ev);
     }
 
