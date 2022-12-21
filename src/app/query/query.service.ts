@@ -115,22 +115,6 @@ export class QueryService {
 	);
 
     }
-/*
-    getExpansionsIn(id : string, limit : number = 100) :
-    Observable<Value[][]> {
-	let qry = new ExpansionsQuery(
-	    "Expand in " + id, id, true, limit
-	);
-	return this.query(qry);
-    }
 
-    getExpansionsOut(id : string, limit : number = 100) :
-    Observable<Value[][]> {
-	let qry = new ExpansionsQuery(
-	    "Expand out " + id, id, false, limit
-	);
-	return this.query(qry);
-    }
-*/
 }
 
