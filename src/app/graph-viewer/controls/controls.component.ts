@@ -6,7 +6,8 @@ import { forkJoin } from 'rxjs';
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
 import { GraphService, Node, Expansion } from '../graph.service';
-import { QueryService, Query } from '../../query.service';
+import { Query } from '../../query';
+import { QueryService } from '../../query.service';
 import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
 
 @Component({

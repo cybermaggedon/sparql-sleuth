@@ -7,10 +7,12 @@ import {
 import { map } from 'rxjs/operators';
 
 import { Triple, Value, Uri } from '../triple';
-import { QueryService, TripleQuery } from '../query.service';
-import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
-
+import { QueryService } from '../query.service';
+import { TripleQuery } from '../triple-query';
+import { ExpansionsQuery } from '../expansion-query';
 import { CommandService, Direction } from './command.service';
+
+import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 export class Node {
     id : string = "";
@@ -132,6 +134,8 @@ export class GraphService {
 
     // FIXME: this was previously set to 4, was there an issue?
     fetchLabelEdges = 1;
+
+    expansionEdges = 25;
 
     private addNodeSubject = new Subject<AddNodeEvent>;
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
@@ -542,7 +546,8 @@ export class GraphService {
 	)
 
     }
-    
+    /*
+      FIXME: Cruft
     getPredicatesIn(node : Node) {
 	return this.query.getExpansionsIn(node.id).pipe(
 	    map(
@@ -568,10 +573,25 @@ export class GraphService {
 	    )
 	);
     }
-
+*/
     getExpansions(node : Node) {
 
-	let inw = this.query.getExpansionsIn(node.id).pipe(
+	let inQry = this.query.query(
+	    new ExpansionsQuery(
+		"Expand in " + node.id, node.id, true, this.expansionEdges
+	    )
+	);
+
+	let outQry = this.query.query(
+	    new ExpansionsQuery(
+		"Expand out " + node.id, node.id, false, this.expansionEdges
+	    )
+	);
+
+//	return this.query(qry);
+//    }
+
+	let inw = inQry.pipe(
 	    map(
 		(v : Value[][]) =>
 		v.map(
@@ -584,7 +604,7 @@ export class GraphService {
 	    )
 	);
 
-	let outw = this.query.getExpansionsOut(node.id).pipe(
+	let outw = outQry.pipe(
 	    map(
 		(v : Value[][]) =>
 		v.map(
