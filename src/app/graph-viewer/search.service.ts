@@ -59,7 +59,6 @@ export class SearchService {
 			// Empty set, return empty properties.
 			// Also, forkJoin on empty set is bad.
 			if (todo.length == 0) {
-			    console.log("BAIL");
 			    sub.next([]);
 			    return;
 			}
