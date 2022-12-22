@@ -59,6 +59,8 @@ export class GraphService {
 	    }
 	);
 
+	// If there's a schema event, reset the graph and drop the schema in
+	// place.
 	this.events.schemaEvents().subscribe(
 	    ev => {
 		this.events.reset();
@@ -66,6 +68,9 @@ export class GraphService {
 	    }
 	);
 
+	// This is weird. The schema event can occur in two observable systems,
+	// the command one, and the event one.  This bridges the event off of
+	// the command system to the event system.
 	this.command.showSchemaEvents().subscribe(
 	    ev => {
 		this.events.reset();
@@ -117,6 +122,24 @@ export class GraphService {
 	
     }
 
+    relationshipOut(id : string) {
+    
+	this.query.query(
+	    new TripleQuery(
+		"Relationship out " + id,
+		id,
+		undefined,
+		undefined,
+		this.fetchEdges,
+	    )
+	).subscribe(
+	    result => {
+		this.includeTriples(result);
+	    }
+	);
+
+    }
+
     relationship(node : Node, rel : Relationship) {
 
 	if (rel.inward) {
@@ -148,24 +171,6 @@ export class GraphService {
 		}
 	    );
 	}
-
-    }
-
-    relationshipOut(id : string) {
-    
-	this.query.query(
-	    new TripleQuery(
-		"Relationship out " + id,
-		id,
-		undefined,
-		undefined,
-		this.fetchEdges,
-	    )
-	).subscribe(
-	    result => {
-		this.includeTriples(result);
-	    }
-	);
 
     }
 
