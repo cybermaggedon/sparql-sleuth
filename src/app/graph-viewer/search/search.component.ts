@@ -23,6 +23,13 @@ export class SearchComponent implements OnInit {
 
     search(text : string) {
 
+	// Not doing this search, it fetches everything.
+	if (text == "") {
+	    this.results = [];
+	    this.executed = true;
+	    return;
+	}
+	
 	this.graph.search(text).subscribe(
 	    (res : any) => {
 		this.results = res;

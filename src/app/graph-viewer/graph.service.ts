@@ -364,6 +364,8 @@ export class GraphService {
 
     }
 
+    // Makes a label by stripping some hopefully useful text out of the ID.
+    // If the ID contains a hash, you get something unfriendly.
     makeLabel(label : string) {
 
 	if (label.startsWith("http://"))
@@ -373,7 +375,7 @@ export class GraphService {
             label = label.substr(label.lastIndexOf("#") + 1);
 
 	if (label.length > 20)
-	    label = label.substring(0, 30);
+	    label = label.substring(0, 15);
 
 	return label;
 
