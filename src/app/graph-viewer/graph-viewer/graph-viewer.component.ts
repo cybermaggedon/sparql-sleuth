@@ -85,11 +85,7 @@ export class GraphViewerComponent implements OnInit {
 
 		} else {
 
-		    timer(1).subscribe(
-			() => {
-			    this.graph.schema();
-			}
-		    );
+		  // Do nothing if node not specified.
 
 		}
 

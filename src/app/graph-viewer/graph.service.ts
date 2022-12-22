@@ -351,20 +351,13 @@ export class GraphService {
 	link.to = to;
 
 	this.query.query(
-	    new TripleQuery(
-		"Label " + rel,
-		rel,
-		LABEL,
-		undefined,
-		this.fetchLabelEdges,
-	    )
+	    new LabelQuery("Label " + rel, rel,)
 	).subscribe(
-	    ev => {
-		try {
-		    link.label = ev[0].o.value;
-		} catch {
+	    lbl => {
+		if (lbl)
+		    link.label = lbl;
+		else
 		    link.label = this.makeLabel(rel);
-		}
 		this.addEdge(link);
 	    }
 	);
