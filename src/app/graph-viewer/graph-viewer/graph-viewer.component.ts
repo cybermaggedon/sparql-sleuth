@@ -8,6 +8,7 @@ import { CommandService } from '../command.service';
 import { PropertiesService, Properties } from '../properties.service';
 
 enum BottomPaneMode {
+    HELP,
     EMPTY,
     DETAIL,
     SEARCH
@@ -29,10 +30,11 @@ export class GraphViewerComponent implements OnInit {
 
     }
 
-    mode : BottomPaneMode = BottomPaneMode.EMPTY;
+    mode : BottomPaneMode = BottomPaneMode.HELP;
 
     get detailMode() : boolean { return this.mode == BottomPaneMode.DETAIL; }
     get searchMode() : boolean { return this.mode == BottomPaneMode.SEARCH; }
+    get helpMode() : boolean { return this.mode == BottomPaneMode.HELP; }
 
     properties : Properties = new Properties();
 
