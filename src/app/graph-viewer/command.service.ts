@@ -20,9 +20,6 @@ export class RecentreEvent {
     id : string = "";
 };
 
-export class ShowSchemaEvent {
-};
-
 @Injectable({
     providedIn: 'root'
 })
@@ -45,13 +42,15 @@ export class CommandService {
 
     private expandSubject = new Subject<ExpandEvent>;
     private recentreSubject = new Subject<RecentreEvent>;
-    private showSchemaSubject = new Subject<ShowSchemaEvent>;
+    private showSchemaSubject = new Subject<void>;
     private beginSearchSubject = new Subject<void>;
+    private helpSubject = new Subject<void>;
 
     expandEvents() { return this.expandSubject; }
     recentreEvents() { return this.recentreSubject; }
     showSchemaEvents() { return this.showSchemaSubject; }
     beginSearchEvents() { return this.beginSearchSubject; }
+    helpEvents() { return this.helpSubject; }
 
     expand(node : Node, exp : Expansion) {
 	let ev = new ExpandEvent;
@@ -67,12 +66,15 @@ export class CommandService {
     }
 
     showSchema() {
-	let ev = new ShowSchemaEvent();
-	this.showSchemaSubject.next(ev);
+	this.showSchemaSubject.next();
     }
 
     beginSearch() {
 	this.beginSearchSubject.next();
+    }
+
+    help() {
+	this.helpSubject.next();
     }
 
 }

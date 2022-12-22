@@ -46,6 +46,12 @@ export class GraphViewerComponent implements OnInit {
 	    }
 	);
 
+	this.command.helpEvents().subscribe(
+	    () => {
+		this.mode = BottomPaneMode.HELP;
+	    }
+	);
+
 	this.propertyService.propertiesEvents().subscribe(
 	    ev => {
 		this.properties = ev;

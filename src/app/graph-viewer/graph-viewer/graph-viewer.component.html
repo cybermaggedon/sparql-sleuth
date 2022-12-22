@@ -16,70 +16,7 @@
     <search *ngIf="searchMode"></search>
 
     <div *ngIf="helpMode">
-
-      <h2>Welcome to SPARQL Explorer!</h2>
-
-      <p>
-	This UI explores a knowledge graph dataset.
-      </p>
-
-      <p>
-	To get started either:
-	</p>
-
-      <ul>
-	<li>
-	  Click <b>Search</b> and search for text in knowledge object
-	  properties and labels, or
-	</li>
-	<li>
-	  Click <b>Schema</b> to pull in some knowledge object data types
-	  which you can use as starting points to explore the graph
-	</li>
-      </ul>
-
-      <p>
-	Once you have some graph nodes to work with, you can:
-      </p>
-
-      <ul>
-	<li>
-	  Click on a graph node to see properties in detail
-	</li>
-	<li>
-	  Click on a node and press <b>re-centre</b>, this clears the
-	  entire graph leaving only the selected node.  This can be
-	  useful if your graph display is cluttered and you want to
-	  continue exploring with less information on the screen.
-	</li>
-	<li>
-	  Select a graph node, and click navigation buttons which appear
-	  with arrow icons e.g. <b>type &#x2b95;</b>.  This tells
-	  SPARQL Explorer to add nodes related to the selected object
-	  through the relationship shown.
-	</li>
-      </ul>
-
-      <p>
-	Note when exploring relationships, all relationships have a
-	direction (indicated by the direction of arrow-heads on the
-	lines.  The direction of the arrow on the button indicates which
-	direction to explore.
-      </p>
-
-      <ul>
-	<li>
-	  When the arrow icon is on the left of the button, SPARQL
-	  explorer will look for relationships which are 'incoming' i.e.
-	  the arrow-head points to the selected node.
-	</li>
-	<li>
-	  When the arrow icon is on the right of the button, SPARQL
-	  explorer will look for relationships which are 'outgoing' i.e.
-	  the arrow-head points away from the selected node.
-	</li>
-      </ul>
-
+      <info></info>
     </div>
 
   </div>

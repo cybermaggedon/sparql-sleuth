@@ -7,6 +7,7 @@ import { GraphComponent } from './graph/graph.component';
 import { ControlsComponent } from './controls/controls.component';
 import { DetailComponent } from './detail/detail.component';
 import { SearchComponent } from './search/search.component';
+import { InfoComponent } from './info/info.component';
 
 @NgModule({
     declarations: [
@@ -15,6 +16,7 @@ import { SearchComponent } from './search/search.component';
 	ControlsComponent,
 	DetailComponent,
 	SearchComponent,
+	InfoComponent,
     ],
     imports: [
 	BrowserModule,

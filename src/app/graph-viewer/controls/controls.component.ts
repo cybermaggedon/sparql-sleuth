@@ -103,5 +103,9 @@ export class ControlsComponent implements OnInit {
 	this.command.beginSearch();
     }
 
+    help() {
+	this.command.help();
+    }
+
 }
 
