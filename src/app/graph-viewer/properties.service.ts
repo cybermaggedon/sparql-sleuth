@@ -16,6 +16,7 @@ import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 import { GraphService } from './graph.service';
 import { Node } from './graph';
+import { EventService } from './event.service';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
@@ -31,9 +32,10 @@ export class PropertiesService {
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
+	private events : EventService,
     ) {
 
-	this.graph.nodeSelectEvents().subscribe(
+	this.events.nodeSelectEvents().subscribe(
 	    (ev : any) => {
 		this.getProperties(ev.node);
 	    }

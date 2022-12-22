@@ -7,7 +7,7 @@ import {
 import { Network, DataSet } from 'vis-network/standalone';
 
 import { Triple } from '../../query/triple';
-import { GraphService } from '../graph.service';
+import { EventService } from '../event.service';
 
 @Component({
     selector: 'graph',
@@ -35,10 +35,10 @@ export class GraphComponent implements OnInit {
     }
 
     constructor(
-	private graph : GraphService
+	private events : EventService,
     ) {
 
-	this.graph.addNodeEvents().subscribe(
+	this.events.addNodeEvents().subscribe(
 	    ev => {
 		if (this.nodes.get(ev.node.id) == null) {
 		    this.nodes.add({
@@ -50,14 +50,14 @@ export class GraphComponent implements OnInit {
 	    }
 	)
 
-	this.graph.removeNodeEvents().subscribe(
+	this.events.removeNodeEvents().subscribe(
 	    ev => {
 		if (this.nodes.get(ev.id))
 		    this.nodes.remove(ev.id);
 	    }
 	)
 
-	this.graph.addEdgeEvents().subscribe(
+	this.events.addEdgeEvents().subscribe(
 	    ev => {
 		if (this.edges.get(ev.edge.id) == null) {
 		    this.edges.add({
@@ -72,14 +72,14 @@ export class GraphComponent implements OnInit {
 	    }
 	)
 
-	this.graph.removeEdgeEvents().subscribe(
+	this.events.removeEdgeEvents().subscribe(
 	    ev => {
 		if (this.edges.get(ev.id))
 		    this.edges.remove(ev.id);
 	    }
 	)
 
-	this.graph.resetEvents().subscribe(
+	this.events.resetEvents().subscribe(
 	    ev => {
 
 		this.nodes.clear();
@@ -115,9 +115,9 @@ export class GraphComponent implements OnInit {
 	    if (params.nodes.length == 1) {
 		let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
-		cmp.graph.select(node);
+		cmp.events.select(node);
 	    } else {
-		cmp.graph.deselect();
+		cmp.events.deselect();
 	    }
 	});
 
@@ -128,7 +128,7 @@ export class GraphComponent implements OnInit {
 	    if (params.nodes.length == 1) {
 	        let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
-		cmp.graph.select(node);
+		cmp.events.select(node);
 	    }
 	});
 

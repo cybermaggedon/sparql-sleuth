@@ -17,33 +17,9 @@ import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 
 import { Relationship } from './graph';
+import { EventService } from './event.service';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
-
-export class AddNodeEvent {
-    node : Node = new Node();
-};
-
-export class RemoveNodeEvent {
-    id : string = "";
-};
-
-export class AddEdgeEvent {
-    edge : Edge = new Edge();
-};
-
-export class RemoveEdgeEvent {
-    id : string = "";
-};
-
-export class NodeSelectEvent {
-    node : Node = new Node();
-};
-
-export class RecentreEvent {
-    id : string = "";
-    relationship : string = "false";
-};
 
 @Injectable({
     providedIn: 'root'
@@ -53,15 +29,16 @@ export class GraphService {
     constructor(
 	private command : CommandService,
 	private query : QueryService,
+	private events : EventService,
     ) {
 
-	this.recentreEvents().subscribe(
+	this.events.recentreEvents().subscribe(
 
 	    ev => {
 
 		if (ev.id) {
 
-		    this.reset();
+		    this.events.reset();
 		    this.includeNode(ev.id);
 
 		    if (ev.relationship == "in" || ev.relationship == "yes" ||
@@ -82,17 +59,17 @@ export class GraphService {
 	    }
 	);
 
-	this.schemaEvents().subscribe(
+	this.events.schemaEvents().subscribe(
 	    ev => {
-		this.reset();
+		this.events.reset();
 		this.addSchema();
 	    }
 	);
 
 	this.command.showSchemaEvents().subscribe(
 	    ev => {
-		this.reset();
-		this.addSchema();
+		this.events.reset();
+		this.events.schema();
 	    }
 	);
 
@@ -121,29 +98,6 @@ export class GraphService {
     }
 
     fetchEdges = 25;
-
-    // FIXME: this was previously set to 4, was there an issue?
-    fetchLabelEdges = 1;
-
-    private addNodeSubject = new Subject<AddNodeEvent>;
-    private removeNodeSubject = new Subject<RemoveNodeEvent>;
-    private addEdgeSubject = new Subject<AddEdgeEvent>;
-    private removeEdgeSubject = new Subject<RemoveEdgeEvent>;
-    private nodeSelectSubject = new Subject<NodeSelectEvent>;
-    private nodeDeselectSubject = new Subject<null>;
-    private resetSubject = new Subject<null>;
-    private recentreSubject = new Subject<RecentreEvent>;
-    private schemaSubject = new Subject<null>;
-
-    addNodeEvents() { return this.addNodeSubject; }
-    removeNodeEvents() { return this.removeNodeSubject; }
-    addEdgeEvents() { return this.addEdgeSubject; }
-    removeEdgeEvents() { return this.removeEdgeSubject; }
-    nodeSelectEvents() { return this.nodeSelectSubject; }
-    nodeDeselectEvents() { return this.nodeDeselectSubject; }
-    resetEvents() { return this.resetSubject; }
-    recentreEvents() { return this.recentreSubject; }
-    schemaEvents() { return this.schemaSubject; }
 
     relationshipIn(id : string) {
 
@@ -215,55 +169,6 @@ export class GraphService {
 
     }
 
-    addNode(node : Node) {
-	let ev = new AddNodeEvent();
-	ev.node = node;
-	this.addNodeSubject.next(ev);
-    }
-
-    removeNode(id : string) {
-	let ev = new RemoveNodeEvent();
-	ev.id = id;
-	this.removeNodeSubject.next(ev);
-    }
-
-    addEdge(edge : Edge) {
-	let ev = new AddEdgeEvent();
-	ev.edge = edge;
-	this.addEdgeSubject.next(ev);
-    }
-
-    removeEdge(id : string) {
-	let ev = new RemoveEdgeEvent();
-	ev.id = id;
-	this.removeEdgeSubject.next(ev);
-    }
-
-    select(n : Node) {
-	let ev = new NodeSelectEvent();
-	ev.node = n;
-	this.nodeSelectSubject.next(ev);
-    }
-
-    deselect() {
-	this.nodeDeselectSubject.next(null);
-    }
-
-    reset() {
-	this.resetSubject.next(null);
-    }
-
-    recentre(id : string, relationship : string = "no") {
-	let ev = new RecentreEvent();
-	ev.id = id;
-	ev.relationship = relationship;
-	this.recentreSubject.next(ev);
-    }
-
-    schema() {
-	this.schemaSubject.next(null);
-    }
-
     includeTriples(triples : Triple[]) {
 
 	for (let triple of triples) {
@@ -305,7 +210,7 @@ export class GraphService {
 		    n.label = lbl;
 		else
 		    n.label = this.makeLabel(id);
-		this.addNode(n);
+		this.events.addNode(n);
 	    }
 	);
 	
@@ -326,7 +231,7 @@ export class GraphService {
 		    link.label = lbl;
 		else
 		    link.label = this.makeLabel(rel);
-		this.addEdge(link);
+		this.events.addEdge(link);
 	    }
 	);
 

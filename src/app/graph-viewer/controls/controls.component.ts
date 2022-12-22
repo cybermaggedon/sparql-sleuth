@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
 import { Node, Relationship } from '../graph';
-import { GraphService } from '../graph.service';
+import { EventService } from '../event.service';
 import { RelationshipService } from '../relationship.service';
 import { Query } from '../../query/query';
 import { QueryService } from '../../query/query.service';
@@ -29,14 +29,14 @@ export class ControlsComponent implements OnInit {
     constructor(
 	private command : CommandService,
 	private select : SelectionService,
-	private graph : GraphService,
 	private relationship : RelationshipService,
 	private router : Router,
 	private query : QueryService,
 	private progress : ProgressService,
+	private events : EventService,
     ) {
 
-	this.graph.nodeSelectEvents().subscribe(
+	this.events.nodeSelectEvents().subscribe(
 	    ev => {
 
 		this.selection = ev.node;
@@ -51,7 +51,7 @@ export class ControlsComponent implements OnInit {
 	    
 	);
 
-	this.graph.nodeDeselectEvents().subscribe(
+	this.events.nodeDeselectEvents().subscribe(
 	    () => {
 		this.selection = null;
 		this.relationships = [];

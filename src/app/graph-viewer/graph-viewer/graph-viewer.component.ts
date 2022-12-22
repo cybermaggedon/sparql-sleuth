@@ -3,9 +3,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { GraphService } from '../graph.service';
 import { CommandService } from '../command.service';
 import { PropertiesService, Properties } from '../properties.service';
+import { EventService } from '../event.service';
 
 enum BottomPaneMode {
     HELP,
@@ -22,10 +22,10 @@ enum BottomPaneMode {
 export class GraphViewerComponent implements OnInit {
 
     constructor(
-	private graph : GraphService,
 	private command : CommandService,
 	private route : ActivatedRoute,
 	private propertyService : PropertiesService,
+	private events : EventService,
     ) {
 
     }
@@ -59,7 +59,7 @@ export class GraphViewerComponent implements OnInit {
 	    }
 	);
 
-	this.graph.nodeDeselectEvents().subscribe(
+	this.events.nodeDeselectEvents().subscribe(
 	    () => {
 		this.mode = BottomPaneMode.EMPTY;
 	    }
@@ -79,16 +79,16 @@ export class GraphViewerComponent implements OnInit {
 
 		    const id = params["node"];
 
-		    let expand = "no";
+		    let relationships = "no";
 		    
-		    if (params["expand"]) {
-			expand = params["expand"];
+		    if (params["relationships"]) {
+			relationships = params["relationships"];
 		    }
 
 		    if (id) {
 			timer(1).subscribe(
 			    () => {
-				this.graph.recentre(id, expand);
+				this.events.recentre(id, relationships);
 			    }
 			);
 		    }
