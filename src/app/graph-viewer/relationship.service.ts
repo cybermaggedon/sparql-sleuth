@@ -7,21 +7,16 @@ import { Value } from '../query/triple';
 import { QueryService } from '../query/query.service';
 import { CommandService } from './command.service';
 
-import { ExpansionsQuery } from '../query/expansion-query';
-import { GraphService, Node} from './graph.service';
+import { RelationshipQuery } from '../query/relationship-query';
+import { GraphService} from './graph.service';
+import { Node, Edge, Relationship } from './graph';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
-
-export class Expansion {
-    name : string = "";
-    id : string = "";
-    inward : boolean = false;
-};
 
 @Injectable({
     providedIn: 'root'
 })
-export class ExpansionService {
+export class RelationshipService {
 
     constructor(
 	private command : CommandService,
@@ -31,13 +26,14 @@ export class ExpansionService {
 
     }
 
-    expansionEdges = 25;
+    relationshipEdges = 25;
 
-    getExpansionsIn(node : Node) {
+    getRelationshipsIn(node : Node) {
 
 	let qry = this.query.query(
-	    new ExpansionsQuery(
-		"Expand in " + node.id, node.id, true, this.expansionEdges
+	    new RelationshipQuery(
+		"Relationships to " + node.id, node.id, true,
+		this.relationshipEdges
 	    )
 	);
 
@@ -54,11 +50,12 @@ export class ExpansionService {
 
     }
 
-    getExpansionsOut(node : Node) {
+    getRelationshipsOut(node : Node) {
 
 	let qry = this.query.query(
-	    new ExpansionsQuery(
-		"Expand out " + node.id, node.id, false, this.expansionEdges
+	    new RelationshipQuery(
+		"Relationships from " + node.id, node.id, false,
+		this.relationshipEdges
 	    )
 	);
 
@@ -75,15 +72,15 @@ export class ExpansionService {
 
     }
 
-    getExpansionPreds(node : Node) : Observable<Expansion[]>{
+    getRelationshipPreds(node : Node) : Observable<Relationship[]>{
 
 	return new Observable<any>(
 
 	    sub => {
 
-		let inw = this.getExpansionsIn(node);
+		let inw = this.getRelationshipsIn(node);
 
-		let outw = this.getExpansionsOut(node);
+		let outw = this.getRelationshipsOut(node);
 	    
 		// combineLatest maybe?
 
@@ -94,17 +91,17 @@ export class ExpansionService {
 		    map(
 			(res : any) => {
 			
-			    let exps : Expansion[] = [];
+			    let exps : Relationship[] = [];
 			    
 			    for (let i of res["in"]) {
-				let exp = new Expansion();
+				let exp = new Relationship();
 				exp.id = i;
 				exp.inward = true;
 				exps.push(exp);
 			    }
 
 			    for (let i of res["out"]) {
-				let exp = new Expansion();
+				let exp = new Relationship();
 				exp.id = i;
 				exp.inward = false;
 				exps.push(exp);
@@ -123,12 +120,12 @@ export class ExpansionService {
 
     }
 
-    getExpansions(node : Node) {
+    getRelationships(node : Node) {
 
-	return new Observable<Expansion[]>(
+	return new Observable<Relationship[]>(
 	    sub => {
 
-		this.getExpansionPreds(node).subscribe(
+		this.getRelationshipPreds(node).subscribe(
 		    exps => {
 			    
 			let todo : any[] = [];
@@ -138,7 +135,7 @@ export class ExpansionService {
 			    todo.push(this.graph.getLabel(exp.id).pipe(
 				map(
 				    (label : string) => {
-					let e = new Expansion();
+					let e = new Relationship();
 					e.id = exp.id;
 					e.name = label;
 					e.inward = exp.inward;

@@ -18,10 +18,10 @@
       Re-centre
     </button>
 
-    <button *ngFor="let exp of expansions" (click)="expand(exp)">
-      <ng-container *ngIf="exp.inward">&#x2b95;</ng-container>
-      {{exp.name}}
-      <ng-container *ngIf="!exp.inward">&#x2b95;</ng-container>
+    <button *ngFor="let rel of relationships" (click)="reln(rel)">
+      <ng-container *ngIf="rel.inward">&#x2b95;</ng-container>
+      {{rel.name}}
+      <ng-container *ngIf="!rel.inward">&#x2b95;</ng-container>
     </button>
 
   </div>

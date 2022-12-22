@@ -5,8 +5,9 @@ import { forkJoin } from 'rxjs';
 
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
-import { GraphService, Node } from '../graph.service';
-import { ExpansionService, Expansion } from '../expansion.service';
+import { Node, Relationship } from '../graph';
+import { GraphService } from '../graph.service';
+import { RelationshipService } from '../relationship.service';
 import { Query } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
@@ -23,13 +24,13 @@ export class ControlsComponent implements OnInit {
     info1 : string = "";
     info2 : string = "";
 
-    expansions : Expansion[] = [];
+    relationships : Relationship[] = [];
 
     constructor(
 	private command : CommandService,
 	private select : SelectionService,
 	private graph : GraphService,
-	private expansion : ExpansionService,
+	private relationship : RelationshipService,
 	private router : Router,
 	private query : QueryService,
 	private progress : ProgressService,
@@ -40,10 +41,10 @@ export class ControlsComponent implements OnInit {
 
 		this.selection = ev.node;
 
-		this.expansions = [];
+		this.relationships = [];
 
-		this.expansion.getExpansions(ev.node).subscribe(
-		    ev => this.expansions = ev
+		this.relationship.getRelationships(ev.node).subscribe(
+		    ev => this.relationships = ev
 		);
 
 	    }
@@ -53,7 +54,7 @@ export class ControlsComponent implements OnInit {
 	this.graph.nodeDeselectEvents().subscribe(
 	    () => {
 		this.selection = null;
-		this.expansions = [];
+		this.relationships = [];
 	    }
 	);
 
@@ -87,11 +88,11 @@ export class ControlsComponent implements OnInit {
 	    this.command.recentre(this.selection.id);
     }
 
-    expand(exp : Expansion) {
+    reln(rel : Relationship) {
 
 	if (!this.selection) return;
 
-	this.command.expand(this.selection, exp);
+	this.command.relationship(this.selection, rel);
 
     }
 

@@ -11,10 +11,11 @@ import { Triple, Value, Uri } from '../query/triple';
 import { QueryService } from '../query/query.service';
 
 import { TripleQuery } from '../query/triple-query';
-import { ExpansionsQuery } from '../query/expansion-query';
+import { RelationshipQuery } from '../query/relationship-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
-import { GraphService, Node } from './graph.service';
+import { GraphService } from './graph.service';
+import { Node } from './graph';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 

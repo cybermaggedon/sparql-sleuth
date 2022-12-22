@@ -2,7 +2,7 @@
 import { Query } from './query';
 import { Value } from './triple';
 
-export class ExpansionsQuery implements Query {
+export class RelationshipQuery implements Query {
     constructor(
 	desc : string,
 	id : string,

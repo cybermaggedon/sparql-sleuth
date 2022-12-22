@@ -7,6 +7,7 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { Node, Edge } from './graph';
 import { Triple, Value, Uri } from '../query/triple';
 import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
@@ -15,21 +16,9 @@ import { TripleQuery } from '../query/triple-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 
-import { Expansion } from './expansion.service';
+import { Relationship } from './graph';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
-
-export class Node {
-    id : string = "";
-    label : string | null = null;
-};
-
-export class Edge {
-    id : string = "";
-    label : string | null = null;
-    from : string = "";
-    to : string = "";
-};
 
 export class AddNodeEvent {
     node : Node = new Node();
@@ -53,7 +42,7 @@ export class NodeSelectEvent {
 
 export class RecentreEvent {
     id : string = "";
-    expand : string = "false";
+    relationship : string = "false";
 };
 
 @Injectable({
@@ -75,17 +64,17 @@ export class GraphService {
 		    this.reset();
 		    this.includeNode(ev.id);
 
-		    if (ev.expand == "in" || ev.expand == "yes" ||
-			ev.expand == "both" || ev.expand == "true") {
+		    if (ev.relationship == "in" || ev.relationship == "yes" ||
+			ev.relationship == "both" || ev.relationship == "true") {
 
-			this.expandIn(ev.id);
+			this.relationshipIn(ev.id);
 
 		    }
 
-		    if (ev.expand == "out" || ev.expand == "yes" ||
-			ev.expand == "both" || ev.expand == "true") {
+		    if (ev.relationship == "out" || ev.relationship == "yes" ||
+			ev.relationship == "both" || ev.relationship == "true") {
 
-			this.expandOut(ev.id);
+			this.relationshipOut(ev.id);
 			
 		    }
 
@@ -107,8 +96,8 @@ export class GraphService {
 	    }
 	);
 
-	this.command.expandEvents().subscribe(
-	    ev => this.expand(ev.node, ev.expansion)
+	this.command.relationshipEvents().subscribe(
+	    ev => this.relationship(ev.node, ev.relationship)
 	);
 
     }
@@ -156,11 +145,11 @@ export class GraphService {
     recentreEvents() { return this.recentreSubject; }
     schemaEvents() { return this.schemaSubject; }
 
-    expandIn(id : string) {
+    relationshipIn(id : string) {
 
 	this.query.query(
 	    new TripleQuery(
-		"Expand in " + id,
+		"Relationship in " + id,
 		undefined,
 		undefined,
 		id,
@@ -174,14 +163,14 @@ export class GraphService {
 	
     }
 
-    expand(node : Node, exp : Expansion) {
+    relationship(node : Node, rel : Relationship) {
 
-	if (exp.inward) {
+	if (rel.inward) {
 	    this.query.query(
 		new TripleQuery(
-		    "Expand in " + node.id,
+		    "Relationships to " + node.id,
 		    undefined,
-		    exp.id,
+		    rel.id,
 		    node.id,
 		    this.fetchEdges,
 		)
@@ -193,9 +182,9 @@ export class GraphService {
 	} else {
 	    this.query.query(
 		new TripleQuery(
-		    "Expand out " + node.id,
+		    "Relationships from " + node.id,
 		    node.id,
-		    exp.id,
+		    rel.id,
 		    undefined,
 		    this.fetchEdges,
 		)
@@ -208,11 +197,11 @@ export class GraphService {
 
     }
 
-    expandOut(id : string) {
+    relationshipOut(id : string) {
     
 	this.query.query(
 	    new TripleQuery(
-		"Expand out " + id,
+		"Relationship out " + id,
 		id,
 		undefined,
 		undefined,
@@ -264,10 +253,10 @@ export class GraphService {
 	this.resetSubject.next(null);
     }
 
-    recentre(id : string, expand : string = "no") {
+    recentre(id : string, relationship : string = "no") {
 	let ev = new RecentreEvent();
 	ev.id = id;
-	ev.expand = expand;
+	ev.relationship = relationship;
 	this.recentreSubject.next(ev);
     }
 

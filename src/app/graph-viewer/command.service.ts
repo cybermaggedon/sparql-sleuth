@@ -2,8 +2,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Node } from './graph.service';
-import { Expansion } from './expansion.service';
+import { Node, Relationship } from './graph';
 
 export enum Direction {
   IN = 0,
@@ -11,9 +10,9 @@ export enum Direction {
   BOTH,
 }
 
-export class ExpandEvent {
+export class RelationshipEvent {
     node : Node = new Node();
-    expansion : Expansion = new Expansion();
+    relationship : Relationship = new Relationship();
 };
 
 export class RecentreEvent {
@@ -40,23 +39,23 @@ export class CommandService {
 
     }
 
-    private expandSubject = new Subject<ExpandEvent>;
+    private relationshipSubject = new Subject<RelationshipEvent>;
     private recentreSubject = new Subject<RecentreEvent>;
     private showSchemaSubject = new Subject<void>;
     private beginSearchSubject = new Subject<void>;
     private helpSubject = new Subject<void>;
 
-    expandEvents() { return this.expandSubject; }
+    relationshipEvents() { return this.relationshipSubject; }
     recentreEvents() { return this.recentreSubject; }
     showSchemaEvents() { return this.showSchemaSubject; }
     beginSearchEvents() { return this.beginSearchSubject; }
     helpEvents() { return this.helpSubject; }
 
-    expand(node : Node, exp : Expansion) {
-	let ev = new ExpandEvent;
+    relationship(node : Node, rel : Relationship) {
+	let ev = new RelationshipEvent;
 	ev.node = node;
-	ev.expansion = exp;
-	this.expandSubject.next(ev);
+	ev.relationship = rel;
+	this.relationshipSubject.next(ev);
     }
 
     recentre(id : string) {
