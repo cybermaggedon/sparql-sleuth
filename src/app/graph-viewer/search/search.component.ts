@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { GraphService } from '../graph.service';
+import { SearchService } from '../search.service';
 
 @Component({
     selector: 'search',
