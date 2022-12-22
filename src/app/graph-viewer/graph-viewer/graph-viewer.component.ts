@@ -3,8 +3,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { GraphService, Properties } from '../graph.service';
+import { GraphService } from '../graph.service';
 import { CommandService } from '../command.service';
+import { PropertiesService, Properties } from '../properties.service';
 
 enum BottomPaneMode {
     EMPTY,
@@ -23,6 +24,7 @@ export class GraphViewerComponent implements OnInit {
 	private graph : GraphService,
 	private command : CommandService,
 	private route : ActivatedRoute,
+	private propertyService : PropertiesService,
     ) {
 
     }
@@ -42,7 +44,7 @@ export class GraphViewerComponent implements OnInit {
 	    }
 	);
 
-	this.graph.propertiesEvents().subscribe(
+	this.propertyService.propertiesEvents().subscribe(
 	    ev => {
 		this.properties = ev;
 		this.mode = BottomPaneMode.DETAIL;

@@ -1,7 +1,8 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 
-import { GraphService, Node, Edge, Properties } from '../graph.service';
+import { GraphService, Node, Edge } from '../graph.service';
+import { Properties } from '../properties.service';
 
 @Component({
     selector: 'detail',

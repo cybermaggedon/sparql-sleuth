@@ -2,7 +2,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Expansion, Node } from './graph.service';
+import { Node } from './graph.service';
+import { Expansion } from './expansion.service';
 
 export enum Direction {
   IN = 0,

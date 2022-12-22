@@ -12,9 +12,10 @@ import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
 
 import { TripleQuery } from '../query/triple-query';
-import { ExpansionsQuery } from '../query/expansion-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
+
+import { Expansion } from './expansion.service';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
@@ -53,16 +54,6 @@ export class NodeSelectEvent {
 export class RecentreEvent {
     id : string = "";
     expand : string = "false";
-};
-
-export class Properties {
-    properties : { [key : string] : string } = {};
-};
-
-export class Expansion {
-    name : string = "";
-    id : string = "";
-    inward : boolean = false;
 };
 
 @Injectable({
@@ -120,12 +111,6 @@ export class GraphService {
 	    ev => this.expand(ev.node, ev.expansion)
 	);
 
-	this.nodeSelectEvents().subscribe(
-	    (ev : any) => {
-		this.getProperties(ev.node);
-	    }
-	);
-
     }
 
     addSchema() {
@@ -151,10 +136,6 @@ export class GraphService {
     // FIXME: this was previously set to 4, was there an issue?
     fetchLabelEdges = 1;
 
-    expansionEdges = 25;
-
-    textSearchResults = 100;
-
     private addNodeSubject = new Subject<AddNodeEvent>;
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
     private addEdgeSubject = new Subject<AddEdgeEvent>;
@@ -164,7 +145,6 @@ export class GraphService {
     private resetSubject = new Subject<null>;
     private recentreSubject = new Subject<RecentreEvent>;
     private schemaSubject = new Subject<null>;
-    private propertiesSubject = new Subject<Properties>;
 
     addNodeEvents() { return this.addNodeSubject; }
     removeNodeEvents() { return this.removeNodeSubject; }
@@ -175,7 +155,6 @@ export class GraphService {
     resetEvents() { return this.resetSubject; }
     recentreEvents() { return this.recentreSubject; }
     schemaEvents() { return this.schemaSubject; }
-    propertiesEvents() { return this.propertiesSubject; }
 
     expandIn(id : string) {
 
@@ -378,166 +357,6 @@ export class GraphService {
 	    label = label.substring(0, 15);
 
 	return label;
-
-    }
-
-    mapToClassLabel(id : string, sub : Subscriber<string[]>) {
-
-	// IS_A relationship, work out the class name
-
-
-	this.query.query(
-	    new LabelQuery("Label " + id, id,)
-	).subscribe(
-	    lbl => {
-		if (lbl) {
-		    sub.next([
-			"class", lbl
-		    ]);
-		    sub.complete();
-		    return;
-		} else {
-		    sub.next(
-			["class", this.makeLabel(id)]
-		    );
-		    sub.complete();
-		    return;
-		}
-		
-	    }
-
-	);
-
-    }
-
-    mapToLiteral(p : string, o : string, sub : Subscriber<string[]>) {
-
-	this.query.query(
-	    new LabelQuery("Label " + p, p)
-	).subscribe(
-	    lbl => {
-		if (lbl) {
-		    sub.next([lbl, o]);
-		    sub.complete();
-		    return;
-		} else {
-		    sub.next([this.makeLabel(p), o]);
-		    sub.complete();
-		    return;
-		}
-	    }
-	    
-	)
-    }
-
-    mapToProperties(res : any) {
-
-	let todo : { [key : string] : any } = {};
-
-	for (let row of res) {
-
-	    todo[row.p] = new Observable<string[]>(
-		sub => {
-		    
-		    if (row.p == LABEL) {
-			
-			// Label
-			sub.next(["label", row.o.value]);
-			sub.complete();
-			return;
-
-		    } else if (row.p == THUMBNAIL) {
-
-			// thumbnail
-			sub.next(["thumbnail", row.o.value]);
-			sub.complete();
-			return;
-
-		    } else if (row.p == RELATION) {
-
-			// link
-			sub.next(["link", row.o.value]);
-			sub.complete();
-			return;
-
-		    } else if (row.p == IS_A) {
-
-			this.mapToClassLabel(row.o.value, sub);
-
-		    } else if (row.o.uri) {
-
-			// Property we're not interested in.
-			// Indicate nothing to return.
-			sub.next([]);
-			sub.complete();
-			return;
-
-		    } else {
-
-			// 'o' is a literal, just need the
-			// human-readable property name.
-			this.mapToLiteral(row.p, row.o.value, sub);
-
-		    }
-		}
-	    );
-
-	}
-
-	return todo;
-	
-    }
-
-    getProperties(node : Node) {
-
-	this.query.query(
-	    new TripleQuery(
-		"Fetch " + node.id,
-		node.id,
-		undefined,
-		undefined,
-		this.fetchEdges,
-	    )
-	).subscribe(
-
-	    res => {
-
-		let todo = this.mapToProperties(res);
-
-		// Empty set, return empty properties.
-		// Also, forkJoin on empty set is bad.
-		if (todo === {}) {
-		    
-		    let ev = new Properties();
-		    ev.properties = {};
-		    this.propertiesSubject.next(ev);
-		    return;
-		}
-
-		forkJoin(todo).subscribe(
-		    (res : { [key : string] : any }) => {
-
-			let props : { [key : string] : string } = {};
-
-			for (let i in res) {
-
-			    if (res[i].length == 0)
-				continue;
-
-			    props[res[i][0]] = res[i][1];
-
-			}
-
-			let ev = new Properties();
-			ev.properties = props;
-			this.propertiesSubject.next(ev);
-			
-		    }
-		);
-
-	    }
-
-	)
 
     }
 
