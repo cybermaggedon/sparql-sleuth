@@ -99,25 +99,17 @@ export class GraphService {
 	    }
 	);
 
+	this.schemaEvents().subscribe(
+	    ev => {
+		this.reset();
+		this.addSchema();
+	    }
+	);
+
 	this.command.showSchemaEvents().subscribe(
 	    ev => {
-
 		this.reset();
-
-		// Add classes
-		this.query.query(
-		    new TripleQuery(
-			"Acquire schema",
-			undefined,
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-			"http://www.w3.org/2000/01/rdf-schema#Class",
-			50,
-		    )
-		).subscribe(
-		    result => {
-			this.includeTriples(result);
-		    }
-		);
+		this.addSchema();
 	    }
 	);
 
@@ -131,6 +123,24 @@ export class GraphService {
 	    }
 	);
 
+    }
+
+    addSchema() {
+
+	// Add classes
+	this.query.query(
+	    new TripleQuery(
+		"Acquire schema",
+		undefined,
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+		"http://www.w3.org/2000/01/rdf-schema#Class",
+		50,
+	    )
+	).subscribe(
+	    result => {
+		this.includeTriples(result);
+	    }
+	);
     }
 
     fetchEdges = 25;

@@ -1,6 +1,7 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { timer } from 'rxjs';
 
 import { GraphService } from '../graph.service';
 
@@ -18,7 +19,10 @@ export class GraphViewerComponent implements OnInit {
 
     }
 
-    ngOnInit(): void {
+    ngOnInit() : void {
+    }
+
+    ngAfterViewInit(): void {
 
 	this.route.queryParams.subscribe(
 
@@ -37,11 +41,20 @@ export class GraphViewerComponent implements OnInit {
 		    }
 
 		    if (id) {
-			this.graph.recentre(id, expand);
+			timer(1).subscribe(
+			    () => {
+				this.graph.recentre(id, expand);
+			    }
+			);
 		    }
 
 		} else {
-//		    this.graph.schema();
+
+		    timer(1).subscribe(
+			() => {
+			    this.graph.schema();
+			}
+		    );
 
 		}
 
