@@ -22,6 +22,8 @@ export class ControlsComponent implements OnInit {
     info1 : string = "";
     info2 : string = "";
 
+    expansions : Expansion[] = [];
+
     constructor(
 	private command : CommandService,
 	private select : SelectionService,
@@ -33,8 +35,15 @@ export class ControlsComponent implements OnInit {
 
 	this.graph.nodeSelectEvents().subscribe(
 	    ev => {
+
 		this.selection = ev.node;
+
 		this.expansions = [];
+
+		this.graph.getExpansions(ev.node).subscribe(
+		    ev => this.expansions = ev
+		);
+
 	    }
 	    
 	);
@@ -69,22 +78,6 @@ export class ControlsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-    }
-
-    expansions : Expansion[] = [];
-
-    openExpansions() {
-
-	if (!this.selection) return;
-
-	this.graph.getExpansions(this.selection).subscribe(
-	    ev => this.expansions = ev
-	);
-
-    }
-
-    closeExpansions() {
-	this.expansions = [];
     }
 
     recentre() {

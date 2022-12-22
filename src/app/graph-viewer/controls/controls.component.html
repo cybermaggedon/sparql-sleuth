@@ -2,32 +2,19 @@
 
   <div>
 
-    <ng-container *ngIf="expansions.length == 0; else expansionControls">
+    <button *ngIf="selection" (click)="recentre()">
+      Re-centre
+    </button>
 
-      <button *ngIf="selection" (click)="openExpansions()">
-	Expand
-      </button>
+    <button (click)="schema()">
+      Schema
+    </button>
 
-      <button *ngIf="selection" (click)="recentre()">
-	Re-centre
-      </button>
-
-      <button (click)="schema()">
-	Schema
-      </button>
-
-    </ng-container>
-
-    <ng-template #expansionControls>
-      <button (click)="closeExpansions()">
-	back
-      </button>
-      <button *ngFor="let exp of expansions" (click)="expand(exp)">
-	<ng-container *ngIf="exp.inward">&#x2b95;</ng-container>
-	{{exp.name}}
-	<ng-container *ngIf="!exp.inward">&#x2b95;</ng-container>
-      </button>
-    </ng-template>
+    <button *ngFor="let exp of expansions" (click)="expand(exp)">
+      <ng-container *ngIf="exp.inward">&#x2b95;</ng-container>
+      {{exp.name}}
+      <ng-container *ngIf="!exp.inward">&#x2b95;</ng-container>
+    </button>
 
   </div>
 
