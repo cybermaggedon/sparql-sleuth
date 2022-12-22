@@ -1,1 +1,29 @@
-<p>search works!</p>
+
+<div class="box info" id="selection">
+
+  <h2>Search</h2>
+
+  <div>
+    <input value="pioneer" type="text" #searchText>
+    <button (click)="search(searchText.value)">Search</button>
+  </div>
+
+  <table *ngIf="results.length > 0">
+    <tr>
+      <th>Entity</th>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+    <tr *ngFor="let row of results">
+      <td><button (click)="select(row[0])">{{row[1]}}</button></td>
+      <td class="key">{{row[3]}}</td>
+      <td>{{row[4]}}</td>
+    </tr>
+  </table>
+
+  <div *ngIf="executed && results.length == 0">
+    No results.
+  </div>
+
+</div>
+

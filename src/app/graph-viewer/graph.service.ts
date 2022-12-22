@@ -9,9 +9,11 @@ import { map } from 'rxjs/operators';
 
 import { Triple, Value, Uri } from '../query/triple';
 import { QueryService } from '../query/query.service';
+import { CommandService, Direction } from './command.service';
+
 import { TripleQuery } from '../query/triple-query';
 import { ExpansionsQuery } from '../query/expansion-query';
-import { CommandService, Direction } from './command.service';
+import { TextSearchQuery } from '../query/text-search-query';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
@@ -149,6 +151,8 @@ export class GraphService {
     fetchLabelEdges = 1;
 
     expansionEdges = 25;
+
+    textSearchResults = 25;
 
     private addNodeSubject = new Subject<AddNodeEvent>;
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
@@ -662,7 +666,7 @@ export class GraphService {
 	).pipe(
 	    map(
 		res => {
-		    if (res.length > 1) {
+		    if (res.length > 0) {
 			return res[0].o.value;
 		    } else {
 			return this.makeLabel(id);
@@ -710,6 +714,114 @@ export class GraphService {
 
 	    }
 	);
+
+    }
+
+    search(text : string) : Observable<string[][]> {
+
+	let phase1 = this.query.query(
+	    new TextSearchQuery(
+		"Search " + text,
+		text,
+		this.textSearchResults,
+	    )
+	);
+
+	let phase2 = new Observable<string[][]>(
+
+	    sub => {
+
+		phase1.subscribe(
+
+		    res => {
+
+			let todo = [];
+
+			for (let row of res) {
+
+			    todo.push(
+				this.getLabel(row.s).pipe(
+				    map(
+					lbl => [row.s, lbl, row.p, row.o.value]
+				    )
+				)
+			    );
+
+			}
+
+			// Empty set, return empty properties.
+			// Also, forkJoin on empty set is bad.
+			if (todo.length == 0) {
+			    console.log("BAIL");
+			    sub.next([]);
+			    return;
+			}
+
+			forkJoin(todo).subscribe(
+			    res => {
+				sub.next(res);
+			    }
+			);
+
+		    }
+
+		)
+
+	    }
+
+	    
+
+	);
+
+	let phase3 = new Observable<string[][]>(
+
+	    sub => {
+
+		phase2.subscribe(
+
+		    res => {
+
+			let todo = [];
+
+			for (let row of res) {
+
+			    todo.push(
+				this.getLabel(row[2]).pipe(
+				    map(
+					lbl => [
+					    row[0], row[1], row[2], lbl,
+					    row[3]
+					]
+				    )
+				)
+			    );
+
+			}
+
+			// Empty set, return empty properties.
+			// Also, forkJoin on empty set is bad.
+			if (todo.length == 0) {
+			    sub.next([]);
+			    return;
+			}
+
+			forkJoin(todo).subscribe(
+			    res => {
+				sub.next(res);
+			    }
+			);
+
+		    }
+
+		)
+
+	    }
+
+	    
+
+	);
+
+	return phase3;
 
     }
 

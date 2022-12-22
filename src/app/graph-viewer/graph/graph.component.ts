@@ -113,12 +113,10 @@ export class GraphComponent implements OnInit {
 
 	this.network.on("select", (params: any) => {
 	    if (params.nodes.length == 1) {
-		console.log("!select");
 		let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
 		cmp.graph.select(node);
 	    } else {
-		console.log("!deselect");
 		cmp.graph.deselect();
 	    }
 	});
