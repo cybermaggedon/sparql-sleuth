@@ -59,6 +59,7 @@ export class DetailComponent implements OnInit {
 		this.selected = undefined;
 		this.selectedLabel = undefined;
 		this.selectedLink = undefined;
+		this.properties = {};
 	    }
 	);
 

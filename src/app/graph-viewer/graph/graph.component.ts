@@ -111,15 +111,22 @@ export class GraphComponent implements OnInit {
 
 	let cmp = this;
 
-	this.network.on("selectNode", function (params : any) {
-	    let id = params.nodes[0];
-	    let node = cmp.nodes.get(id).node;
-	    cmp.graph.select(node);
+	this.network.on("select", (params: any) => {
+	    if (params.nodes.length == 1) {
+		console.log("!select");
+		let id = params.nodes[0];
+		let node = cmp.nodes.get(id).node;
+		cmp.graph.select(node);
+	    } else {
+		console.log("!deselect");
+		cmp.graph.deselect();
+	    }
 	});
 
-	// Bug in visjs?  Dragging selects a node but doesn't cause a
-	// select event.
-	this.network.on("dragStart", function (params : any) {
+	// Dragging a node appears to select it, but not trigger the
+	// select event.  This causes a UI inconsistency because subsequently
+	// clicking on the event doesn't cause a select event.
+	this.network.on("dragStart", (params : any) => {
 	    if (params.nodes.length == 1) {
 	        let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
