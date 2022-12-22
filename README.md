@@ -22,7 +22,7 @@ provided by the web service on which the application is hosted.
 One option is to get the web server to reverse-proxy /sparql to a
 real SPARQL service elsewhere on the internet.
 
-The application works my POSTing SPARQL queries to the endpoint.
+The application works by POSTing SPARQL queries to the endpoint.
 
 ## Web proxy
 
@@ -71,6 +71,7 @@ You need to run:
 - `ng serve` to run the SPARQL application on port 4200.
 - Some sort of proxy.  I use the code in `proxy/serve-local.go` to
   redirect to the SPARQL endpoint and Angular service.
+- A SPARQL service.
 
 e.g. to list on port 8080, redirect to a SPARQL endpoint on
 `http://localhost:8089`:
