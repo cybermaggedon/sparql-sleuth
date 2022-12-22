@@ -10,7 +10,8 @@
   </div>
 
   <div class="box info">
-    <detail></detail>
+    <detail *ngIf="detailMode" [properties]="properties"></detail>
+    <search *ngIf="searchMode"></search>
   </div>
   
 </div>

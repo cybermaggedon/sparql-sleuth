@@ -13,8 +13,6 @@ export enum Direction {
 export class ExpandEvent {
     node : Node = new Node();
     expansion : Expansion = new Expansion();
-//    dir : Direction = Direction.IN;
-//    id : string = "";
 };
 
 export class RecentreEvent {
@@ -47,10 +45,12 @@ export class CommandService {
     private expandSubject = new Subject<ExpandEvent>;
     private recentreSubject = new Subject<RecentreEvent>;
     private showSchemaSubject = new Subject<ShowSchemaEvent>;
+    private beginSearchSubject = new Subject<void>;
 
     expandEvents() { return this.expandSubject; }
     recentreEvents() { return this.recentreSubject; }
     showSchemaEvents() { return this.showSchemaSubject; }
+    beginSearchEvents() { return this.beginSearchSubject; }
 
     expand(node : Node, exp : Expansion) {
 	let ev = new ExpandEvent;
@@ -68,6 +68,10 @@ export class CommandService {
     showSchema() {
 	let ev = new ShowSchemaEvent();
 	this.showSchemaSubject.next(ev);
+    }
+
+    beginSearch() {
+	this.beginSearchSubject.next();
     }
 
 }

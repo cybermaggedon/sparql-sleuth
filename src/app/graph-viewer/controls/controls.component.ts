@@ -97,4 +97,9 @@ export class ControlsComponent implements OnInit {
 	this.command.showSchema();
     }
 
+    beginSearch() {
+	this.command.beginSearch();
+    }
+
 }
+

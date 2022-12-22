@@ -527,6 +527,7 @@ export class GraphService {
 		// Empty set, return empty properties.
 		// Also, forkJoin on empty set is bad.
 		if (todo === {}) {
+		    
 		    let ev = new Properties();
 		    ev.properties = {};
 		    this.propertiesSubject.next(ev);

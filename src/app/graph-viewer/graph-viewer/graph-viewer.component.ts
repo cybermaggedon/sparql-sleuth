@@ -3,7 +3,14 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { GraphService } from '../graph.service';
+import { GraphService, Properties } from '../graph.service';
+import { CommandService } from '../command.service';
+
+enum BottomPaneMode {
+    EMPTY,
+    DETAIL,
+    SEARCH
+};
 
 @Component({
     selector: 'graph-viewer',
@@ -14,12 +21,40 @@ export class GraphViewerComponent implements OnInit {
 
     constructor(
 	private graph : GraphService,
+	private command : CommandService,
 	private route : ActivatedRoute,
     ) {
 
     }
 
+    mode : BottomPaneMode = BottomPaneMode.EMPTY;
+
+    get detailMode() : boolean { return this.mode == BottomPaneMode.DETAIL; }
+    get searchMode() : boolean { return this.mode == BottomPaneMode.SEARCH; }
+
+    properties : Properties = new Properties();
+
     ngOnInit() : void {
+
+	this.command.beginSearchEvents().subscribe(
+	    () => {
+		this.mode = BottomPaneMode.SEARCH;
+	    }
+	);
+
+	this.graph.propertiesEvents().subscribe(
+	    ev => {
+		this.properties = ev;
+		this.mode = BottomPaneMode.DETAIL;
+	    }
+	);
+
+	this.graph.nodeDeselectEvents().subscribe(
+	    () => {
+		this.mode = BottomPaneMode.EMPTY;
+	    }
+	);
+
     }
 
     ngAfterViewInit(): void {

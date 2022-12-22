@@ -2,12 +2,16 @@
 
   <div>
 
-    <button *ngIf="selection" (click)="recentre()">
-      Re-centre
-    </button>
-
     <button (click)="schema()">
       Schema
+    </button>
+
+    <button (click)="beginSearch()">
+      Search
+    </button>
+
+    <button *ngIf="selection" (click)="recentre()">
+      Re-centre
     </button>
 
     <button *ngFor="let exp of expansions" (click)="expand(exp)">
