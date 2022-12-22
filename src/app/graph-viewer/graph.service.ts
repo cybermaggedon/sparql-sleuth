@@ -384,18 +384,15 @@ export class GraphService {
     mapToClassLabel(id : string, sub : Subscriber<string[]>) {
 
 	// IS_A relationship, work out the class name
+
+
 	this.query.query(
-	    new TripleQuery(
-		"Label " + id,
-		id, LABEL, undefined,
-		this.fetchLabelEdges,
-	    )
+	    new LabelQuery("Label " + id, id,)
 	).subscribe(
-	    res => {
-		
-		if (res.length > 0) {
+	    lbl => {
+		if (lbl) {
 		    sub.next([
-			"class", res[0].o.value
+			"class", lbl
 		    ]);
 		    sub.complete();
 		    return;
@@ -414,27 +411,17 @@ export class GraphService {
     }
 
     mapToLiteral(p : string, o : string, sub : Subscriber<string[]>) {
-	
+
 	this.query.query(
-	    new TripleQuery(
-		"Label " + p,
-		p, LABEL, undefined,
-		this.fetchLabelEdges,
-	    )
+	    new LabelQuery("Label " + p, p)
 	).subscribe(
-	    res => {
-		
-		if (res.length > 0) {
-		    sub.next([
-			res[0].o.value, o
-		    ]);
+	    lbl => {
+		if (lbl) {
+		    sub.next([lbl, o]);
 		    sub.complete();
 		    return;
 		} else {
-		    sub.next([
-			this.makeLabel(p),
-			o
-		    ]);
+		    sub.next([this.makeLabel(p), o]);
 		    sub.complete();
 		    return;
 		}
