@@ -30,7 +30,6 @@ export class ExpansionsQuery implements Query {
 
 	let query = "";
 
-	query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
 	query += "SELECT DISTINCT ?pred WHERE {\n";
 
 	if (this.inward)

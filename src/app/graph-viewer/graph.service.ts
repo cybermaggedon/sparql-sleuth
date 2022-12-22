@@ -14,6 +14,7 @@ import { CommandService, Direction } from './command.service';
 import { TripleQuery } from '../query/triple-query';
 import { ExpansionsQuery } from '../query/expansion-query';
 import { TextSearchQuery } from '../query/text-search-query';
+import { LabelQuery } from '../query/label-query';
 
 import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
@@ -152,7 +153,7 @@ export class GraphService {
 
     expansionEdges = 25;
 
-    textSearchResults = 25;
+    textSearchResults = 100;
 
     private addNodeSubject = new Subject<AddNodeEvent>;
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
@@ -329,20 +330,13 @@ export class GraphService {
 	n.id = id;
 
 	this.query.query(
-	    new TripleQuery(
-		"Label " + id,
-		id,
-		LABEL,
-		undefined,
-		this.fetchLabelEdges,
-	    )
+	    new LabelQuery("Label " + id, id,)
 	).subscribe(
-	    ev => {
-		try {
-		    n.label = ev[0].o.value;
-		} catch {
+	    lbl => {
+		if (lbl)
+		    n.label = lbl;
+		else
 		    n.label = this.makeLabel(id);
-		}
 		this.addNode(n);
 	    }
 	);
@@ -658,19 +652,13 @@ export class GraphService {
     getLabel(id : string) : Observable<string> {
 
 	return this.query.query(
-	    new TripleQuery(
-		"Label " + id,
-		id, LABEL, undefined,
-		this.fetchLabelEdges,
-	    )
+	    new LabelQuery("Label " + id, id,)
 	).pipe(
 	    map(
 		res => {
-		    if (res.length > 0) {
-			return res[0].o.value;
-		    } else {
-			return this.makeLabel(id);
-		    }
+		    if (res)
+			return res;
+		    return this.makeLabel(id);
 		}
 	    )
 	);

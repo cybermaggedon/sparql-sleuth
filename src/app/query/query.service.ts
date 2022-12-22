@@ -20,6 +20,8 @@ class QueryRequest {
     description() { return this.q.description(); }
 }
 
+const maxConcurrent = 2;
+
 @Injectable({
     providedIn: 'root'
 })
@@ -39,7 +41,7 @@ export class QueryService {
 		    return this.runQuery(qry);
 		},
 		undefined,
-		4,
+		maxConcurrent,
 	    )
 
 	).subscribe(
