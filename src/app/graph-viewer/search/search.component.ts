@@ -13,6 +13,7 @@ export class SearchComponent implements OnInit {
 
     constructor(
 	private graph : GraphService,
+	private searchService : SearchService,
     ) { }
 
     ngOnInit(): void {
@@ -31,7 +32,7 @@ export class SearchComponent implements OnInit {
 	    return;
 	}
 	
-	this.graph.search(text).subscribe(
+	this.searchService.search(text).subscribe(
 	    (res : any) => {
 		this.results = res;
 		this.executed = true;

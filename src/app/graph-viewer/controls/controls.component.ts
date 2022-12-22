@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { CommandService, Direction } from '../command.service';
 import { SelectionService } from '../selection.service';
 import { GraphService, Node, Expansion } from '../graph.service';
+import { ExpansionService } from '../expansion.service';
 import { Query } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
@@ -28,6 +29,7 @@ export class ControlsComponent implements OnInit {
 	private command : CommandService,
 	private select : SelectionService,
 	private graph : GraphService,
+	private expansion : ExpansionService,
 	private router : Router,
 	private query : QueryService,
 	private progress : ProgressService,
@@ -40,7 +42,7 @@ export class ControlsComponent implements OnInit {
 
 		this.expansions = [];
 
-		this.graph.getExpansions(ev.node).subscribe(
+		this.expansion.getExpansions(ev.node).subscribe(
 		    ev => this.expansions = ev
 		);
 
