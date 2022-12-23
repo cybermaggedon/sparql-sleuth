@@ -102,7 +102,7 @@ export class GraphService {
 	);
     }
 
-    fetchEdges = 25;
+    fetchEdges = 40;
 
     relationshipIn(id : string) {
 
