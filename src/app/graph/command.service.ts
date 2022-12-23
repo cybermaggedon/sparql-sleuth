@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Node, Relationship } from './graph';
+import { Node, Relationship } from '../graph/graph';
 
 export enum Direction {
   IN = 0,

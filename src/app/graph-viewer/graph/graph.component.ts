@@ -7,7 +7,7 @@ import {
 import { Network, DataSet } from 'vis-network/standalone';
 
 import { Triple } from '../../query/triple';
-import { EventService } from '../event.service';
+import { EventService } from '../../graph/event.service';
 
 @Component({
     selector: 'graph',

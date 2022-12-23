@@ -3,11 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
-import { CommandService, Direction } from '../command.service';
-import { SelectionService } from '../selection.service';
-import { Node, Relationship } from '../graph';
-import { EventService } from '../event.service';
-import { RelationshipService } from '../relationship.service';
+import { CommandService, Direction } from '../../graph/command.service';
+import { Node, Relationship } from '../../graph/graph';
+import { EventService } from '../../graph/event.service';
+import { RelationshipService } from '../../graph/relationship.service';
 import { Query } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
@@ -28,7 +27,6 @@ export class ControlsComponent implements OnInit {
 
     constructor(
 	private command : CommandService,
-	private select : SelectionService,
 	private relationship : RelationshipService,
 	private router : Router,
 	private query : QueryService,

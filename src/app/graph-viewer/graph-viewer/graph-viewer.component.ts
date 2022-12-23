@@ -3,9 +3,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { CommandService } from '../command.service';
-import { PropertiesService, Properties } from '../properties.service';
-import { EventService } from '../event.service';
+import { CommandService } from '../../graph/command.service';
+import { PropertiesService, Properties } from '../../graph/properties.service';
+import { EventService } from '../../graph/event.service';
 
 enum BottomPaneMode {
     HELP,

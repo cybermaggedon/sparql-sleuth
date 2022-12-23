@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { GraphService } from '../graph.service';
-import { SearchService } from '../search.service';
+import { GraphService } from '../../graph/graph.service';
+import { SearchService } from '../../graph/search.service';
 
 @Component({
     selector: 'search',

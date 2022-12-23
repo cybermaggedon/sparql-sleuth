@@ -1,8 +1,8 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 
-import { GraphService } from '../graph.service';
-import { Properties } from '../properties.service';
+import { GraphService } from '../../graph/graph.service';
+import { Properties } from '../../graph/properties.service';
 
 @Component({
     selector: 'detail',
