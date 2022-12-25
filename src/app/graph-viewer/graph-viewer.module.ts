@@ -2,6 +2,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { ButtonModule } from 'primeng/button';
+
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
 import { ControlsComponent } from './controls/controls.component';
@@ -20,6 +22,7 @@ import { InfoComponent } from './info/info.component';
     ],
     imports: [
 	BrowserModule,
+	ButtonModule,
     ],
     exports: [
 	GraphViewerComponent,
