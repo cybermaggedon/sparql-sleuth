@@ -20,6 +20,18 @@ export class DetailComponent implements OnInit {
 
     get properties() { return this.allProperties.properties; }
 
+    get table() {
+	let rows : {key: string, value: string}[] = [];
+
+	for(let key in this.properties) {
+	    rows.push({
+		key: key, value: this.properties[key]
+	    });
+	}
+	
+	return rows;
+    }
+
     constructor(
 	private graph : GraphService,
     ) { }

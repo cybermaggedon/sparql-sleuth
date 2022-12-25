@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -23,6 +25,8 @@ import { InfoComponent } from './info/info.component';
     imports: [
 	BrowserModule,
 	ButtonModule,
+	TableModule,
+	InputTextModule,
     ],
     exports: [
 	GraphViewerComponent,

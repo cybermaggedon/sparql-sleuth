@@ -4,6 +4,13 @@ import { Component, OnInit } from '@angular/core';
 import { GraphService } from '../../graph/graph.service';
 import { SearchService } from '../../graph/search.service';
 
+class Row {
+    id : string = "";
+    entity : string = "";
+    property : string = "";
+    value : string = "";
+};
+
 @Component({
     selector: 'search',
     templateUrl: './search.component.html',
@@ -19,7 +26,7 @@ export class SearchComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    results : string[][] = [];
+    results : Row[] = [];
 
     executed : boolean = false;
 
@@ -34,7 +41,18 @@ export class SearchComponent implements OnInit {
 	
 	this.searchService.search(text).subscribe(
 	    (res : any) => {
-		this.results = res;
+
+		this.results = [];
+
+		for (let row of res) {
+		    let r = new Row();
+		    r.id = row[0];
+		    r.entity = row[1];
+		    r.property = row[3];
+		    r.value = row[4];
+		    this.results.push(r);
+		}
+
 		this.executed = true;
 	    }		
 	);
