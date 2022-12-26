@@ -5,16 +5,21 @@
 
   <div>
 
-    <span class="p-input-icon-left">
-      <i class="pi pi-search"></i>
-      <input type="text" pInputText placeholder="Search" #searchText/>
-    </span>
+    <form [formGroup]="searchForm" (ngSubmit)="submit()">
+      
+      <span class="p-input-icon-left">
+	<i class="pi pi-search"></i>
+	<input type="text" pInputText placeholder="Search"
+	       formControlName="search"/>
+      </span>
 
-    <button (click)="search(searchText.value)"
-	    pButton pRipple type="button" class="p-button-raised p-button-text"
-	    >
-      Search
-    </button>
+      <button type="submit"
+	      pButton pRipple class="p-button-raised p-button-text"
+	      >
+	Search
+      </button>
+
+    </form>
 
   </div>
 

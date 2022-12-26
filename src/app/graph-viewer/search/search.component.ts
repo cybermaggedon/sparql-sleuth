@@ -1,6 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 
+import { FormBuilder } from '@angular/forms';
+
 import { GraphService } from '../../graph/graph.service';
 import { SearchService } from '../../graph/search.service';
 
@@ -21,7 +23,12 @@ export class SearchComponent implements OnInit {
     constructor(
 	private graph : GraphService,
 	private searchService : SearchService,
+	private formBuilder: FormBuilder,
     ) { }
+
+    searchForm = this.formBuilder.group({
+	search: '',
+    });
 
     ngOnInit(): void {
     }
@@ -29,6 +36,12 @@ export class SearchComponent implements OnInit {
     results : Row[] = [];
 
     executed : boolean = false;
+
+    submit() : void {
+	let term = this.searchForm.value.search;
+	if (term)
+	    this.search(term);
+    }
 
     search(text : string) {
 

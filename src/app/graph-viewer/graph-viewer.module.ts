@@ -1,6 +1,8 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -27,6 +29,8 @@ import { InfoComponent } from './info/info.component';
 	ButtonModule,
 	TableModule,
 	InputTextModule,
+	FormsModule,
+	ReactiveFormsModule,
     ],
     exports: [
 	GraphViewerComponent,
