@@ -19,7 +19,7 @@ import { LabelQuery } from '../query/label-query';
 import { Relationship } from './graph';
 import { EventService } from './event.service';
 
-import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 @Injectable({
     providedIn: 'root'
@@ -183,7 +183,7 @@ export class GraphService {
 		// Edge points to object
 
 		// Ignore relation links, point to e.g. a web resource
-		if (triple.p == RELATION) continue;
+		if (triple.p == SEE_ALSO) continue;
 
 		// Ignore thumbnail links, point to a thumbnail image
 		if (triple.p == THUMBNAIL) continue;

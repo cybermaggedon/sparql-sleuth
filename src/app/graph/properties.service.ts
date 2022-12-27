@@ -18,7 +18,7 @@ import { GraphService } from './graph.service';
 import { Node } from './graph';
 import { EventService } from './event.service';
 
-import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 export class Properties {
     properties : { [key : string] : string } = {};
@@ -125,7 +125,7 @@ export class PropertiesService {
 			sub.complete();
 			return;
 
-		    } else if (row.p == RELATION) {
+		    } else if (row.p == SEE_ALSO) {
 
 			// link
 			sub.next(["link", row.o.value]);

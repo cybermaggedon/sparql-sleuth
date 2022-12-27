@@ -38,21 +38,24 @@ export class TripleQuery implements Query {
 	query += "  ?s ?p ?o .\n";
 
 	if (this.s) {
-	    if (this.s.startsWith("http://"))
+	    if (this.s.startsWith("http://") ||
+		this.s.startsWith("https://"))
 		query += "  FILTER(?s = <" + this.s + ">) .\n";
 	    else
 		query += "  FILTER(?s = \"" + this.s + "\") .\n";
 	}
 
 	if (this.p) {
-	    if (this.p.startsWith("http://"))
+	    if (this.p.startsWith("http://") ||
+		this.p.startsWith("https://"))
 		query += "  FILTER(?p = <" + this.p + ">) .\n";
 	    else
 		query += "  FILTER(?p = \"" + this.p + "\") .\n";
 	}
 
 	if (this.o) {
-	    if (this.o.startsWith("http://"))
+	    if (this.o.startsWith("http://") ||
+		this.o.startsWith("https://"))
 		query += "  FILTER(?o = <" + this.o + ">) .\n";
 	    else
 		query += "  FILTER(?o = \"" + this.o + "\") .\n";

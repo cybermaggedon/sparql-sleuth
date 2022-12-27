@@ -11,7 +11,7 @@ import { RelationshipQuery } from '../query/relationship-query';
 import { GraphService} from './graph.service';
 import { Node, Edge, Relationship } from './graph';
 
-import { RELATION, THUMBNAIL, LABEL, IS_A } from '../rdf';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 @Injectable({
     providedIn: 'root'
@@ -43,7 +43,7 @@ export class RelationshipService {
 		v.map(
 		    v => v.value
 		).filter(
-		    v => ((v != RELATION) && v != THUMBNAIL)
+		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
 		)
 	    )
 	);
@@ -65,7 +65,7 @@ export class RelationshipService {
 		v.map(
 		    v => v.value
 		).filter(
-		    v => ((v != RELATION) && v != THUMBNAIL)
+		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
 		)
 	    )
 	);
