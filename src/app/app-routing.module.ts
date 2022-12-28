@@ -9,9 +9,13 @@ import { GraphViewerComponent
 import { QueryEditorComponent
        } from './query-editor/query-editor/query-editor.component';
 
+import { TableViewerComponent
+       } from './table-viewer/table-viewer/table-viewer.component';
+
 const routes: Routes = [
     { path: 'graph', component: GraphViewerComponent },
     { path: 'editor', component: QueryEditorComponent },
+    { path: 'table', component: TableViewerComponent },
     { path: '', redirectTo: '/graph', pathMatch: 'full' },
 ];
 
