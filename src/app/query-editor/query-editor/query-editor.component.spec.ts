@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TechExplorerComponent } from './tech-explorer.component';
+import { QueryEditorComponent } from './query-editor.component';
 
-describe('TechExplorerComponent', () => {
-  let component: TechExplorerComponent;
-  let fixture: ComponentFixture<TechExplorerComponent>;
+describe('QueryEditorComponent', () => {
+  let component: QueryEditorComponent;
+  let fixture: ComponentFixture<QueryEditorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TechExplorerComponent ]
+      declarations: [ QueryEditorComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TechExplorerComponent);
+    fixture = TestBed.createComponent(QueryEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

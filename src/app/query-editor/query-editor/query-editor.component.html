@@ -1,0 +1,47 @@
+  
+<div class="box info">
+
+  <h2>SPARQL query</h2>
+
+  <div>
+
+    <form [formGroup]="queryForm" (ngSubmit)="submit()">
+      
+      <span class="p-float-label">
+	<textarea id="query" rows="12" cols="60" pInputTextarea
+		  formControlName="query">
+	</textarea>
+	<label for="query">Enter SPARQL query</label>
+      </span>
+
+      <button type="submit"
+	      pButton pRipple class="p-button-raised p-button-text">
+	Search
+      </button>
+      
+    </form>
+
+  </div>
+
+  <div *ngIf="rows.length > 0">
+    <h2>Results</h2>
+    <p-table [value]="rows" styleClass="p-datatable-striped"
+	     [tableStyle]="{'min-width': '20rem'}" >
+      <ng-template pTemplate="header">
+	<tr>
+          <th *ngFor="let v of vars">{{v}}</th>
+	</tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+	<tr>
+          <td *ngFor="let v of vars">
+	    {{row[v].value}}
+	  </td>
+	</tr>
+      </ng-template>
+    </p-table>
+
+  </div>
+
+</div>
+
