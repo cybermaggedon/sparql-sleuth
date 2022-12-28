@@ -9,7 +9,7 @@ import { EventService } from '../../graph/event.service';
 import { RelationshipService } from '../../graph/relationship.service';
 import { Query } from '../../query/query';
 import { QueryService } from '../../query/query.service';
-import { ProgressService, ProgressEvent, Activity } from '../../progress.service';
+import { ProgressService, ProgressEvent } from '../../progress.service';
 
 @Component({
   selector: 'controls',
