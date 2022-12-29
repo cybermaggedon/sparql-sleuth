@@ -241,12 +241,6 @@ export class PropertiesService {
 		    return res;
 		}
 	    ),
-	    map(
-		x => {
-		    console.log(x);
-		    return x;
-		}
-	    ),
 	);
     }
 
