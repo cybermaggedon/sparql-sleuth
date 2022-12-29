@@ -7,9 +7,19 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { Value } from '../query/triple';
 import { QueryService } from '../query/query.service';
 import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';
+import { TransformService } from '../query/transform.service';
+
+export interface SearchResult {
+    s : Value,
+    p : Value,
+    o : Value,
+    slabel : Value,
+    plabel : Value,
+};
 
 @Injectable({
     providedIn: 'root'
@@ -19,115 +29,39 @@ export class SearchService {
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
+	private transform : TransformService,
     ) {
     }
 
     textSearchResults = 100;
 
-    search(text : string) : Observable<string[][]> {
+    search(text : string) : Observable<SearchResult[]> {
 
-	let phase1 = this.query.query(
-	    new TextSearchQuery(
-		"Search " + text,
-		text,
-		this.textSearchResults,
-	    )
-	);
-
-	let phase2 = new Observable<string[][]>(
-
-	    sub => {
-
-		phase1.subscribe(
-
-		    res => {
-
-			let todo = [];
-
-			for (let row of res) {
-
-			    todo.push(
-				this.graph.getLabel(row.s).pipe(
-				    map(
-					lbl => [row.s, lbl, row.p, row.o.value]
-				    )
-				)
-			    );
-
-			}
-
-			// Empty set, return empty properties.
-			// Also, forkJoin on empty set is bad.
-			if (todo.length == 0) {
-			    sub.next([]);
-			    return;
-			}
-
-			forkJoin(todo).subscribe(
-			    res => {
-				sub.next(res);
-			    }
-			);
-
+	return new TextSearchQuery(
+	    "Search " + text,
+	    text,
+	    this.textSearchResults,
+	).run(
+	    this.query
+	).pipe(
+	    this.transform.queryResultToArray(),
+	    map(x => x.data),
+	    this.transform.mapAddLabel(0),
+	    this.transform.mapAddLabel(1),
+	    map(x =>
+		x.map(
+		    y => {
+			return {
+			    s: y[0],
+			    p: y[1],
+			    o: y[2],
+			    slabel: y[3],
+			    plabel: y[4],
+			};
 		    }
-
 		)
-
-	    }
-
-	    
-
+	    ),
 	);
-
-	let phase3 = new Observable<string[][]>(
-
-	    sub => {
-
-		phase2.subscribe(
-
-		    res => {
-
-			let todo = [];
-
-			for (let row of res) {
-
-			    todo.push(
-				this.graph.getLabel(row[2]).pipe(
-				    map(
-					lbl => [
-					    row[0], row[1], row[2], lbl,
-					    row[3]
-					]
-				    )
-				)
-			    );
-
-			}
-
-			// Empty set, return empty properties.
-			// Also, forkJoin on empty set is bad.
-			if (todo.length == 0) {
-			    sub.next([]);
-			    return;
-			}
-
-			forkJoin(todo).subscribe(
-			    res => {
-				sub.next(res);
-			    }
-			);
-
-		    }
-
-		)
-
-	    }
-
-	    
-
-	);
-
-	return phase3;
 
     }
 

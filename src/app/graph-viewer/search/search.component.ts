@@ -5,7 +5,7 @@ import { FormBuilder } from '@angular/forms';
 
 import { Uri } from '../../query/triple';
 import { GraphService } from '../../graph/graph.service';
-import { SearchService } from '../../graph/search.service';
+import { SearchService, SearchResult } from '../../graph/search.service';
 
 class Row {
     id : string = "";
@@ -60,10 +60,10 @@ export class SearchComponent implements OnInit {
 
 		for (let row of res) {
 		    let r = new Row();
-		    r.id = row[0];
-		    r.entity = row[1];
-		    r.property = row[3];
-		    r.value = row[4];
+		    r.id = row.s.value();
+		    r.entity = row.slabel.value();
+		    r.property = row.plabel.value();
+		    r.value = row.o.value();
 		    this.results.push(r);
 		}
 

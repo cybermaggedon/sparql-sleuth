@@ -47,7 +47,7 @@ export class TransformService {
 		if (!(x[id].is_uri()))
 		    throw new Error("Can't call appendLabel on non-URI");
 
-		new LabelQuery("Label " + x[id], x[id] as Uri).run(
+		new LabelQuery("Label " + x[id].value(), x[id] as Uri).run(
 		    this.query
 		).subscribe(
 		    (label : string | null) => {
@@ -126,14 +126,14 @@ export class TransformService {
 	return map(
 	    (qr : QueryResult) => {
 
-		let trs : string[][] = [];
+		let trs : Value[][] = [];
 
 		for(let qrow of qr.data) {
 
-		    let row : string[] = [];
+		    let row : Value[] = [];
 
 		    for (let v of qr.vars) {
-			row.push(qrow[v].value());
+			row.push(qrow[v]);
 		    }
 
 		    trs.push(row);

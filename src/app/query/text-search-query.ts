@@ -1,5 +1,8 @@
 
-import { Query } from './query';
+import { Observable } from 'rxjs';
+
+import { Query, QueryResult } from './query';
+import { QueryService } from './query.service';
 import { Value, Uri, Literal, Triple } from './triple';
 
 export class TextSearchQuery implements Query {
@@ -44,6 +47,10 @@ export class TextSearchQuery implements Query {
 
 	return "query=" + query + "&output=json";
 
+    }
+
+    run(q : QueryService) : Observable<QueryResult> {
+	return q.query(this);
     }
 
     decode(res : any) : any{

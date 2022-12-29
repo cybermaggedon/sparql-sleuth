@@ -1,11 +1,14 @@
 
-import { Query } from './query';
+import { Observable, map } from 'rxjs';
+
+import { Query, QueryResult } from './query';
 import { Value } from './triple';
+import { QueryService } from './query.service';
 
 export class RelationshipQuery implements Query {
     constructor(
 	desc : string,
-	id : string,
+	id : Value,
 	inward : boolean,
 	limit : number = 100
     ) {
@@ -14,13 +17,13 @@ export class RelationshipQuery implements Query {
 	this.desc = desc;
 	this.limit = limit;
     }
-    id : string;
+    id : Value;
     inward : boolean;
     desc : string;
     limit : number = 100;
     description() { return this.desc; }
     hash() : string {
-	return "eq " +  this.id + " " + this.inward + " " + this.limit;
+	return "eq " +  this.id.hash() + " " + this.inward + " " + this.limit;
     }
 
     
@@ -33,9 +36,9 @@ export class RelationshipQuery implements Query {
 	query += "SELECT DISTINCT ?pred WHERE {\n";
 
 	if (this.inward)
-	    query += "  ?s ?pred <" + this.id + "> . \n";
+	    query += "  ?s ?pred " + this.id.term() + " . \n";
 	else {
-	    query += "  <" + this.id + "> ?pred ?o . \n";
+	    query += "  " + this.id.term() + " ?pred ?o . \n";
 	    
 	    // Only want links to URIs, not literals.
 	    // FIXME, filter out thumbnails and references?
@@ -51,18 +54,22 @@ export class RelationshipQuery implements Query {
 
     }
 
-    decode(res : any) : any {
-/*
+    run(q : QueryService) : Observable<Value[]> {
+	return q.query(this).pipe(
+	    map(x => this.decode(x))
+	);
+    }
+
+    decode(res : QueryResult) : any {
+
 	let values : Value[] = [];
 
-	for (let row of res.results.bindings) {
-	    let pred = new Value(row.pred.value, true);
+	for (let row of res.data) {
+	    let pred = row["pred"];
 	    values.push(pred);
 	}
 
 	return values;
-*/
-return res;
     }
 	
 }

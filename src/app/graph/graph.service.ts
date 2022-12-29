@@ -155,7 +155,7 @@ export class GraphService {
 		new TripleQuery(
 		    "Relationships to " + node.id,
 		    undefined,
-		    new Uri(rel.id),
+		    rel.id,
 		    new Uri(node.id),
 		    this.fetchEdges,
 		)
@@ -171,7 +171,7 @@ export class GraphService {
 		new TripleQuery(
 		    "Relationships from " + node.id,
 		    new Uri(node.id),
-		    new Uri(rel.id),
+		    rel.id,
 		    undefined,
 		    this.fetchEdges,
 		)

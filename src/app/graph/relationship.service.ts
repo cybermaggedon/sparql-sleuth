@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, forkJoin, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Value } from '../query/triple';
+import { Value, Uri } from '../query/triple';
 import { QueryService } from '../query/query.service';
 import { CommandService } from './command.service';
 
@@ -28,21 +28,16 @@ export class RelationshipService {
 
     relationshipEdges = 25;
 
-    getRelationshipsIn(node : Node) {
+    getRelationshipsIn(node : Node) : Observable<Value[]> {
 
-	let qry = this.query.query(
-	    new RelationshipQuery(
-		"Relationships to " + node.id, node.id, true,
-		this.relationshipEdges
-	    )
-	);
-
-	return qry.pipe(
+    	return new RelationshipQuery(
+	    "Relationships to " + node.id, new Uri(node.id), true,
+	    this.relationshipEdges
+	).run(
+	    this.query
+	).pipe(
 	    map(
-		(v : Value[]) =>
-		v.map(
-		    v => v.value
-		).filter(
+		(v : Value[]) => v.filter(
 		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
 		)
 	    )
@@ -50,21 +45,16 @@ export class RelationshipService {
 
     }
 
-    getRelationshipsOut(node : Node) {
+    getRelationshipsOut(node : Node) : Observable<Value[]> {
 
-	let qry = this.query.query(
-	    new RelationshipQuery(
-		"Relationships from " + node.id, node.id, false,
-		this.relationshipEdges
-	    )
-	);
-
-	return qry.pipe(
+    	return new RelationshipQuery(
+	    "Relationships from " + node.id, new Uri(node.id), false,
+	    this.relationshipEdges
+	).run(
+	    this.query
+	).pipe(
 	    map(
-		(v : Value[]) =>
-		v.map(
-		    v => v.value
-		).filter(
+		(v : Value[]) => v.filter(
 		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
 		)
 	    )
@@ -89,20 +79,24 @@ export class RelationshipService {
 		    "out": outw,
 		}).pipe(
 		    map(
-			(res : any) => {
+			(res : { [key : string] : Value[] }) => {
 			
 			    let exps : Relationship[] = [];
 			    
 			    for (let i of res["in"]) {
 				let exp = new Relationship();
-				exp.id = i;
+
+				// Assumption
+				exp.id = i as Uri;
 				exp.inward = true;
 				exps.push(exp);
 			    }
 
 			    for (let i of res["out"]) {
 				let exp = new Relationship();
-				exp.id = i;
+
+				// Assumption
+				exp.id = i as Uri;
 				exp.inward = false;
 				exps.push(exp);
 			    }
