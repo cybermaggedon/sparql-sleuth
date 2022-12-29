@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
     BehaviorSubject, Subject, Observable, forkJoin, Subscriber, of,
-    combineLatest
+    combineLatest, mergeMap
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -207,6 +207,73 @@ export class PropertiesService {
 
 	);
 
+    }
+
+    makeLabel(label : string) {
+
+	if (label.startsWith("http://"))
+            label = label.substr(label.lastIndexOf("/") + 1);
+
+	if (label.lastIndexOf("#") >= 0)
+            label = label.substr(label.lastIndexOf("#") + 1);
+
+	if (label.length > 20)
+	    label = label.substring(0, 15);
+
+	return label;
+
+    }
+
+    appendLabel(x : string[], id : number) : Observable<string[]> {
+	return new Observable<string[]>(
+	    sub => {
+		this.query.query(
+		    new LabelQuery("Label " + x[id], x[id])
+		).subscribe(label => {
+		    if (!label) label = this.makeLabel(x[id]);
+		    sub.next(x.concat(label));
+		    sub.complete();
+		});
+	    }
+	);
+    }
+    
+    mapAddLabel(id : number) {
+	return mergeMap((x : any[]) => {
+	    let res : any[] = [];
+	    for (let inp of x) {
+		res.push(this.appendLabel(inp, id));
+	    }
+	    return forkJoin(res);
+	});
+    }
+
+    getProps(node : Node) {
+	
+	return this.query.query(
+	    new TripleQuery(
+		"Fetch " + node.id,
+		node.id,
+		undefined,
+		undefined,
+		this.propertyEdges,
+	    )
+	).pipe(
+	    map(
+		x => x.map((y : any) => [y.p, y.o.value])
+	    ),
+	    this.mapAddLabel(0),
+	    this.mapAddLabel(1),
+	    map(
+		x => {
+		    let res : any = {};
+		    for (let row of x) {
+			res[row[2]] = row[3];
+		    }
+		    return res;
+		}
+	    )
+	);
     }
 
 }
