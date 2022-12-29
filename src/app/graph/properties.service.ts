@@ -248,7 +248,7 @@ export class PropertiesService {
 	});
     }
 
-    getProps(node : Node) {
+    getProps(node : Node) : Observable<string[][]> {
 	
 	return this.query.query(
 	    new TripleQuery(
@@ -260,7 +260,7 @@ export class PropertiesService {
 	    )
 	).pipe(
 	    map(
-		x => x.map((y : any) => [y.p, y.o.value])
+		x => x.map((y : any) => [y.p.value(), y.o.value()])
 	    ),
 	    this.mapAddLabel(0),
 	    this.mapAddLabel(1),

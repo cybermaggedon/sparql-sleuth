@@ -1,13 +1,13 @@
 
-import { Query } from './query';
+import { Query, QueryResult } from './query';
 import { Triple, Uri, Value } from './triple';
 
 export class TripleQuery implements Query {
     constructor(
 	desc : string,
-	s? : string,
-	p? : string,
-	o? : Uri | string,
+	s? : Value,
+	p? : Value,
+	o? : Value,
 	limit : number = 100
     ) {
 	this.s = s;
@@ -16,14 +16,17 @@ export class TripleQuery implements Query {
 	this.desc = desc;
 	this.limit = limit;
     }
-    s? : string;
-    p? : string;
-    o? : Uri | string;
+    s? : Value;
+    p? : Value;
+    o? : Value;
     desc : string;
     limit : number = 100;
     description() { return this.desc; }
     hash() : string {
-	return "tq " +  this.s + " " + this.p + " " + this.o + " " +
+	return "tq " +
+	    (this.s ? this.s.hash() : "-") + " " +
+	    (this.p ? this.p.hash() : "-") + " " +
+	    (this.o ? this.o.hash() : "-") + " " +
 	    this.limit;
     }
 
@@ -38,27 +41,15 @@ export class TripleQuery implements Query {
 	query += "  ?s ?p ?o .\n";
 
 	if (this.s) {
-	    if (this.s.startsWith("http://") ||
-		this.s.startsWith("https://"))
-		query += "  FILTER(?s = <" + this.s + ">) .\n";
-	    else
-		query += "  FILTER(?s = \"" + this.s + "\") .\n";
+	    query += "  FILTER(?s = " + this.s.term() + ") .\n";
 	}
 
 	if (this.p) {
-	    if (this.p.startsWith("http://") ||
-		this.p.startsWith("https://"))
-		query += "  FILTER(?p = <" + this.p + ">) .\n";
-	    else
-		query += "  FILTER(?p = \"" + this.p + "\") .\n";
+	    query += "  FILTER(?p = " + this.p.term() + ") .\n";
 	}
 
 	if (this.o) {
-	    if (this.o.startsWith("http://") ||
-		this.o.startsWith("https://"))
-		query += "  FILTER(?o = <" + this.o + ">) .\n";
-	    else
-		query += "  FILTER(?o = \"" + this.o + "\") .\n";
+	    query += "  FILTER(?o = " + this.o.term() + ") .\n";
 	}
 
 	query += "}\n";
@@ -67,32 +58,11 @@ export class TripleQuery implements Query {
 	query = encodeURIComponent(query);
 	return "query=" + query + "&output=json";
 
-    }
+    };
 
-    decode(res : any) : any{
-	
-	let triples : Triple[] = [];
-	
-	for (let row of res.results.bindings) {
+    decode(res : QueryResult) : any {
 
-	    let s = row.s.value;
-
-	    let p = row.p.value;
-
-	    let o;
-
-	    if (row.o.type == "uri")
-		o = new Value(row.o.value, true);
-	    else
-		o = new Value(row.o.value, false);
-
-	    let triple = new Triple(s, p, o);
-
-	    triples.push(triple);
-
-	}
-
-	return triples;
+	return res;
 
     }
 

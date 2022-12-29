@@ -52,7 +52,7 @@ export class RelationshipQuery implements Query {
     }
 
     decode(res : any) : any {
-
+/*
 	let values : Value[] = [];
 
 	for (let row of res.results.bindings) {
@@ -61,7 +61,8 @@ export class RelationshipQuery implements Query {
 	}
 
 	return values;
-
+*/
+return res;
     }
 	
 }

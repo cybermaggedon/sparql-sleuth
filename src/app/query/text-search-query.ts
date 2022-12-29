@@ -1,6 +1,6 @@
 
 import { Query } from './query';
-import { Value, Triple } from './triple';
+import { Value, Uri, Literal, Triple } from './triple';
 
 export class TextSearchQuery implements Query {
     constructor(
@@ -47,30 +47,7 @@ export class TextSearchQuery implements Query {
     }
 
     decode(res : any) : any{
-	
-	let triples : Triple[] = [];
-	
-	for (let row of res.results.bindings) {
-
-	    let s = row.s.value;
-
-	    let p = row.p.value;
-
-	    let o;
-
-	    if (row.o.type == "uri")
-		o = new Value(row.o.value, true);
-	    else
-		o = new Value(row.o.value, false);
-
-	    let triple = new Triple(s, p, o);
-
-	    triples.push(triple);
-
-	}
-
-	return triples;
-
+      return res;
     }
 
 }

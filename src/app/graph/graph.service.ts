@@ -8,9 +8,10 @@ import {
 import { map } from 'rxjs/operators';
 
 import { Node, Edge } from './graph';
-import { Triple, Value, Uri } from '../query/triple';
+import { Triple, Literal, Value, Uri } from '../query/triple';
 import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
+import { TransformService } from '../query/transform.service';
 
 import { TripleQuery } from '../query/triple-query';
 import { TextSearchQuery } from '../query/text-search-query';
@@ -30,6 +31,7 @@ export class GraphService {
 	private command : CommandService,
 	private query : QueryService,
 	private events : EventService,
+	private transform : TransformService,
     ) {
 
 	this.events.recentreEvents().subscribe(
@@ -91,10 +93,12 @@ export class GraphService {
 	    new TripleQuery(
 		"Acquire schema",
 		undefined,
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-		"http://www.w3.org/2000/01/rdf-schema#Class",
+		new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+		new Uri("http://www.w3.org/2000/01/rdf-schema#Class"),
 		50,
 	    )
+	).pipe(
+	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
 		this.includeTriples(result);
@@ -111,9 +115,11 @@ export class GraphService {
 		"Relationship in " + id,
 		undefined,
 		undefined,
-		id,
+		new Uri(id),
 		this.fetchEdges,
 	    )
+	).pipe(
+	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
 		this.includeTriples(result);
@@ -127,11 +133,13 @@ export class GraphService {
 	this.query.query(
 	    new TripleQuery(
 		"Relationship out " + id,
-		id,
+		new Uri(id),
 		undefined,
 		undefined,
 		this.fetchEdges,
 	    )
+	).pipe(
+	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
 		this.includeTriples(result);
@@ -147,10 +155,12 @@ export class GraphService {
 		new TripleQuery(
 		    "Relationships to " + node.id,
 		    undefined,
-		    rel.id,
-		    node.id,
+		    new Uri(rel.id),
+		    new Uri(node.id),
 		    this.fetchEdges,
 		)
+	    ).pipe(
+		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
 		    this.includeTriples(result);
@@ -160,11 +170,13 @@ export class GraphService {
 	    this.query.query(
 		new TripleQuery(
 		    "Relationships from " + node.id,
-		    node.id,
-		    rel.id,
+		    new Uri(node.id),
+		    new Uri(rel.id),
 		    undefined,
 		    this.fetchEdges,
 		)
+	    ).pipe(
+		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
 		    this.includeTriples(result);
@@ -178,7 +190,7 @@ export class GraphService {
 
 	for (let triple of triples) {
 
-	    if (triple.o.uri) {
+	    if (triple.o.is_uri()) {
 
 		// Edge points to object
 
@@ -189,8 +201,8 @@ export class GraphService {
 		if (triple.p == THUMBNAIL) continue;
 
 		this.includeNode(triple.s);
-		this.includeNode(triple.o.value);
-		this.includeEdge(triple.s, triple.p, triple.o.value);
+		this.includeNode(triple.o);
+		this.includeEdge(triple.s, triple.p, triple.o);
 
 	    } else {
 
@@ -202,13 +214,13 @@ export class GraphService {
 	
     }
     
-    includeNode(id : string) {
+    includeNode(uri : Uri) {
 
 	let n = new Node();
-	n.id = id;
+	n.id = uri.value();
 
 	this.query.query(
-	    new LabelQuery("Label " + id, id,)
+	    new LabelQuery("Label " + id, new Uri(id))
 	).subscribe(
 	    lbl => {
 		if (lbl)
@@ -221,10 +233,10 @@ export class GraphService {
 	
     }
 
-    includeEdge(from : string, rel : string, to : string) {
+    includeEdge(from : Uri, rel : Uri, to : Uri) {
 	
 	let link = new Edge();
-	link.id = from + "//" + rel + "//" + to;
+	link.id = from.value() + "//" + rel.value() + "//" + to.value();
 	link.from = from;
 	link.to = to;
 

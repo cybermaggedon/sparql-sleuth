@@ -5,6 +5,7 @@ import { FormBuilder } from '@angular/forms';
 import { RawQuery } from '../../query/raw-query';
 import { QueryService } from '../../query/query.service';
 import { ProgressService, ProgressEvent } from '../../progress.service';
+import { TransformService } from '../../query/transform.service';
 
 @Component({
     selector: 'app-query-editor',
@@ -16,6 +17,7 @@ export class QueryEditorComponent implements OnInit {
     constructor(
 	private formBuilder: FormBuilder,
 	private queryService : QueryService,
+	private transform : TransformService,
 	private progress : ProgressService,
     ) {
 
@@ -41,7 +43,7 @@ export class QueryEditorComponent implements OnInit {
 
     }
 
-    rows : any[] = [];
+    rows : { [key : string] : string }[] = [];
     vars : string[] = [];
 
     info1 = "";
@@ -61,10 +63,12 @@ export class QueryEditorComponent implements OnInit {
 
 	let qry = new RawQuery("SPARQL query", this.queryForm.value.query);
 
-	this.queryService.query(qry).subscribe(
+	this.queryService.query(qry).pipe(
+	    this.transform.queryResultToStrings(),
+	).subscribe(
 	    ev => {
 		this.vars = ev.vars;
-		this.rows = ev.rows;
+		this.rows = ev.data;
 	    }
 	);
 

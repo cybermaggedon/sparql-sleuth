@@ -1,5 +1,8 @@
 
-import { Query } from './query';
+import { Observable, map } from 'rxjs';
+
+import { Query, QueryResult } from './query';
+import { QueryService } from './query.service';
 import { Triple, Uri, Value } from './triple';
 
 export class RawQuery implements Query {
@@ -27,34 +30,15 @@ export class RawQuery implements Query {
 
     }
 
-    decode(res : any) : any{
+    run(q : QueryService) : Observable<QueryResult> {
+	return q.query(this).pipe(
+	    map(x => this.decode(x))
+	);
+    }
 
-	let vars = res.head.vars;
-
-	let ret : any[] = [];
-
-	for (let row of res.results.bindings) {
-
-	    let obj : any = {};
-	    
-	    for (let k in row) {
-
-		if (row[k].type == "uri")
-		    obj[k] = new Value(row[k].value, true);
-		else
-		    obj[k] = new Value(row[k].value, false);
-
-	    }
-
-	    ret.push(obj);
-
-	}
-
-	return {
-	    vars: vars,
-	    rows: ret,
-	};
-
+    // FIXME: Not needed?
+    decode(res : QueryResult) : QueryResult {
+	return res;
     }
 
 }

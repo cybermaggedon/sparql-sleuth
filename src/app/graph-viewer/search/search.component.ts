@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { FormBuilder } from '@angular/forms';
 
+import { Uri } from '../../query/triple';
 import { GraphService } from '../../graph/graph.service';
 import { SearchService } from '../../graph/search.service';
 
@@ -73,7 +74,7 @@ export class SearchComponent implements OnInit {
     }
 
     select(id : string) {
-	this.graph.includeNode(id);
+	this.graph.includeNode(new Uri(id));
     }
 
 }

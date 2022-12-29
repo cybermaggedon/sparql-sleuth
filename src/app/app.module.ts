@@ -7,9 +7,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { GraphViewerModule } from './graph-viewer/graph-viewer.module';
+//import { GraphViewerModule } from './graph-viewer/graph-viewer.module';
 import { QueryEditorModule } from './query-editor/query-editor.module';
-import { TableViewerModule } from './table-viewer/table-viewer.module';
+//import { TableViewerModule } from './table-viewer/table-viewer.module';
 
 @NgModule({
     declarations: [
@@ -21,9 +21,10 @@ import { TableViewerModule } from './table-viewer/table-viewer.module';
 	BrowserAnimationsModule,
 	DragDropModule,
 	HttpClientModule,
-	GraphViewerModule,
+
+//	GraphViewerModule,
 	QueryEditorModule,
-	TableViewerModule,
+//	TableViewerModule,
     ],
     providers: [],
     bootstrap: [
