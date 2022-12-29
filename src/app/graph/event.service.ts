@@ -19,7 +19,7 @@ export class AddNodeEvent {
 };
 
 export class RemoveNodeEvent {
-    id : string = "";
+    id : Uri = new Uri("");
 };
 
 export class AddEdgeEvent {
@@ -27,7 +27,7 @@ export class AddEdgeEvent {
 };
 
 export class RemoveEdgeEvent {
-    id : string = "";
+    id : Uri = new Uri("");
 };
 
 export class NodeSelectEvent {
@@ -35,7 +35,7 @@ export class NodeSelectEvent {
 };
 
 export class RecentreEvent {
-    id : string = "";
+    id : Uri = new Uri("");
     relationship : string = "false";
 };
 
@@ -74,7 +74,7 @@ export class EventService {
 	this.addNodeSubject.next(ev);
     }
 
-    removeNode(id : string) {
+    removeNode(id : Uri) {
 	let ev = new RemoveNodeEvent();
 	ev.id = id;
 	this.removeNodeSubject.next(ev);
@@ -86,7 +86,7 @@ export class EventService {
 	this.addEdgeSubject.next(ev);
     }
 
-    removeEdge(id : string) {
+    removeEdge(id : Uri) {
 	let ev = new RemoveEdgeEvent();
 	ev.id = id;
 	this.removeEdgeSubject.next(ev);
@@ -106,7 +106,7 @@ export class EventService {
 	this.resetSubject.next(null);
     }
 
-    recentre(id : string, relationship : string = "no") {
+    recentre(id : Uri, relationship : string = "no") {
 	let ev = new RecentreEvent();
 	ev.id = id;
 	ev.relationship = relationship;

@@ -1,7 +1,7 @@
 
 import { Observable, map } from 'rxjs';
 
-import { Query } from './query';
+import { Query, QueryResult } from './query';
 import { QueryService } from './query.service';
 import { Triple, Uri, Value } from './triple';
 
@@ -42,18 +42,20 @@ export class LabelQuery implements Query {
 
     }
 
-    run(q : QueryService) : Observable<string> {
+    run(q : QueryService) : Observable<string | null> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);
     }
 
-    decode(res : any) : any {
+    decode(res : QueryResult) : string | null {
 
-	if (res.results.bindings.length > 0)
-	    return res.results.bindings[0].label.value;
-	else
-	    return null;
+	if (res.data.length > 0) {
+	    let key = res.vars[0];
+	    return res.data[0][key].value();
+	}
+
+	return null;
 
     }
 

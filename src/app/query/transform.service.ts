@@ -50,13 +50,23 @@ export class TransformService {
 		new LabelQuery("Label " + x[id], x[id] as Uri).run(
 		    this.query
 		).subscribe(
-		    (label : string) => {
+		    (label : string | null) => {
 			if (!label) label = this.makeLabel(x[id] as Uri);
 			sub.next(x.concat(new Literal(label)));
 			sub.complete();
 		    });
 	    }
 	);
+    }
+
+    mapAddLabel(id : number) {
+	return mergeMap((x : any[]) => {
+	    let res : any[] = [];
+	    for (let inp of x) {
+		res.push(this.appendLabel(inp, id));
+	    }
+	    return forkJoin(res);
+	});
     }
 
     queryResultToTriples() {
@@ -140,15 +150,5 @@ export class TransformService {
 
     }
     
-    mapAddLabel(id : number) {
-	return mergeMap((x : any[]) => {
-	    let res : any[] = [];
-	    for (let inp of x) {
-		res.push(this.appendLabel(inp, id));
-	    }
-	    return forkJoin(res);
-	});
-    }
-
 }
 

@@ -108,14 +108,14 @@ export class GraphService {
 
     fetchEdges = 40;
 
-    relationshipIn(id : string) {
+    relationshipIn(id : Uri) {
 
 	this.query.query(
 	    new TripleQuery(
 		"Relationship in " + id,
 		undefined,
 		undefined,
-		new Uri(id),
+		id,
 		this.fetchEdges,
 	    )
 	).pipe(
@@ -128,12 +128,12 @@ export class GraphService {
 	
     }
 
-    relationshipOut(id : string) {
+    relationshipOut(id : Uri) {
     
 	this.query.query(
 	    new TripleQuery(
 		"Relationship out " + id,
-		new Uri(id),
+		id,
 		undefined,
 		undefined,
 		this.fetchEdges,
@@ -200,9 +200,10 @@ export class GraphService {
 		// Ignore thumbnail links, point to a thumbnail image
 		if (triple.p == THUMBNAIL) continue;
 
-		this.includeNode(triple.s);
-		this.includeNode(triple.o);
-		this.includeEdge(triple.s, triple.p, triple.o);
+		this.includeNode(triple.s as Uri);
+		this.includeNode(triple.o as Uri);
+		this.includeEdge(triple.s as Uri, triple.p as Uri,
+				 triple.o as Uri);
 
 	    } else {
 
@@ -214,19 +215,20 @@ export class GraphService {
 	
     }
     
-    includeNode(uri : Uri) {
+    includeNode(id : Uri) {
 
 	let n = new Node();
-	n.id = uri.value();
+	n.id = id.value();
 
-	this.query.query(
-	    new LabelQuery("Label " + id, new Uri(id))
+	// FIXME: Can be wrapped in transform?
+	new LabelQuery("Label " + id, id).run(
+	    this.query
 	).subscribe(
 	    lbl => {
 		if (lbl)
 		    n.label = lbl;
 		else
-		    n.label = this.makeLabel(id);
+		    n.label = this.transform.makeLabel(id);
 		this.events.addNode(n);
 	    }
 	);
@@ -237,17 +239,17 @@ export class GraphService {
 	
 	let link = new Edge();
 	link.id = from.value() + "//" + rel.value() + "//" + to.value();
-	link.from = from;
-	link.to = to;
+	link.from = from.value();
+	link.to = to.value();
 
-	this.query.query(
-	    new LabelQuery("Label " + rel, rel,)
+	new LabelQuery("Label " + rel, rel,).run(
+	    this.query
 	).subscribe(
 	    lbl => {
 		if (lbl)
 		    link.label = lbl;
 		else
-		    link.label = this.makeLabel(rel);
+		    link.label = this.transform.makeLabel(rel);
 		this.events.addEdge(link);
 	    }
 	);
@@ -271,16 +273,16 @@ export class GraphService {
 
     }
 
-    getLabel(id : string) : Observable<string> {
+    getLabel(id : Uri) : Observable<string> {
 
-	return this.query.query(
-	    new LabelQuery("Label " + id, id,)
+	return new LabelQuery("Label " + id, id,).run(
+	    this.query
 	).pipe(
 	    map(
 		res => {
 		    if (res)
 			return res;
-		    return this.makeLabel(id);
+		    return this.transform.makeLabel(id);
 		}
 	    )
 	);

@@ -7,14 +7,16 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Triple, Value, Uri } from '../query/triple';
+import { Triple, Value, Uri, Literal } from '../query/triple';
 import { QueryService } from '../query/query.service';
 
 import { TripleQuery } from '../query/triple-query';
+import { QueryResult } from '../query/query';
 import { RelationshipQuery } from '../query/relationship-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 import { GraphService } from './graph.service';
+import { TransformService } from '../query/transform.service';
 import { Node } from './graph';
 import { EventService } from './event.service';
 
@@ -32,6 +34,7 @@ export class PropertiesService {
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
+	private transform : TransformService,
 	private events : EventService,
     ) {
 
@@ -54,7 +57,7 @@ export class PropertiesService {
 	this.query.query(
 	    new TripleQuery(
 		"Fetch " + node.id,
-		node.id,
+		new Uri(node.id),
 		undefined,
 		undefined,
 		this.propertyEdges,
@@ -108,7 +111,7 @@ export class PropertiesService {
 
 	for (let row of res) {
 
-	    todo[row.p] = new Observable<string[]>(
+	    todo[row.p] = new Observable<Value[]>(
 		sub => {
 		    
 		    if (row.p == LABEL) {
@@ -148,7 +151,7 @@ export class PropertiesService {
 
 			// 'o' is a literal, just need the
 			// human-readable property name.
-			this.mapToLiteral(row.p, row.o.value, sub);
+			this.mapToLiteral(row.p, row.o, sub);
 
 		    }
 		}
@@ -160,18 +163,18 @@ export class PropertiesService {
 	
     }
 
-    mapToLiteral(p : string, o : string, sub : Subscriber<string[]>) {
+    mapToLiteral(p : Uri, o : Uri, sub : Subscriber<Value[]>) {
 
-	this.query.query(
-	    new LabelQuery("Label " + p, p)
+	new LabelQuery("Label " + p, p).run(
+	    this.query
 	).subscribe(
 	    lbl => {
 		if (lbl) {
-		    sub.next([lbl, o]);
+		    sub.next([new Literal(lbl), o]);
 		    sub.complete();
 		    return;
 		} else {
-		    sub.next([this.graph.makeLabel(p), o]);
+		    sub.next([new Literal(this.transform.makeLabel(p)), o]);
 		    sub.complete();
 		    return;
 		}
@@ -180,24 +183,26 @@ export class PropertiesService {
 	)
     }
 
-    mapToClassLabel(id : string, sub : Subscriber<string[]>) {
+    mapToClassLabel(id : Uri, sub : Subscriber<Value[]>) {
 
 	// IS_A relationship, work out the class name
 
-
-	this.query.query(
-	    new LabelQuery("Label " + id, id,)
+	new LabelQuery("Label " + id, id,).run(
+	    this.query
 	).subscribe(
 	    lbl => {
 		if (lbl) {
 		    sub.next([
-			"class", lbl
+			new Literal("class"), new Literal(lbl)
 		    ]);
 		    sub.complete();
 		    return;
 		} else {
 		    sub.next(
-			["class", this.graph.makeLabel(id)]
+			[
+			    new Literal("class"),
+			    new Literal(this.transform.makeLabel(id))
+			]
 		    );
 		    sub.complete();
 		    return;
@@ -209,70 +214,39 @@ export class PropertiesService {
 
     }
 
-    makeLabel(label : string) {
-
-	if (label.startsWith("http://"))
-            label = label.substr(label.lastIndexOf("/") + 1);
-
-	if (label.lastIndexOf("#") >= 0)
-            label = label.substr(label.lastIndexOf("#") + 1);
-
-	if (label.length > 20)
-	    label = label.substring(0, 15);
-
-	return label;
-
-    }
-
-    appendLabel(x : string[], id : number) : Observable<string[]> {
-	return new Observable<string[]>(
-	    sub => {
-		this.query.query(
-		    new LabelQuery("Label " + x[id], x[id])
-		).subscribe(label => {
-		    if (!label) label = this.makeLabel(x[id]);
-		    sub.next(x.concat(label));
-		    sub.complete();
-		});
-	    }
-	);
-    }
-    
-    mapAddLabel(id : number) {
-	return mergeMap((x : any[]) => {
-	    let res : any[] = [];
-	    for (let inp of x) {
-		res.push(this.appendLabel(inp, id));
-	    }
-	    return forkJoin(res);
-	});
-    }
-
-    getProps(node : Node) : Observable<string[][]> {
+    getProps(node : Node) : Observable<any> {
 	
-	return this.query.query(
-	    new TripleQuery(
-		"Fetch " + node.id,
-		node.id,
-		undefined,
-		undefined,
-		this.propertyEdges,
-	    )
+	return new TripleQuery(
+	    "Fetch " + node.id,
+	    new Uri(node.id),
+	    undefined,
+	    undefined,
+	    this.propertyEdges,
+	).run(
+	    this.query
 	).pipe(
 	    map(
-		x => x.map((y : any) => [y.p.value(), y.o.value()])
+		(x : QueryResult) => x.data.map(
+		    (y : any) => [y.p, y.o]
+		)
 	    ),
-	    this.mapAddLabel(0),
-	    this.mapAddLabel(1),
+	    this.transform.mapAddLabel(0),
+	    this.transform.mapAddLabel(1),
 	    map(
-		x => {
-		    let res : any = {};
+		(x : Value[][]) => {
+		    let res : { key : string, value : string }[] = [];
 		    for (let row of x) {
-			res[row[2]] = row[3];
+			res.push({key: row[2].value(), value: row[3].value()});
 		    }
 		    return res;
 		}
-	    )
+	    ),
+	    map(
+		x => {
+		    console.log(x);
+		    return x;
+		}
+	    ),
 	);
     }
 

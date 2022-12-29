@@ -1,5 +1,8 @@
 
+import { Observable } from 'rxjs';
+
 import { Query, QueryResult } from './query';
+import { QueryService } from './query.service';
 import { Triple, Uri, Value } from './triple';
 
 export class TripleQuery implements Query {
@@ -59,6 +62,10 @@ export class TripleQuery implements Query {
 	return "query=" + query + "&output=json";
 
     };
+
+    run(q : QueryService) : Observable<QueryResult> {
+	return q.query(this);
+    }
 
     decode(res : QueryResult) : any {
 
