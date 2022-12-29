@@ -54,15 +54,13 @@ export class PropertiesService {
 
     getProperties(node : Node) {
 
-	this.query.query(
-	    new TripleQuery(
-		"Fetch " + node.id,
-		new Uri(node.id),
-		undefined,
-		undefined,
-		this.propertyEdges,
-	    )
-	).subscribe(
+	new TripleQuery(
+	    "Fetch " + node.id,
+	    new Uri(node.id),
+	    undefined,
+	    undefined,
+	    this.propertyEdges,
+	).run(this.query).subscribe(
 
 	    res => {
 
@@ -79,7 +77,10 @@ export class PropertiesService {
 		}
 
 		forkJoin(todo).subscribe(
+
 		    (res : { [key : string] : any }) => {
+
+			console.log(res);
 
 			let props : { [key : string] : string } = {};
 
@@ -88,12 +89,13 @@ export class PropertiesService {
 			    if (res[i].length == 0)
 				continue;
 
-			    props[res[i][0]] = res[i][1];
+			    props[res[i][0].value()] = res[i][1].value();
 
 			}
 
 			let ev = new Properties();
 			ev.properties = props;
+			console.log(ev);
 			this.propertiesSubject.next(ev);
 			
 		    }
@@ -105,41 +107,45 @@ export class PropertiesService {
 
     }
 
-    mapToProperties(res : any) {
+    mapToProperties(res : QueryResult) {
 
 	let todo : { [key : string] : any } = {};
 
-	for (let row of res) {
+	for (let row of res.data) {
 
-	    todo[row.p] = new Observable<Value[]>(
+	    let s = row["s"] as Uri;
+	    let p = row["p"] as Uri;
+	    let o = row["o"];
+
+	    todo[p.value()] = new Observable<Value[]>(
 		sub => {
 		    
-		    if (row.p == LABEL) {
+		    if (p == LABEL) {
 			
 			// Label
-			sub.next(["label", row.o.value]);
+			sub.next([new Literal("label"), o]);
 			sub.complete();
 			return;
 
-		    } else if (row.p == THUMBNAIL) {
+		    } else if (p == THUMBNAIL) {
 
 			// thumbnail
-			sub.next(["thumbnail", row.o.value]);
+			sub.next([new Literal("thumbnail"), o]);
 			sub.complete();
 			return;
 
-		    } else if (row.p == SEE_ALSO) {
+		    } else if (p == SEE_ALSO) {
 
 			// link
-			sub.next(["link", row.o.value]);
+			sub.next([new Literal("link"), o]);
 			sub.complete();
 			return;
 
-		    } else if (row.p == IS_A) {
+		    } else if (p == IS_A) {
 
-			this.mapToClassLabel(row.o.value, sub);
+			this.mapToClassLabel(o as Uri, sub);
 
-		    } else if (row.o.uri) {
+		    } else if (o.is_uri()) {
 
 			// Property we're not interested in.
 			// Indicate nothing to return.
@@ -151,7 +157,7 @@ export class PropertiesService {
 
 			// 'o' is a literal, just need the
 			// human-readable property name.
-			this.mapToLiteral(row.p, row.o, sub);
+			this.mapToLiteral(p, o as Uri, sub);
 
 		    }
 		}

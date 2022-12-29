@@ -74,8 +74,12 @@ export class TransformService {
 	return map(
 	    (qr : QueryResult) => {
 
-		if (!(qr.vars == ["s", "p", "o"]))
+		if ((qr.vars.length != 3) ||
+		    (qr.vars[0] != "s") ||
+		    (qr.vars[1] != "p") ||
+		    (qr.vars[2] != "o")) {
 		    throw new Error("qrToTriples requires head variables s, p, o");
+		}
 
 		let trs : Triple[] = [];
 

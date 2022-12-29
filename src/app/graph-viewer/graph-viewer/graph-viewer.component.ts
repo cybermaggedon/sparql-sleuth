@@ -6,6 +6,7 @@ import { timer } from 'rxjs';
 import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
+import { Uri } from '../../query/triple';
 
 enum BottomPaneMode {
     HELP,
@@ -88,7 +89,10 @@ export class GraphViewerComponent implements OnInit {
 		    if (id) {
 			timer(1).subscribe(
 			    () => {
-				this.events.recentre(id, relationships);
+				this.events.recentre(
+				    new Uri(id),
+				    relationships
+				);
 			    }
 			);
 		    }
