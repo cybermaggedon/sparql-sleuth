@@ -21,6 +21,8 @@ import { InfoComponent } from './info/info.component';
 import { NodeDetailsComponent } from './node-details/node-details.component';
 import { NodeDialogComponent } from './node-dialog/node-dialog.component';
 import { SearchDialogComponent } from './search-dialog/search-dialog.component';
+import { SchemaDialogComponent } from './schema-dialog/schema-dialog.component';
+import { SchemaComponent } from './schema/schema.component';
 
 @NgModule({
     declarations: [
@@ -33,6 +35,8 @@ import { SearchDialogComponent } from './search-dialog/search-dialog.component';
         NodeDetailsComponent,
         NodeDialogComponent,
         SearchDialogComponent,
+        SchemaDialogComponent,
+        SchemaComponent,
     ],
     imports: [
 	BrowserModule,

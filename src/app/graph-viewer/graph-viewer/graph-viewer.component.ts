@@ -10,15 +10,6 @@ import { RelationshipService } from '../../graph/relationship.service';
 import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
-import { NodeDialogComponent } from '../node-dialog/node-dialog.component';
-
-
-enum BottomPaneMode {
-    HELP,
-    EMPTY,
-    DETAIL,
-    SEARCH
-};
 
 @Component({
     selector: 'graph-viewer',
@@ -37,49 +28,17 @@ export class GraphViewerComponent implements OnInit {
 
     }
 
-    mode : BottomPaneMode = BottomPaneMode.HELP;
-
-    get detailMode() : boolean { return this.mode == BottomPaneMode.DETAIL; }
-    get searchMode() : boolean { return this.mode == BottomPaneMode.SEARCH; }
-    get helpMode() : boolean { return this.mode == BottomPaneMode.HELP; }
-
     properties : Properties = new Properties();
 
     nodeDialogVisible = false;
     searchDialogVisible = false;
+    schemaDialogVisible = false;
 
     selection? : Node;
 
     relationships : Relationship[] = [];
 
     ngOnInit() : void {
-
-	this.command.beginSearchEvents().subscribe(
-	    () => {
-		this.mode = BottomPaneMode.SEARCH;
-	    }
-	);
-
-	this.command.helpEvents().subscribe(
-	    () => {
-		this.mode = BottomPaneMode.HELP;
-	    }
-	);
-
-	this.propertyService.propertiesEvents().subscribe(
-	    ev => {
-		this.properties = ev;
-		this.mode = BottomPaneMode.DETAIL;
-		this.nodeDialogVisible = true;
-	    }
-	);
-
-	this.events.nodeDeselectedEvents().subscribe(
-	    () => {
-		this.mode = BottomPaneMode.EMPTY;
-		this.selection = undefined;
-	    }
-	);
 
 	this.events.nodeSelectedEvents().subscribe(
 	    ev => {
@@ -108,10 +67,17 @@ export class GraphViewerComponent implements OnInit {
 	this.searchDialogVisible = true;
     }
 
+    schema() {
+	this.schemaDialogVisible = true;
+    }
+
     closeSearchDialog() {
 	this.searchDialogVisible = false;
-	// FIXME:
 	this.events.unselect();
+    }
+
+    closeSchemaDialog() {
+	this.schemaDialogVisible = false;
     }
 
     ngAfterViewInit(): void {

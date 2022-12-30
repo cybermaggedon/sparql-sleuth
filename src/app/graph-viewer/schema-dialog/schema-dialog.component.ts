@@ -1,19 +1,18 @@
-
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-    selector: 'search-dialog',
-    templateUrl: './search-dialog.component.html',
-    styleUrls: ['./search-dialog.component.scss']
+    selector: 'schema-dialog',
+    templateUrl: './schema-dialog.component.html',
+    styleUrls: ['./schema-dialog.component.scss']
 })
-export class SearchDialogComponent implements OnInit {
+export class SchemaDialogComponent implements OnInit {
 
     @Input() display = false;
 
     @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
     constructor() { }
-
+    
     ngOnInit(): void {
     }
 
