@@ -28,6 +28,13 @@ export class RelationshipService {
 
     relationshipEdges = 25;
 
+    ignoreRelationship(p : Value) {
+	if (!p.is_uri()) return false;
+	if (p.value() == THUMBNAIL.value()) return true;
+	if (p.value() == SEE_ALSO.value()) return true;
+	return false;
+    }
+
     getRelationshipsIn(node : Node) : Observable<Value[]> {
 
     	return new RelationshipQuery(
@@ -38,7 +45,7 @@ export class RelationshipService {
 	).pipe(
 	    map(
 		(v : Value[]) => v.filter(
-		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
+		    v => !this.ignoreRelationship(v)
 		)
 	    )
 	);
@@ -55,7 +62,7 @@ export class RelationshipService {
 	).pipe(
 	    map(
 		(v : Value[]) => v.filter(
-		    v => ((v != SEE_ALSO) && v != THUMBNAIL)
+		    v => !this.ignoreRelationship(v)
 		)
 	    )
 	);

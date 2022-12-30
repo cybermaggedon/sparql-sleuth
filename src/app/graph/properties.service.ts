@@ -80,8 +80,6 @@ export class PropertiesService {
 
 		    (res : { [key : string] : any }) => {
 
-			console.log(res);
-
 			let props : { [key : string] : string } = {};
 
 			for (let i in res) {
@@ -95,7 +93,6 @@ export class PropertiesService {
 
 			let ev = new Properties();
 			ev.properties = props;
-			console.log(ev);
 			this.propertiesSubject.next(ev);
 			
 		    }
@@ -120,21 +117,21 @@ export class PropertiesService {
 	    todo[p.value()] = new Observable<Value[]>(
 		sub => {
 		    
-		    if (p == LABEL) {
+		    if (p.is_uri() && (p.value() == LABEL.value())) {
 			
 			// Label
 			sub.next([new Literal("label"), o]);
 			sub.complete();
 			return;
 
-		    } else if (p == THUMBNAIL) {
+		    } else if (p.is_uri() && (p.value() == THUMBNAIL.value())) {
 
 			// thumbnail
 			sub.next([new Literal("thumbnail"), o]);
 			sub.complete();
 			return;
 
-		    } else if (p == SEE_ALSO) {
+		    } else if (p.is_uri() && (p.value() == SEE_ALSO.value())) {
 
 			// link
 			sub.next([new Literal("link"), o]);
