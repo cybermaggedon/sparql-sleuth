@@ -44,23 +44,24 @@ export class SearchService {
 	).run(
 	    this.query
 	).pipe(
-	    this.transform.queryResultToArray(),
-	    map(x => x.data),
-	    this.transform.mapAddLabel(0),
-	    this.transform.mapAddLabel(1),
-	    map(x =>
-		x.map(
-		    y => {
-			return {
-			    s: y[0],
-			    p: y[1],
-			    o: y[2],
-			    slabel: y[3],
-			    plabel: y[4],
-			};
-		    }
-		)
-	    ),
+	    this.transform.mapToLabel("s", "slabel"),
+	    this.transform.mapToLabel("p", "plabel"),
+	    map(x => {
+		if ("data" in x)
+		    return x.data.map(
+			row => {
+			    return {
+				s: row["s"],
+				p: row["p"],
+				o: row["o"],
+				slabel: row["slabel"],
+				plabel: row["plabel"],
+			    };
+			}
+		    );
+		else
+		    return [];
+	    }),
 	);
 
     }

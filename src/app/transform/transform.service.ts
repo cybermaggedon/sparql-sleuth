@@ -101,6 +101,10 @@ export class TransformService {
 
 	return mergeMap((qr : QueryResult) => {
 
+	    if (qr.data.length == 0) {
+		return of(qr);
+	    }
+
 	    let res : any[] = [];
 
 	    for (let row of qr.data) {
