@@ -1,11 +1,7 @@
 
 <p-tabView>
 
-  <p-tabPanel header="Information">
-    <info></info>
-  </p-tabPanel>
-
-  <p-tabPanel header="Graph">
+  <p-tabPanel header="Graph" leftIcon="pi pi-globe">
     <p-toolbar>
       <div class="p-toolbar-group-left">
 	<p-button label="Search" (click)="search()" icon="pi pi-search">
@@ -19,6 +15,10 @@
 	<graph></graph>
       </div>
     </div>
+  </p-tabPanel>
+
+  <p-tabPanel header="Help" leftIcon="pi pi-question-circle">
+    <info></info>
   </p-tabPanel>
 
 </p-tabView>

@@ -3,11 +3,13 @@
   <h2>Results</h2>
   <p-table [value]="results" styleClass="p-datatable-striped"
 	   [tableStyle]="{'min-width': '20rem'}" >
+
     <ng-template pTemplate="header">
       <tr>
         <th>Class</th>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="body" let-row>
       <tr>
         <td>
