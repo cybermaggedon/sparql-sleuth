@@ -48,11 +48,18 @@ export class GraphViewerComponent implements OnInit {
 		this.relationships = [];
 
 		this.relationship.getRelationships(ev.node).subscribe(
-		    ev => this.relationships = ev
+		    ev => { this.relationships = ev; }
 		);
 
 	    }
 	    
+	);
+
+	this.propertyService.propertiesEvents().subscribe(
+            ev => {
+		this.properties = ev;
+		this.nodeDialogVisible = true;
+            }
 	);
 
     }

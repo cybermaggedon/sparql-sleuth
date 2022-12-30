@@ -56,8 +56,6 @@ export class SearchComponent implements OnInit {
 	this.searchService.search(text).subscribe(
 	    (res : any) => {
 
-console.log(res);
-
 		this.results = [];
 
 		for (let row of res) {
