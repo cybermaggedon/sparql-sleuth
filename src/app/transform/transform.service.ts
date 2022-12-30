@@ -6,6 +6,7 @@ import { Observable, forkJoin, mergeMap, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueryService } from '../query/query.service';
 import { LabelQuery } from '../query/label-query';
+import { SPQuery } from '../query/s-p-query';
 import { Uri, Value, Literal, Triple } from '../rdf/triple';
 import { THUMBNAIL, SEE_ALSO, IS_A } from '../rdf/defs';
 
@@ -99,6 +100,71 @@ export class TransformService {
 
     mapToLabel(src : string, dest : string) {
 
+        return mergeMap((qr : QueryResult) => {
+
+            if (qr.data.length == 0) {
+                return of(qr);
+            }
+
+            let res : any[] = [];
+
+            for (let row of qr.data) {
+                res.push(this.addLabel(row, src, dest));
+            }
+
+            return forkJoin(res).pipe(
+                map(
+                    (rows : Row[]) => {
+                        return {
+                            vars: qr.vars.concat(dest),
+                            data: rows,
+                        };
+                    }
+                )
+            );
+
+        });
+    }
+
+    addProperty(row : Row, id : string, pred : Uri, dest : string)
+    : Observable<Row> {
+
+	// This only works on URIs.  Just append the value otherwise.
+	if (!row[id].is_uri()) {
+	    row[dest] = new Literal("");
+	    return of(row);
+	}
+
+	if (!pred.is_uri())
+	    throw new Error("Can't call addProperty on non-URI predicate");
+
+	return new Observable<Row>(
+	    sub => {
+
+		if (!(row[id].is_uri()))
+		    throw new Error("Can't call addProperty on non-URI");
+
+		new SPQuery(
+		    "Property " + row[id].value() + " " + pred.value(),
+		    row[id] as Uri,
+		    pred
+		).run(
+		    this.query
+		).subscribe(
+		    (qr : QueryResult) => {
+			if (qr.data.length == 0)
+			    row[dest] = new Literal("");
+			else
+			    row[dest] = qr.data[0]["o"];
+			sub.next(row);
+			sub.complete();
+		    });
+	    }
+	);
+    }
+
+    mapToProperty(id : string, pred : Uri, dest : string) {
+
 	return mergeMap((qr : QueryResult) => {
 
 	    if (qr.data.length == 0) {
@@ -108,7 +174,7 @@ export class TransformService {
 	    let res : any[] = [];
 
 	    for (let row of qr.data) {
-		res.push(this.addLabel(row, src, dest));
+		res.push(this.addProperty(row, id, pred, dest));
 	    }
 
 	    return forkJoin(res).pipe(
@@ -121,17 +187,6 @@ export class TransformService {
 		    }
 		)
 	    );
-	    
-/*
-		.pipe(
-		// FIXME: type
-		(rows : any[]) => {
-		    return {
-			vars: qr.vars,
-			data: rows,
-		    };
-		}
-	    );*/
 	});
     }
 

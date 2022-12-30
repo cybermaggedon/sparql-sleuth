@@ -11,6 +11,7 @@ import { DialogModule } from 'primeng/dialog'; // Unused?
 import { SidebarModule } from 'primeng/sidebar';
 import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
+import { PanelModule } from 'primeng/panel';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -54,6 +55,7 @@ import { DatasetComponent } from './dataset/dataset.component';
 	SidebarModule,
 	TabViewModule,
 	ToolbarModule,
+	PanelModule,
 
     ],
     exports: [

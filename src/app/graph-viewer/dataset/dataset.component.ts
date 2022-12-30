@@ -1,7 +1,7 @@
-
 import { Component, OnInit } from '@angular/core';
 
-import { map } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../../rdf/defs';
 import { Uri } from '../../rdf/triple';
@@ -13,11 +13,11 @@ import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
 
 @Component({
-  selector: 'schema',
-  templateUrl: './schema.component.html',
-  styleUrls: ['./schema.component.scss']
+  selector: 'dataset',
+  templateUrl: './dataset.component.html',
+  styleUrls: ['./dataset.component.scss']
 })
-export class SchemaComponent implements OnInit {
+export class DatasetComponent implements OnInit {
 
     constructor(
 	private query : QueryService,
@@ -34,17 +34,27 @@ export class SchemaComponent implements OnInit {
     runQuery() {
 
 	new POQuery(
-	    "Acquire schema", IS_A, CLASS, 50
+	    "Acquire schema", IS_A, new Uri("http://www.w3.org/ns/dcat#Dataset"), 50
 	).run(
 	    this.query
 	).pipe(
 	    this.transform.mapToLabel("s", "slabel"),
-	    this.transform.addFixedColumn("p", IS_A),
-	    this.transform.mapToLabel("p", "plabel"),
-	    this.transform.addFixedColumn("o", CLASS),
-	    map((x : any) => x.data),
+	    this.transform.mapToProperty(
+		"s", new Uri("http://purl.org/dc/terms/title"),
+		"title"
+	    ),
+	    this.transform.mapToProperty(
+		"s", new Uri("http://purl.org/dc/terms/description"),
+		"description"
+	    ),
+	    this.transform.mapToProperty(
+		"s", new Uri("http://xmlns.com/foaf/0.1/homepage"),
+		"url"
+	    ),
+	    map(qr => qr.data),
 	).subscribe(
 	    result => {
+		console.log(result);
 		this.results = result;
 	    }
 	);
