@@ -1,5 +1,5 @@
 
-import { Uri } from '../query/triple';
+import { Uri } from '../rdf/triple';
 
 export class Node {
     id : string = "";

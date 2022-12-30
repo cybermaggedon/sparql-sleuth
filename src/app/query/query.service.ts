@@ -6,7 +6,7 @@ import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { LRUCache } from 'typescript-lru-cache';
 
 import { Query, QueryResult } from './query';
-import { Triple, Value, Literal, Uri, Unbound } from './triple';
+import { Triple, Value, Literal, Uri, Unbound } from '../rdf/triple';
 import { ProgressService, Activity } from '../progress.service';
 
 class QueryRequest {

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { Query, QueryResult } from './query';
 import { QueryService } from './query.service';
-import { Value, Uri, Literal, Triple } from './triple';
+import { Value, Uri, Literal, Triple } from '../rdf/triple';
 
 export class TextSearchQuery implements Query {
     constructor(

@@ -7,8 +7,10 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../rdf/defs';
+import { Triple, Literal, Value, Uri } from '../rdf/triple';
 import { Node, Edge } from './graph';
-import { Triple, Literal, Value, Uri } from '../query/triple';
+
 import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
 import { TransformService } from '../query/transform.service';
@@ -23,7 +25,6 @@ import { LabelQuery } from '../query/label-query';
 import { Relationship } from './graph';
 import { EventService } from './event.service';
 
-import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../rdf';
 
 @Injectable({
     providedIn: 'root'

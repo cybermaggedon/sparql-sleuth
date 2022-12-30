@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { FormBuilder } from '@angular/forms';
 
-import { Uri } from '../../query/triple';
+import { Uri } from '../../rdf/triple';
 import { GraphService } from '../../graph/graph.service';
 import { SearchService, SearchResult } from '../../graph/search.service';
 

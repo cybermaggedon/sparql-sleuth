@@ -6,7 +6,7 @@ import {
 
 import { Network, DataSet } from 'vis-network/standalone';
 
-import { Triple } from '../../query/triple';
+import { Triple } from '../../rdf/triple';
 import { EventService } from '../../graph/event.service';
 
 @Component({

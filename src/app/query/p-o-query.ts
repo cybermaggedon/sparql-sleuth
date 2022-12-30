@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { Query, QueryResult } from './query';
 import { QueryService } from './query.service';
-import { Triple, Uri, Value } from './triple';
+import { Triple, Uri, Value } from '../rdf/triple';
 
 export class POQuery implements Query {
     constructor(

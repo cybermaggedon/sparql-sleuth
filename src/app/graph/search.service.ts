@@ -7,7 +7,7 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Value } from '../query/triple';
+import { Value } from '../rdf/triple';
 import { QueryService } from '../query/query.service';
 import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';

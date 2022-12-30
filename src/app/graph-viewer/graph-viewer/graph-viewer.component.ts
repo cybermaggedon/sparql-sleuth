@@ -6,7 +6,7 @@ import { timer } from 'rxjs';
 import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
-import { Uri } from '../../query/triple';
+import { Uri } from '../../rdf/triple';
 
 enum BottomPaneMode {
     HELP,

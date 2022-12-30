@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, forkJoin, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Value, Uri } from '../query/triple';
+import { Value, Uri } from '../rdf/triple';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf/defs';
+
 import { QueryService } from '../query/query.service';
 import { CommandService } from './command.service';
 
@@ -11,7 +13,6 @@ import { RelationshipQuery } from '../query/relationship-query';
 import { GraphService} from './graph.service';
 import { Node, Edge, Relationship } from './graph';
 
-import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 @Injectable({
     providedIn: 'root'

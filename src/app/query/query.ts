@@ -1,5 +1,5 @@
 
-import { Value } from './triple';
+import { Value } from '../rdf/triple';
 
 export type Row = {
     [key : string] : Value

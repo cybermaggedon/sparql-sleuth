@@ -6,8 +6,8 @@ import { Observable, forkJoin, mergeMap, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueryService } from './query.service';
 import { LabelQuery } from './label-query';
-import { Uri, Value, Literal, Triple } from './triple';
-import { THUMBNAIL, SEE_ALSO, CLASS } from '../rdf';
+import { Uri, Value, Literal, Triple } from '../rdf/triple';
+import { THUMBNAIL, SEE_ALSO, CLASS } from '../rdf/defs';
 
 @Injectable({
     providedIn: 'root'

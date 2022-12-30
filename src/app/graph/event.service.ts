@@ -8,7 +8,8 @@ import {
 import { map } from 'rxjs/operators';
 
 import { Node, Edge } from './graph';
-import { Triple, Value, Uri } from '../query/triple';
+import { Triple, Value, Uri } from '../rdf/triple';
+
 import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
 

@@ -2,7 +2,7 @@
 import { Observable, map } from 'rxjs';
 
 import { Query, QueryResult } from './query';
-import { Value } from './triple';
+import { Value } from '../rdf/triple';
 import { QueryService } from './query.service';
 
 export class RelationshipQuery implements Query {

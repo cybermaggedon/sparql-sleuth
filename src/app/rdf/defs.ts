@@ -1,5 +1,5 @@
 
-import { Uri } from './query/triple';
+import { Uri } from './triple';
 
 export const SEE_ALSO = new Uri("http://www.w3.org/2000/01/rdf-schema#seeAlso");
 export const LABEL = new Uri("http://www.w3.org/2000/01/rdf-schema#label");

@@ -7,7 +7,9 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Triple, Value, Uri, Literal } from '../query/triple';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf/defs';
+import { Triple, Value, Uri, Literal } from '../rdf/triple';
+
 import { QueryService } from '../query/query.service';
 
 import { TripleQuery } from '../query/triple-query';
@@ -19,7 +21,6 @@ import { TransformService } from '../query/transform.service';
 import { Node } from './graph';
 import { EventService } from './event.service';
 
-import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
 export type PropertyMap = { [key : string] : Value };
 
