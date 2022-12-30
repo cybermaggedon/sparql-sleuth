@@ -11,6 +11,7 @@ import { Triple, Value, Uri, Literal } from '../query/triple';
 import { QueryService } from '../query/query.service';
 
 import { TripleQuery } from '../query/triple-query';
+import { SQuery } from '../query/s-query';
 import { QueryResult } from '../query/query';
 import { RelationshipQuery } from '../query/relationship-query';
 import { TextSearchQuery } from '../query/text-search-query';
@@ -54,13 +55,13 @@ export class PropertiesService {
 
     getProperties(node : Node) {
 
-	new TripleQuery(
+	new SQuery(
 	    "Fetch " + node.id,
 	    new Uri(node.id),
-	    undefined,
-	    undefined,
 	    this.propertyEdges,
-	).run(this.query).subscribe(
+	).run(
+	    this.query
+	).subscribe(
 
 	    res => {
 
@@ -110,7 +111,6 @@ export class PropertiesService {
 
 	for (let row of res.data) {
 
-	    let s = row["s"] as Uri;
 	    let p = row["p"] as Uri;
 	    let o = row["o"];
 
