@@ -2,7 +2,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { GraphService } from '../../graph/graph.service';
-import { Properties } from '../../graph/properties.service';
+import { Properties, PropertyMap } from '../../graph/properties.service';
 
 @Component({
     selector: 'detail',
@@ -21,15 +21,17 @@ export class DetailComponent implements OnInit {
     get properties() { return this.allProperties.properties; }
 
     get table() {
+
 	let rows : {key: string, value: string}[] = [];
 
 	for(let key in this.properties) {
 	    rows.push({
-		key: key, value: this.properties[key]
+		key: key, value: this.properties[key].value()
 	    });
 	}
 	
 	return rows;
+
     }
 
     constructor(
@@ -41,23 +43,23 @@ export class DetailComponent implements OnInit {
 
     get label() : string {
 	if ("title" in this.properties) {
-	    return this.properties["title"];
+	    return this.properties["title"].value();
 	} else if ("label" in this.properties) {
-	    return this.properties["label"];
+	    return this.properties["label"].value();
 	} else
 	    return "";
     }
     
     get link() : string {
 	if ("link" in this.properties)
-	    return this.properties["link"];
+	    return this.properties["link"].value();
 	else
 	    return "";
     }
 
     get thumbnail() : string {
 	if ("thumbnail" in this.properties)
-	    return this.properties["thumbnail"];
+	    return this.properties["thumbnail"].value();
 	else
 	    return "";
     }

@@ -1,11 +1,13 @@
 
 import { Value } from './triple';
 
+export type Row = {
+    [key : string] : Value
+};
+
 export class QueryResult {
     vars : string[] = [];
-    data : {
-	[key : string] : Value
-    }[] = [];
+    data : Row[] = [];
 };
 
 export interface Query {

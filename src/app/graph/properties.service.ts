@@ -12,7 +12,7 @@ import { QueryService } from '../query/query.service';
 
 import { TripleQuery } from '../query/triple-query';
 import { SQuery } from '../query/s-query';
-import { QueryResult } from '../query/query';
+import { QueryResult, Row } from '../query/query';
 import { RelationshipQuery } from '../query/relationship-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
@@ -23,8 +23,10 @@ import { EventService } from './event.service';
 
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
 
+export type PropertyMap = { [key : string] : Value };
+
 export class Properties {
-    properties : { [key : string] : string } = {};
+    properties : PropertyMap = {};
 };
 
 @Injectable({
@@ -54,130 +56,103 @@ export class PropertiesService {
     propertiesEvents() { return this.propertiesSubject; }
 
     getProperties(node : Node) {
-
 	new SQuery(
 	    "Fetch " + node.id,
 	    new Uri(node.id),
 	    this.propertyEdges,
 	).run(
 	    this.query
+	).pipe(
+	    this.transform.filterRelationships(),
+	    this.mapToProperties(),
 	).subscribe(
-
 	    res => {
-
-		let todo = this.mapToProperties(res);
-
-		// Empty set, return empty properties.
-		// Also, forkJoin on empty set is bad.
-		if (todo === {}) {
-		    
-		    let ev = new Properties();
-		    ev.properties = {};
-		    this.propertiesSubject.next(ev);
-		    return;
+		let prop = new Properties();
+		for (let row of res) {
+		    prop.properties[row["p"].value()] = row["o"];
 		}
+		this.propertiesSubject.next(prop);
+	    }
+	);
+    }
 
-		forkJoin(todo).subscribe(
-
-		    (res : { [key : string] : any }) => {
-
-			let props : { [key : string] : string } = {};
-
-			for (let i in res) {
-
-			    if (res[i].length == 0)
-				continue;
-
-			    props[res[i][0].value()] = res[i][1].value();
-
-			}
-
-			let ev = new Properties();
-			ev.properties = props;
-			this.propertiesSubject.next(ev);
+    mapToProperty(row : Row) {
+	return new Observable<Row>(
+	    sub => {
+		
+		let p = row["p"] as Uri;
+		let o = row["o"];
+		    
+		if (p.is_uri() && (p.value() == LABEL.value())) {
 			
-		    }
-		);
+		    // Label
+		    sub.next({
+			p: new Literal("label"),
+			o: o
+		    });
+		    sub.complete();
 
+		} else if (p.is_uri() && (p.value() == THUMBNAIL.value())) {
+		    
+		    // thumbnail
+		    sub.next({p: new Literal("thumbnail"), o: o});
+		    sub.complete();
+
+		} else if (p.is_uri() && (p.value() == SEE_ALSO.value())) {
+
+		    // link
+		    sub.next({
+			p: new Literal("link"), o: o
+		    });
+		    sub.complete();
+		    
+		} else if (p == IS_A) {
+
+		    this.mapToClassLabel(o as Uri, sub);
+
+		} else if (o.is_uri()) {
+
+		    sub.next({});
+		    sub.complete();
+
+		} else {
+
+		    // 'o' is a literal, just need the
+		    // human-readable property name.
+		    this.mapToLiteral(p, o as Uri, sub);
+
+		}
 	    }
 
-	)
-
+	);
     }
 
-    mapToProperties(res : QueryResult) {
+    mapToProperties() {
+	return mergeMap((qr : QueryResult) => {
 
-	let todo : { [key : string] : any } = {};
+	    let obs : any[] = [];
+	    
+	    for (let row of qr.data) {
+		obs.push(this.mapToProperty(row));
+	    }
 
-	for (let row of res.data) {
-
-	    let p = row["p"] as Uri;
-	    let o = row["o"];
-
-	    todo[p.value()] = new Observable<Value[]>(
-		sub => {
-		    
-		    if (p.is_uri() && (p.value() == LABEL.value())) {
-			
-			// Label
-			sub.next([new Literal("label"), o]);
-			sub.complete();
-			return;
-
-		    } else if (p.is_uri() && (p.value() == THUMBNAIL.value())) {
-
-			// thumbnail
-			sub.next([new Literal("thumbnail"), o]);
-			sub.complete();
-			return;
-
-		    } else if (p.is_uri() && (p.value() == SEE_ALSO.value())) {
-
-			// link
-			sub.next([new Literal("link"), o]);
-			sub.complete();
-			return;
-
-		    } else if (p == IS_A) {
-
-			this.mapToClassLabel(o as Uri, sub);
-
-		    } else if (o.is_uri()) {
-
-			// Property we're not interested in.
-			// Indicate nothing to return.
-			sub.next([]);
-			sub.complete();
-			return;
-
-		    } else {
-
-			// 'o' is a literal, just need the
-			// human-readable property name.
-			this.mapToLiteral(p, o as Uri, sub);
-
-		    }
-		}
-	    );
-
-	}
-
-	return todo;
-	
+	    return forkJoin(obs);
+	    
+	});
     }
 
-    mapToLiteral(p : Uri, o : Uri, sub : Subscriber<Value[]>) {
+    mapToLiteral(p : Uri, o : Value, sub : Subscriber<Row>) {
 
 	new LabelQuery("Label " + p, p).run(
 	    this.query
 	).subscribe(
 	    lbl => {
 		if (lbl) {
-		    sub.next([new Literal(lbl), o]);
+		    sub.next({p: new Literal(lbl), o: o});
 		    sub.complete();
 		    return;
 		} else {
-		    sub.next([new Literal(this.transform.makeLabel(p)), o]);
+		    sub.next({p: new Literal(this.transform.makeLabel(p)), o: o});
 		    sub.complete();
 		    return;
 		}
@@ -186,7 +161,7 @@ export class PropertiesService {
 	)
     }
 
-    mapToClassLabel(id : Uri, sub : Subscriber<Value[]>) {
+    mapToClassLabel(id : Uri, sub : Subscriber<Row>) {
 
 	// IS_A relationship, work out the class name
 
@@ -195,17 +170,17 @@ export class PropertiesService {
 	).subscribe(
 	    lbl => {
 		if (lbl) {
-		    sub.next([
-			new Literal("class"), new Literal(lbl)
-		    ]);
+		    sub.next({
+			p: new Literal("class"), o: new Literal(lbl)
+		    });
 		    sub.complete();
 		    return;
 		} else {
 		    sub.next(
-			[
-			    new Literal("class"),
-			    new Literal(this.transform.makeLabel(id))
-			]
+			{
+			    p: new Literal("class"),
+			    o: new Literal(this.transform.makeLabel(id))
+			}
 		    );
 		    sub.complete();
 		    return;

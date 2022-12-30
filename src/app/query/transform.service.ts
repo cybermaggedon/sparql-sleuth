@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { QueryService } from './query.service';
 import { LabelQuery } from './label-query';
 import { Uri, Value, Literal, Triple } from './triple';
-import { THUMBNAIL, SEE_ALSO } from '../rdf';
+import { THUMBNAIL, SEE_ALSO, CLASS } from '../rdf';
 
 @Injectable({
     providedIn: 'root'
@@ -203,6 +203,29 @@ export class TransformService {
 			if (p.value() == SEE_ALSO.value()) return false;
 			if (p.value() == THUMBNAIL.value()) return false;
 			return true;
+		    }
+		);
+		return qr;
+	    }
+	);
+    };
+    
+    filterRelationships() {
+	return map(
+	    (qr : QueryResult) => {
+		qr.data = qr.data.filter(
+		    row => {
+			let p = row["p"];
+			let o = row["o"];
+			if (o.is_literal()) return true;
+			if (p.is_uri()) {
+			    if (p.value() == SEE_ALSO.value()) return true;
+			    if (p.value() == THUMBNAIL.value()) return true;
+			    if (p.value() == CLASS.value()) return true;
+			    return false;
+			}
+			// Unbound
+			return false;
 		    }
 		);
 		return qr;
