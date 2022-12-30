@@ -1,9 +1,8 @@
 
 import { Observable, map } from 'rxjs';
 
-import { Query, QueryResult } from './query';
+import { Query, QueryResult, QueryEngine } from './query';
 import { Value } from '../rdf/triple';
-import { QueryService } from './query.service';
 
 export class RelationshipQuery implements Query {
     constructor(
@@ -54,7 +53,7 @@ export class RelationshipQuery implements Query {
 
     }
 
-    run(q : QueryService) : Observable<Value[]> {
+    run(q : QueryEngine) : Observable<Value[]> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);

@@ -1,5 +1,6 @@
 
 import { Value } from '../rdf/triple';
+import { Observable } from 'rxjs';
 
 export type Row = {
     [key : string] : Value
@@ -16,4 +17,9 @@ export interface Query {
     hash() : string;
     decode(res : any) : any 
 };
+
+export interface QueryEngine {
+    query(q : Query) : Observable<QueryResult>;
+};
+
 

@@ -1,8 +1,7 @@
 
 import { Observable, map } from 'rxjs';
 
-import { Query, QueryResult } from './query';
-import { QueryService } from './query.service';
+import { Query, QueryResult, QueryEngine } from './query';
 import { Triple, Uri, Value } from '../rdf/triple';
 
 export class LabelQuery implements Query {
@@ -42,7 +41,7 @@ export class LabelQuery implements Query {
 
     }
 
-    run(q : QueryService) : Observable<string | null> {
+    run(q : QueryEngine) : Observable<string | null> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);

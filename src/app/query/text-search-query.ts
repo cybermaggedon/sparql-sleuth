@@ -1,8 +1,7 @@
 
 import { Observable } from 'rxjs';
 
-import { Query, QueryResult } from './query';
-import { QueryService } from './query.service';
+import { Query, QueryResult, QueryEngine } from './query';
 import { Value, Uri, Literal, Triple } from '../rdf/triple';
 
 export class TextSearchQuery implements Query {
@@ -49,7 +48,7 @@ export class TextSearchQuery implements Query {
 
     }
 
-    run(q : QueryService) : Observable<QueryResult> {
+    run(q : QueryEngine) : Observable<QueryResult> {
 	return q.query(this);
     }
 

@@ -5,7 +5,7 @@ import { Observable, Subject, Subscriber, of } from 'rxjs';
 import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { LRUCache } from 'typescript-lru-cache';
 
-import { Query, QueryResult } from './query';
+import { Query, QueryResult, QueryEngine } from './query';
 import { Triple, Value, Literal, Uri, Unbound } from '../rdf/triple';
 import { ProgressService, Activity } from '../progress.service';
 
@@ -42,7 +42,7 @@ const maxConcurrent = 2;
 @Injectable({
     providedIn: 'root'
 })
-export class QueryService {
+export class QueryService implements QueryEngine {
 
     constructor(
 	private httpClient : HttpClient,
