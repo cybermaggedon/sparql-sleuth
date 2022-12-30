@@ -8,6 +8,8 @@
 	</p-button>
 	<p-button label="Schema" (click)="schema()" icon="pi pi-list">
 	</p-button>
+	<p-button label="Dataset" (click)="dataset()" icon="pi pi-book">
+	</p-button>
       </div>
     </p-toolbar>
     <div class="container">
@@ -43,4 +45,10 @@
   (onClose)="closeSchemaDialog()"
   >
 </schema-dialog>
+
+<dataset-dialog
+  [display]="datasetDialogVisible"
+  (onClose)="closeDatasetDialog()"
+  >
+</dataset-dialog>
 

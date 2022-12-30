@@ -30,9 +30,11 @@ export class GraphViewerComponent implements OnInit {
 
     properties : Properties = new Properties();
 
+    // FIXME: quad-state type needed.
     nodeDialogVisible = false;
     searchDialogVisible = false;
     schemaDialogVisible = false;
+    datasetDialogVisible = false;
 
     selection? : Node;
 
@@ -69,6 +71,7 @@ export class GraphViewerComponent implements OnInit {
 		this.nodeDialogVisible = true;
 		this.searchDialogVisible = false;
 		this.schemaDialogVisible = false;
+		this.datasetDialogVisible = false;
             }
 	);
 
@@ -84,12 +87,14 @@ export class GraphViewerComponent implements OnInit {
 	this.searchDialogVisible = true;
 	this.nodeDialogVisible = false;
 	this.schemaDialogVisible = false;
+	this.datasetDialogVisible = false;
     }
 
     schema() {
 	this.schemaDialogVisible = true;
 	this.nodeDialogVisible = false;
 	this.searchDialogVisible = false;
+	this.datasetDialogVisible = false;
     }
 
     closeSearchDialog() {
@@ -99,6 +104,17 @@ export class GraphViewerComponent implements OnInit {
 
     closeSchemaDialog() {
 	this.schemaDialogVisible = false;
+    }
+
+    closeDatasetDialog() {
+	this.datasetDialogVisible = false;
+    }
+
+    dataset() {
+	this.datasetDialogVisible = true;
+	this.schemaDialogVisible = false;
+	this.nodeDialogVisible = false;
+	this.searchDialogVisible = false;
     }
 
     ngAfterViewInit(): void {

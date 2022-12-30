@@ -23,6 +23,8 @@ import { NodeDialogComponent } from './node-dialog/node-dialog.component';
 import { SearchDialogComponent } from './search-dialog/search-dialog.component';
 import { SchemaDialogComponent } from './schema-dialog/schema-dialog.component';
 import { SchemaComponent } from './schema/schema.component';
+import { DatasetDialogComponent } from './dataset-dialog/dataset-dialog.component';
+import { DatasetComponent } from './dataset/dataset.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +39,8 @@ import { SchemaComponent } from './schema/schema.component';
         SearchDialogComponent,
         SchemaDialogComponent,
         SchemaComponent,
+        DatasetDialogComponent,
+        DatasetComponent,
     ],
     imports: [
 	BrowserModule,
