@@ -89,14 +89,14 @@ export class GraphService {
     addSchema() {
 
 	// Add classes
-	this.query.query(
-	    new TripleQuery(
-		"Acquire schema",
-		undefined,
-		new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-		new Uri("http://www.w3.org/2000/01/rdf-schema#Class"),
-		50,
-	    )
+	new TripleQuery(
+	    "Acquire schema",
+	    undefined,
+	    new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+	    new Uri("http://www.w3.org/2000/01/rdf-schema#Class"),
+	    50,
+	).run(
+	    this.query
 	).pipe(
 	    this.transform.queryResultToTriples(),
 	).subscribe(
@@ -110,14 +110,14 @@ export class GraphService {
 
     relationshipIn(id : Uri) {
 
-	this.query.query(
-	    new TripleQuery(
-		"Relationship in " + id,
-		undefined,
-		undefined,
-		id,
-		this.fetchEdges,
-	    )
+	new TripleQuery(
+	    "Relationship in " + id,
+	    undefined,
+	    undefined,
+	    id,
+	    this.fetchEdges,
+	).run(
+	    this.query
 	).pipe(
 	    this.transform.queryResultToTriples(),
 	).subscribe(
@@ -130,14 +130,14 @@ export class GraphService {
 
     relationshipOut(id : Uri) {
     
-	this.query.query(
-	    new TripleQuery(
-		"Relationship out " + id,
-		id,
-		undefined,
-		undefined,
-		this.fetchEdges,
-	    )
+	new TripleQuery(
+	    "Relationship out " + id,
+	    id,
+	    undefined,
+	    undefined,
+	    this.fetchEdges,
+	).run(
+	    this.query
 	).pipe(
 	    this.transform.queryResultToTriples(),
 	).subscribe(
@@ -151,14 +151,14 @@ export class GraphService {
     relationship(node : Node, rel : Relationship) {
 
 	if (rel.inward) {
-	    this.query.query(
-		new TripleQuery(
-		    "Relationships to " + node.id,
-		    undefined,
-		    rel.id,
-		    new Uri(node.id),
-		    this.fetchEdges,
-		)
+	    new TripleQuery(
+		"Relationships to " + node.id,
+		undefined,
+		rel.id,
+		new Uri(node.id),
+		this.fetchEdges,
+	    ).run(
+		this.query
 	    ).pipe(
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
@@ -167,14 +167,14 @@ export class GraphService {
 		}
 	    );
 	} else {
-	    this.query.query(
-		new TripleQuery(
-		    "Relationships from " + node.id,
-		    new Uri(node.id),
-		    rel.id,
-		    undefined,
-		    this.fetchEdges,
-		)
+	    new TripleQuery(
+		"Relationships from " + node.id,
+		new Uri(node.id),
+		rel.id,
+		undefined,
+		this.fetchEdges,
+	    ).run(
+		this.query
 	    ).pipe(
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
