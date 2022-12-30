@@ -119,6 +119,7 @@ export class GraphService {
 	    this.query
 	).pipe(
 	    this.transform.addFixedColumn("o", id),
+	    this.transform.filterNonProperties(),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
@@ -138,6 +139,7 @@ export class GraphService {
 	    this.query
 	).pipe(
 	    this.transform.addFixedColumn("s", id),
+	    this.transform.filterNonProperties(),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
@@ -204,10 +206,10 @@ export class GraphService {
 		// Edge points to object
 
 		// Ignore relation links, point to e.g. a web resource
-		if (triple.p == SEE_ALSO) continue;
+//		if (triple.p == SEE_ALSO) continue;
 
 		// Ignore thumbnail links, point to a thumbnail image
-		if (triple.p == THUMBNAIL) continue;
+//		if (triple.p == THUMBNAIL) continue;
 
 		this.includeNode(triple.s as Uri);
 		this.includeNode(triple.o as Uri);
