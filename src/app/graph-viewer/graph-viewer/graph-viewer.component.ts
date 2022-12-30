@@ -55,10 +55,20 @@ export class GraphViewerComponent implements OnInit {
 	    
 	);
 
+	this.events.nodeDeselectedEvents().subscribe(
+	    ev => {
+		if (this.nodeDialogVisible)
+		    this.nodeDialogVisible = false;
+	    }
+	    
+	);
+
 	this.propertyService.propertiesEvents().subscribe(
             ev => {
 		this.properties = ev;
 		this.nodeDialogVisible = true;
+		this.searchDialogVisible = false;
+		this.schemaDialogVisible = false;
             }
 	);
 
@@ -72,10 +82,14 @@ export class GraphViewerComponent implements OnInit {
 
     search() {
 	this.searchDialogVisible = true;
+	this.nodeDialogVisible = false;
+	this.schemaDialogVisible = false;
     }
 
     schema() {
 	this.schemaDialogVisible = true;
+	this.nodeDialogVisible = false;
+	this.searchDialogVisible = false;
     }
 
     closeSearchDialog() {
