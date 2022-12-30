@@ -14,13 +14,14 @@ import { CommandService, Direction } from './command.service';
 import { TransformService } from '../query/transform.service';
 
 import { TripleQuery } from '../query/triple-query';
+import { POQuery } from '../query/p-o-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 
 import { Relationship } from './graph';
 import { EventService } from './event.service';
 
-import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf';
+import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../rdf';
 
 @Injectable({
     providedIn: 'root'
@@ -88,22 +89,20 @@ export class GraphService {
 
     addSchema() {
 
-	// Add classes
-	new TripleQuery(
-	    "Acquire schema",
-	    undefined,
-	    new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-	    new Uri("http://www.w3.org/2000/01/rdf-schema#Class"),
-	    50,
+	new POQuery(
+	    "Acquire schema", IS_A, CLASS, 50
 	).run(
 	    this.query
 	).pipe(
+	    this.transform.addLiteralColumn("p", IS_A),
+	    this.transform.addLiteralColumn("o", CLASS),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
 		this.includeTriples(result);
 	    }
 	);
+
     }
 
     fetchEdges = 40;
@@ -111,7 +110,7 @@ export class GraphService {
     relationshipIn(id : Uri) {
 
 	new TripleQuery(
-	    "Relationship in " + id,
+	    "Relationship in " + id.value(),
 	    undefined,
 	    undefined,
 	    id,
@@ -131,7 +130,7 @@ export class GraphService {
     relationshipOut(id : Uri) {
     
 	new TripleQuery(
-	    "Relationship out " + id,
+	    "Relationship out " + id.value(),
 	    id,
 	    undefined,
 	    undefined,
@@ -221,7 +220,7 @@ export class GraphService {
 	n.id = id.value();
 
 	// FIXME: Can be wrapped in transform?
-	new LabelQuery("Label " + id, id).run(
+	new LabelQuery("Label " + id.value(), id).run(
 	    this.query
 	).subscribe(
 	    lbl => {
@@ -242,7 +241,7 @@ export class GraphService {
 	link.from = from.value();
 	link.to = to.value();
 
-	new LabelQuery("Label " + rel, rel,).run(
+	new LabelQuery("Label " + rel.value(), rel).run(
 	    this.query
 	).subscribe(
 	    lbl => {
@@ -275,7 +274,7 @@ export class GraphService {
 
     getLabel(id : Uri) : Observable<string> {
 
-	return new LabelQuery("Label " + id, id,).run(
+	return new LabelQuery("Label " + id.value(), id).run(
 	    this.query
 	).pipe(
 	    map(

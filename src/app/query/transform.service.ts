@@ -74,12 +74,14 @@ export class TransformService {
 	return map(
 	    (qr : QueryResult) => {
 
+/*
 		if ((qr.vars.length != 3) ||
 		    (qr.vars[0] != "s") ||
 		    (qr.vars[1] != "p") ||
 		    (qr.vars[2] != "o")) {
 		    throw new Error("qrToTriples requires head variables s, p, o");
-		}
+		    }
+		    */
 
 		let trs : Triple[] = [];
 
@@ -152,7 +154,43 @@ export class TransformService {
 
 	);
 
-    }
+    };
+    
+    columnToArray(col : string) {
+
+	return map(
+	    (qr : QueryResult) => {
+
+		let vals : Value[] = [];
+
+		for(let qrow of qr.data) {
+		    vals.push(qrow[col]);
+		}
+		
+		return vals;
+
+	    }
+
+	);
+
+    };
+    
+    addLiteralColumn(col : string, value : Value) {
+
+	return map(
+	    (qr : QueryResult) => {
+
+		for(let qrow of qr.data) {
+		    qrow[col] = value;
+		}
+		
+		return qr;
+
+	    }
+
+	);
+
+    };
     
 }
 
