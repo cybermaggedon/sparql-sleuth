@@ -175,7 +175,7 @@ export class TransformService {
 
     };
     
-    addLiteralColumn(col : string, value : Value) {
+    addFixedColumn(col : string, value : Value) {
 
 	return map(
 	    (qr : QueryResult) => {

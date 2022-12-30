@@ -13,8 +13,10 @@ import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
 import { TransformService } from '../query/transform.service';
 
-import { TripleQuery } from '../query/triple-query';
 import { POQuery } from '../query/p-o-query';
+import { OQuery } from '../query/o-query';
+import { SQuery } from '../query/s-query';
+import { SPQuery } from '../query/s-p-query';
 import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 
@@ -94,8 +96,8 @@ export class GraphService {
 	).run(
 	    this.query
 	).pipe(
-	    this.transform.addLiteralColumn("p", IS_A),
-	    this.transform.addLiteralColumn("o", CLASS),
+	    this.transform.addFixedColumn("p", IS_A),
+	    this.transform.addFixedColumn("o", CLASS),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
@@ -109,35 +111,33 @@ export class GraphService {
 
     relationshipIn(id : Uri) {
 
-	new TripleQuery(
+	new OQuery(
 	    "Relationship in " + id.value(),
-	    undefined,
-	    undefined,
 	    id,
 	    this.fetchEdges,
 	).run(
 	    this.query
 	).pipe(
+	    this.transform.addFixedColumn("o", id),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
 		this.includeTriples(result);
 	    }
 	);
-	
+
     }
 
     relationshipOut(id : Uri) {
-    
-	new TripleQuery(
+
+	new SQuery(
 	    "Relationship out " + id.value(),
 	    id,
-	    undefined,
-	    undefined,
 	    this.fetchEdges,
 	).run(
 	    this.query
 	).pipe(
+	    this.transform.addFixedColumn("s", id),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
 	    result => {
@@ -150,37 +150,47 @@ export class GraphService {
     relationship(node : Node, rel : Relationship) {
 
 	if (rel.inward) {
-	    new TripleQuery(
-		"Relationships to " + node.id,
-		undefined,
+
+	    let o = new Uri(node.id);
+	    
+	    new POQuery(
+		"Relationship to " + node.id,
 		rel.id,
-		new Uri(node.id),
+		o,
 		this.fetchEdges,
 	    ).run(
 		this.query
 	    ).pipe(
+		this.transform.addFixedColumn("p", rel.id),
+		this.transform.addFixedColumn("o", o),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
 		    this.includeTriples(result);
 		}
 	    );
+
 	} else {
-	    new TripleQuery(
-		"Relationships from " + node.id,
-		new Uri(node.id),
+
+	    let s = new Uri(node.id);
+	    
+	    new SPQuery(
+		"Relationship to " + node.id,
+		s,
 		rel.id,
-		undefined,
 		this.fetchEdges,
 	    ).run(
 		this.query
 	    ).pipe(
+		this.transform.addFixedColumn("s", s),
+		this.transform.addFixedColumn("p", rel.id),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
 		    this.includeTriples(result);
 		}
 	    );
+
 	}
 
     }
@@ -201,8 +211,9 @@ export class GraphService {
 
 		this.includeNode(triple.s as Uri);
 		this.includeNode(triple.o as Uri);
-		this.includeEdge(triple.s as Uri, triple.p as Uri,
-				 triple.o as Uri);
+		this.includeEdge(
+		    triple.s as Uri, triple.p as Uri, triple.o as Uri
+		);
 
 	    } else {
 
@@ -252,23 +263,6 @@ export class GraphService {
 		this.events.addEdge(link);
 	    }
 	);
-
-    }
-
-    // Makes a label by stripping some hopefully useful text out of the ID.
-    // If the ID contains a hash, you get something unfriendly.
-    makeLabel(label : string) {
-
-	if (label.startsWith("http://"))
-            label = label.substr(label.lastIndexOf("/") + 1);
-
-	if (label.lastIndexOf("#") >= 0)
-            label = label.substr(label.lastIndexOf("#") + 1);
-
-	if (label.length > 20)
-	    label = label.substring(0, 15);
-
-	return label;
 
     }
 

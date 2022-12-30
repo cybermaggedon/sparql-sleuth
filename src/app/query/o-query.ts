@@ -5,25 +5,22 @@ import { Query, QueryResult } from './query';
 import { QueryService } from './query.service';
 import { Triple, Uri, Value } from './triple';
 
-export class POQuery implements Query {
+export class OQuery implements Query {
     constructor(
 	desc : string,
-	p : Value,
 	o : Value,
 	limit : number = 100
     ) {
-	this.p = p;
 	this.o = o;
 	this.desc = desc;
 	this.limit = limit;
     }
-    p : Value;
     o : Value;
     desc : string;
     limit : number = 100;
     description() { return this.desc; }
     hash() : string {
-	return "p-o-q " + this.p.hash() + " " + this.o.hash() + " " + this.limit;
+	return "o-q " + this.o.hash() + " " + this.limit;
     }
 
     
@@ -33,8 +30,8 @@ export class POQuery implements Query {
 
 	let query = "";
 
-	query += "SELECT DISTINCT ?s WHERE {\n";
-	query += "  ?s " + this.p.term() + " " + this.o.term() + " .\n";
+	query += "SELECT DISTINCT ?s ?p WHERE {\n";
+	query += "  ?s ?p " + this.o.term() + " .\n";
 
 	query += "}\n";
 	query += "LIMIT " + this.limit + "\n";
