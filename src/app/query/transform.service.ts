@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { QueryResult } from './query';
+import { QueryResult, Row } from './query';
 import { Observable, forkJoin, mergeMap, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueryService } from './query.service';
@@ -67,6 +67,57 @@ export class TransformService {
 		res.push(this.appendLabel(inp, id));
 	    }
 	    return forkJoin(res);
+	});
+    }
+
+    addLabel(row : Row, src : string, dest : string) : Observable<Row> {
+
+	// This only works on URIs.  Just append the value otherwise.
+	if (!row[src].is_uri()) {
+	    row[dest] = row[src];
+	    return of(row);
+	}
+
+	return new Observable<Row>(
+	    sub => {
+
+		if (!(row[src].is_uri()))
+		    throw new Error("Can't call appendLabel on non-URI");
+
+		new LabelQuery("Label " + row[src].value(), row[src] as Uri).run(
+		    this.query
+		).subscribe(
+		    (label : string | null) => {
+			if (!label) label = this.makeLabel(row[src] as Uri);
+			row[dest] = new Literal(label);
+			sub.next(row);
+			sub.complete();
+		    });
+	    }
+	);
+    }
+
+    mapToLabel(src : string, dest : string) {
+
+	return mergeMap((qr : QueryResult) => {
+
+	    let res : any[] = [];
+
+	    for (let row of qr.data) {
+		res.push(this.addLabel(row, src, dest));
+	    }
+
+	    return forkJoin(res);
+/*
+		.pipe(
+		// FIXME: type
+		(rows : any[]) => {
+		    return {
+			vars: qr.vars,
+			data: rows,
+		    };
+		}
+	    );*/
 	});
     }
 

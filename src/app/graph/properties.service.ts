@@ -13,8 +13,6 @@ import { QueryService } from '../query/query.service';
 import { TripleQuery } from '../query/triple-query';
 import { SQuery } from '../query/s-query';
 import { QueryResult, Row } from '../query/query';
-import { RelationshipQuery } from '../query/relationship-query';
-import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 import { GraphService } from './graph.service';
 import { TransformService } from '../query/transform.service';
@@ -194,22 +192,27 @@ export class PropertiesService {
 
     getProps(node : Node) : Observable<any> {
 	
-	return new TripleQuery(
+	return new SQuery(
 	    "Fetch " + node.id,
 	    new Uri(node.id),
-	    undefined,
-	    undefined,
 	    this.propertyEdges,
 	).run(
 	    this.query
 	).pipe(
+	    this.transform.addFixedColumn("s", new Uri(node.id)),
+/*
 	    map(
 		(x : QueryResult) => x.data.map(
 		    (y : any) => [y.p, y.o]
 		)
-	    ),
-	    this.transform.mapAddLabel(0),
-	    this.transform.mapAddLabel(1),
+		),
+*/
+	    this.transform.mapToLabel("s", "slabel"),
+
+//	    this.transform.mapAddLabel(0),
+//	    this.transform.mapAddLabel(1),
+	    map(x => { console.log(x); return x; }),
+	    /*
 	    map(
 		(x : Value[][]) => {
 		    let res : { key : string, value : string }[] = [];
@@ -217,8 +220,9 @@ export class PropertiesService {
 			res.push({key: row[2].value(), value: row[3].value()});
 		    }
 		    return res;
-		}
-	    ),
+		    }
+		    ),*/
+	    map(blah => [])
 	);
     }
 
