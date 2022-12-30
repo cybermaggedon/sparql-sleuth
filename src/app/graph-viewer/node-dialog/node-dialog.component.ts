@@ -2,6 +2,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { Properties } from '../../graph/properties.service';
+import { Node, Relationship } from '../../graph/graph';
 
 @Component({
     selector: 'node-dialog',
@@ -15,6 +16,12 @@ export class NodeDialogComponent implements OnInit {
 
     @Input()
     properties : Properties = new Properties();
+
+    @Input()
+    relationships : Relationship[] = [];
+
+    @Input()
+    selection? : Node;
 
     constructor() { }
     

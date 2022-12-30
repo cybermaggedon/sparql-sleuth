@@ -1,2 +1,11 @@
+
+<button *ngFor="let rel of relationships" (click)="reln(rel)"
+	pButton pRipple type="button" class="p-button-raised p-button-text"
+	>
+  <ng-container *ngIf="rel.inward">&#x2b95;</ng-container>
+  {{rel.name}}
+  <ng-container *ngIf="!rel.inward">&#x2b95;</ng-container>
+</button>
+
 <detail class="detail" [properties]="properties">
 </detail>

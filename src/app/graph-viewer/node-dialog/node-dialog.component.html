@@ -1,12 +1,17 @@
 
-<p-dialog class="dialog"
+<p-sidebar class="dialog" position="right"
 	  [(visible)]="display" [style]="{width: '50vw'}"
 	  (onHide)="onHide()">
 
   <ng-template pTemplate="header">
   </ng-template>
 
-  <node-details [properties]="properties"></node-details>
+  <node-details
+    [properties]="properties"
+    [relationships]="relationships"
+    [selection]="selection"
+    >
+  </node-details>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple type="button" class="p-button-raised p-button-text"
@@ -15,5 +20,5 @@
     </button>
   </ng-template>
 
-</p-dialog>
+</p-sidebar>
 

@@ -7,7 +7,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { DialogModule } from 'primeng/dialog';
+import { DialogModule } from 'primeng/dialog'; // Unused?
+import { SidebarModule } from 'primeng/sidebar';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -17,7 +18,6 @@ import { SearchComponent } from './search/search.component';
 import { InfoComponent } from './info/info.component';
 import { NodeDetailsComponent } from './node-details/node-details.component';
 import { NodeDialogComponent } from './node-dialog/node-dialog.component';
-
 @NgModule({
     declarations: [
 	GraphViewerComponent,
@@ -31,12 +31,15 @@ import { NodeDialogComponent } from './node-dialog/node-dialog.component';
     ],
     imports: [
 	BrowserModule,
+	FormsModule,
+	ReactiveFormsModule,
+
 	ButtonModule,
 	TableModule,
 	InputTextModule,
 	DialogModule,
-	FormsModule,
-	ReactiveFormsModule,
+	SidebarModule,
+
     ],
     exports: [
 	GraphViewerComponent,

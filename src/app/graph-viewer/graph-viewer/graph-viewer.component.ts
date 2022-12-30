@@ -4,7 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
 import { Uri } from '../../rdf/triple';
+import { Node, Relationship } from '../../graph/graph';
 
+import { RelationshipService } from '../../graph/relationship.service';
 import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
@@ -25,13 +27,12 @@ enum BottomPaneMode {
 })
 export class GraphViewerComponent implements OnInit {
 
-       
-
     constructor(
 	private command : CommandService,
 	private route : ActivatedRoute,
 	private propertyService : PropertiesService,
 	private events : EventService,
+	private relationship : RelationshipService,
     ) {
 
     }
@@ -45,6 +46,10 @@ export class GraphViewerComponent implements OnInit {
     properties : Properties = new Properties();
 
     nodeDialogVisible = false;
+
+    selection? : Node;
+
+    relationships : Relationship[] = [];
 
     ngOnInit() : void {
 
@@ -71,7 +76,23 @@ export class GraphViewerComponent implements OnInit {
 	this.events.nodeDeselectedEvents().subscribe(
 	    () => {
 		this.mode = BottomPaneMode.EMPTY;
+		this.selection = undefined;
 	    }
+	);
+
+	this.events.nodeSelectedEvents().subscribe(
+	    ev => {
+
+		this.selection = ev.node;
+
+		this.relationships = [];
+
+		this.relationship.getRelationships(ev.node).subscribe(
+		    ev => this.relationships = ev
+		);
+
+	    }
+	    
 	);
 
     }

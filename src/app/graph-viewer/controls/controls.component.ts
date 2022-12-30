@@ -87,11 +87,8 @@ export class ControlsComponent implements OnInit {
     }
 
     reln(rel : Relationship) {
-
 	if (!this.selection) return;
-
 	this.command.relationship(this.selection, rel);
-
     }
 
     schema() {

@@ -1,7 +1,10 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 
+import { RelationshipService } from '../../graph/relationship.service';
 import { Properties } from '../../graph/properties.service';
+import { Node, Relationship } from '../../graph/graph';
+import { CommandService, Direction } from '../../graph/command.service';
 
 @Component({
     selector: 'node-details',
@@ -11,13 +14,26 @@ import { Properties } from '../../graph/properties.service';
 export class NodeDetailsComponent implements OnInit {
 
     constructor(
-    ) { }
+	private command : CommandService
+    ) {
+    }
+
+    @Input()
+    relationships : Relationship[] = [];
 
     @Input()
     properties : Properties = new Properties();
 
-    ngOnInit(): void {
+    @Input()
+    selection? : Node;
 
+    ngOnInit(): void {
+    }
+
+    reln(rel : Relationship) {
+	if (!this.selection) return;
+	this.command.relationship(this.selection, rel);
     }
 
 }
+
