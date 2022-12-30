@@ -46,6 +46,7 @@ export class GraphViewerComponent implements OnInit {
     properties : Properties = new Properties();
 
     nodeDialogVisible = false;
+    searchDialogVisible = false;
 
     selection? : Node;
 
@@ -97,8 +98,18 @@ export class GraphViewerComponent implements OnInit {
 
     }
 
-    closeDialog() {
+    closeNodeDialog() {
 	this.nodeDialogVisible = false;
+	// FIXME:
+	this.events.unselect();
+    }
+
+    search() {
+	this.searchDialogVisible = true;
+    }
+
+    closeSearchDialog() {
+	this.searchDialogVisible = false;
 	// FIXME:
 	this.events.unselect();
     }

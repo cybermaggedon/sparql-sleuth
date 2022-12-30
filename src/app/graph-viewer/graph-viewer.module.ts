@@ -9,6 +9,8 @@ import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog'; // Unused?
 import { SidebarModule } from 'primeng/sidebar';
+import { TabViewModule } from 'primeng/tabview';
+import { ToolbarModule } from 'primeng/toolbar';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -18,6 +20,8 @@ import { SearchComponent } from './search/search.component';
 import { InfoComponent } from './info/info.component';
 import { NodeDetailsComponent } from './node-details/node-details.component';
 import { NodeDialogComponent } from './node-dialog/node-dialog.component';
+import { SearchDialogComponent } from './search-dialog/search-dialog.component';
+
 @NgModule({
     declarations: [
 	GraphViewerComponent,
@@ -28,6 +32,7 @@ import { NodeDialogComponent } from './node-dialog/node-dialog.component';
 	InfoComponent,
         NodeDetailsComponent,
         NodeDialogComponent,
+        SearchDialogComponent,
     ],
     imports: [
 	BrowserModule,
@@ -39,6 +44,8 @@ import { NodeDialogComponent } from './node-dialog/node-dialog.component';
 	InputTextModule,
 	DialogModule,
 	SidebarModule,
+	TabViewModule,
+	ToolbarModule,
 
     ],
     exports: [

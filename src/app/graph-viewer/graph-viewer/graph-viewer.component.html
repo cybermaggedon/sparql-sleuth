@@ -1,8 +1,28 @@
 
+<p-tabView>
+
+  <p-tabPanel header="Information">
+    <info></info>
+  </p-tabPanel>
+
+  <p-tabPanel header="Graph">
+    <p-toolbar>
+      <p-button label="Search" (click)="search()" icon="pi pi-search">
+      </p-button>
+    </p-toolbar>
+    <div class="container">
+      <div class="graph">
+	<graph></graph>
+      </div>
+    </div>
+  </p-tabPanel>
+
+</p-tabView>
+
+<!--
 <div class="container">
   
   <div class="box graph">
-    <graph></graph>
   </div>
 
   <div class="box controls">
@@ -16,19 +36,25 @@
       <search *ngIf="searchMode"></search>
 
     <div *ngIf="helpMode">
-      <info></info>
     </div>
 
   </div>
   
 </div>
 
+-->
+
 <node-dialog
   [display]="nodeDialogVisible"
   [properties]="properties"
   [relationships]="relationships"
   [selection]="selection"
-  (onClose)="closeDialog()"
+  (onClose)="closeNodeDialog()"
   >
 </node-dialog>
 
+<search-dialog
+  [display]="searchDialogVisible"
+  (onClose)="closeSearchDialog()"
+  >
+</search-dialog>

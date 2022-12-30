@@ -11,14 +11,13 @@ import { Node, Relationship } from '../../graph/graph';
 })
 export class NodeDialogComponent implements OnInit {
 
-    @Input()
-    display = false;
+    @Input() display = false;
 
-    @Input()
-    properties : Properties = new Properties();
+    @Input() properties : Properties = new Properties();
 
-    @Input()
-    relationships : Relationship[] = [];
+    @Input() relationships : Relationship[] = [];
+
+    @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
     @Input()
     selection? : Node;
@@ -31,8 +30,6 @@ export class NodeDialogComponent implements OnInit {
     close() {
 	this.onClose.emit();
     }
-
-    @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
     onHide() {
 	this.onClose.emit();

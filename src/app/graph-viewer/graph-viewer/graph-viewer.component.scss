@@ -2,7 +2,8 @@
 .container {
     display: flex;
     flex-flow: column;
-    height: 100%;
+    height: 85vh;
+    border: 1px solid #e0e0e0;
 }
 
 .graph {
@@ -29,3 +30,4 @@
     margin: 0.2rem;
     padding: 0.8rem;
 }
+
