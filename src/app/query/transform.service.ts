@@ -107,7 +107,17 @@ export class TransformService {
 		res.push(this.addLabel(row, src, dest));
 	    }
 
-	    return forkJoin(res);
+	    return forkJoin(res).pipe(
+		map(
+		    (rows : Row[]) => {
+			return {
+			    vars: qr.vars.concat(dest),
+			    data: rows,
+			};
+		    }
+		)
+	    );
+	    
 /*
 		.pipe(
 		// FIXME: type
@@ -235,6 +245,8 @@ export class TransformService {
 		for(let qrow of qr.data) {
 		    qrow[col] = value;
 		}
+
+		qr.vars = qr.vars.concat(col);
 		
 		return qr;
 

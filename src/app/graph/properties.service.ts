@@ -200,29 +200,20 @@ export class PropertiesService {
 	    this.query
 	).pipe(
 	    this.transform.addFixedColumn("s", new Uri(node.id)),
-/*
-	    map(
-		(x : QueryResult) => x.data.map(
-		    (y : any) => [y.p, y.o]
-		)
-		),
-*/
 	    this.transform.mapToLabel("s", "slabel"),
+	    this.transform.mapToLabel("p", "plabel"),
+	    map(qr => {
+		let res : { key : string, value : string }[] = [];
 
-//	    this.transform.mapAddLabel(0),
-//	    this.transform.mapAddLabel(1),
+		for (let row of qr.data) {
+		    res.push({
+			key: row["plabel"].value(),
+			value: row["o"].value()
+		    });
+		}
+		return res;
+	    }),
 	    map(x => { console.log(x); return x; }),
-	    /*
-	    map(
-		(x : Value[][]) => {
-		    let res : { key : string, value : string }[] = [];
-		    for (let row of x) {
-			res.push({key: row[2].value(), value: row[3].value()});
-		    }
-		    return res;
-		    }
-		    ),*/
-	    map(blah => [])
 	);
     }
 
