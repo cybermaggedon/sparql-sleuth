@@ -81,10 +81,8 @@ export class GraphComponent implements OnInit {
 
 	this.events.resetEvents().subscribe(
 	    ev => {
-
 		this.nodes.clear();
 		this.edges.clear();
-		
 	    }
 	)
 
@@ -125,11 +123,17 @@ export class GraphComponent implements OnInit {
 	// select event.  This causes a UI inconsistency because subsequently
 	// clicking on the event doesn't cause a select event.
 	this.network.on("dragStart", (params : any) => {
+	/*
 	    if (params.nodes.length == 1) {
 	        let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
 		cmp.events.selected(node);
 	    }
+	    */
+	});
+
+	this.network.on("dragEnd", (params : any) => {
+	    this.network.unselectAll();
 	});
 
 	this.events.nodeUnselectEvents().subscribe(

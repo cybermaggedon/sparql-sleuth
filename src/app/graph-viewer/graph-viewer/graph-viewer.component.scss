@@ -1,37 +1,17 @@
 
 p-button {
-    padding: 0.3rem;
+    margin: 0 0 0 1rem;
 }
 
 .container {
-    display: flex;
-    flex-flow: column;
-    height: 85vh;
+    height: calc(100vh - 13rem);
+    width: 100%;
     border: 1px solid #e0e0e0;
+    margin: auto;
 }
 
 .graph {
-    flex-grow: 1;
-}
-
-.controls {
-    height: 4rem;
-    display: flex;
-}
-
-.info {
-    height: 24rem;
-    overflow: scroll;
-}
-
-.box {
-    border: 1px solid #e0e0e0;
-    padding: 0.1rem;
-    margin: 0.1rem;
-}
-
-.box.info {
-    margin: 0.2rem;
-    padding: 0.8rem;
+    height: 100%;
+    width: 100%;
 }
 
