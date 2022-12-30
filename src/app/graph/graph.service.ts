@@ -13,7 +13,7 @@ import { Node, Edge } from './graph';
 
 import { QueryService } from '../query/query.service';
 import { CommandService, Direction } from './command.service';
-import { TransformService } from '../query/transform.service';
+import { TransformService } from '../transform/transform.service';
 
 import { POQuery } from '../query/p-o-query';
 import { OQuery } from '../query/o-query';

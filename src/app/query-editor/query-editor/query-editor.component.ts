@@ -5,7 +5,7 @@ import { FormBuilder } from '@angular/forms';
 import { RawQuery } from '../../query/raw-query';
 import { QueryService } from '../../query/query.service';
 import { ProgressService, ProgressEvent } from '../../progress.service';
-import { TransformService } from '../../query/transform.service';
+import { TransformService } from '../../transform/transform.service';
 
 @Component({
     selector: 'app-query-editor',

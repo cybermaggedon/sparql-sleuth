@@ -17,7 +17,7 @@ import { SQuery } from '../query/s-query';
 import { QueryResult, Row } from '../query/query';
 import { LabelQuery } from '../query/label-query';
 import { GraphService } from './graph.service';
-import { TransformService } from '../query/transform.service';
+import { TransformService } from '../transform/transform.service';
 import { Node } from './graph';
 import { EventService } from './event.service';
 

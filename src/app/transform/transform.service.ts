@@ -1,11 +1,11 @@
 
 import { Injectable } from '@angular/core';
 
-import { QueryResult, Row } from './query';
+import { QueryResult, Row } from '../query//query';
 import { Observable, forkJoin, mergeMap, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { QueryService } from './query.service';
-import { LabelQuery } from './label-query';
+import { QueryService } from '../query/query.service';
+import { LabelQuery } from '../query/label-query';
 import { Uri, Value, Literal, Triple } from '../rdf/triple';
 import { THUMBNAIL, SEE_ALSO, CLASS } from '../rdf/defs';
 

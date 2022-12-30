@@ -11,7 +11,7 @@ import { Value } from '../rdf/triple';
 import { QueryService } from '../query/query.service';
 import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';
-import { TransformService } from '../query/transform.service';
+import { TransformService } from '../transform/transform.service';
 
 export interface SearchResult {
     s : Value,
