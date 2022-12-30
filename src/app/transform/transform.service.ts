@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { QueryService } from '../query/query.service';
 import { LabelQuery } from '../query/label-query';
 import { Uri, Value, Literal, Triple } from '../rdf/triple';
-import { THUMBNAIL, SEE_ALSO, CLASS } from '../rdf/defs';
+import { THUMBNAIL, SEE_ALSO, IS_A } from '../rdf/defs';
 
 @Injectable({
     providedIn: 'root'
@@ -284,7 +284,7 @@ export class TransformService {
 			if (p.is_uri()) {
 			    if (p.value() == SEE_ALSO.value()) return true;
 			    if (p.value() == THUMBNAIL.value()) return true;
-			    if (p.value() == CLASS.value()) return true;
+			    if (p.value() == IS_A.value()) return true;
 			    return false;
 			}
 			// Unbound

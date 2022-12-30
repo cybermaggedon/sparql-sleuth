@@ -81,7 +81,7 @@ export class PropertiesService {
 		
 		let p = row["p"] as Uri;
 		let o = row["o"];
-		    
+
 		if (p.is_uri() && (p.value() == LABEL.value())) {
 			
 		    // Label
@@ -105,7 +105,7 @@ export class PropertiesService {
 		    });
 		    sub.complete();
 		    
-		} else if (p == IS_A) {
+		} else if (p.is_uri() && (p.value() == IS_A.value())) {
 
 		    this.mapToClassLabel(o as Uri, sub);
 
@@ -214,7 +214,6 @@ export class PropertiesService {
 		}
 		return res;
 	    }),
-	    map(x => { console.log(x); return x; }),
 	);
     }
 
