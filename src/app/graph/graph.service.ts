@@ -25,7 +25,6 @@ import { LabelQuery } from '../query/label-query';
 import { Relationship } from './graph';
 import { EventService } from './event.service';
 
-
 @Injectable({
     providedIn: 'root'
 })
