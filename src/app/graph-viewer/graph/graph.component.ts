@@ -115,9 +115,9 @@ export class GraphComponent implements OnInit {
 	    if (params.nodes.length == 1) {
 		let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
-		cmp.events.select(node);
+		cmp.events.selected(node);
 	    } else {
-		cmp.events.deselect();
+		cmp.events.deselected();
 	    }
 	});
 
@@ -128,9 +128,15 @@ export class GraphComponent implements OnInit {
 	    if (params.nodes.length == 1) {
 	        let id = params.nodes[0];
 		let node = cmp.nodes.get(id).node;
-		cmp.events.select(node);
+		cmp.events.selected(node);
 	    }
 	});
+
+	this.events.nodeUnselectEvents().subscribe(
+	    ev => {
+		this.network.unselectAll();
+	    }
+	);
 
     }
 

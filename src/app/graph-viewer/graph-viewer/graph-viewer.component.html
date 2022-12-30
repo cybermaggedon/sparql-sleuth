@@ -13,7 +13,7 @@
 
     <detail *ngIf="detailMode" [properties]="properties"></detail>
 
-    <search *ngIf="searchMode"></search>
+      <search *ngIf="searchMode"></search>
 
     <div *ngIf="helpMode">
       <info></info>
@@ -22,4 +22,11 @@
   </div>
   
 </div>
+
+<node-dialog
+  [display]="nodeDialogVisible"
+  [properties]="properties"
+  (onClose)="closeDialog()"
+  >
+</node-dialog>
 

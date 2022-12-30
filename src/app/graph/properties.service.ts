@@ -40,7 +40,7 @@ export class PropertiesService {
 	private events : EventService,
     ) {
 
-	this.events.nodeSelectEvents().subscribe(
+	this.events.nodeSelectedEvents().subscribe(
 	    (ev : any) => {
 		this.getProperties(ev.node);
 	    }

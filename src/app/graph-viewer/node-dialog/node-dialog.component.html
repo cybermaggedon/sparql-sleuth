@@ -1,0 +1,19 @@
+
+<p-dialog class="dialog"
+	  [(visible)]="display" [style]="{width: '50vw'}"
+	  (onHide)="onHide()">
+
+  <ng-template pTemplate="header">
+  </ng-template>
+
+  <node-details [properties]="properties"></node-details>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+

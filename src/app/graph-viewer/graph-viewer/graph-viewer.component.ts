@@ -3,10 +3,13 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
+import { Uri } from '../../rdf/triple';
+
 import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
-import { Uri } from '../../rdf/triple';
+import { NodeDialogComponent } from '../node-dialog/node-dialog.component';
+
 
 enum BottomPaneMode {
     HELP,
@@ -21,6 +24,8 @@ enum BottomPaneMode {
     styleUrls: ['./graph-viewer.component.scss']
 })
 export class GraphViewerComponent implements OnInit {
+
+       
 
     constructor(
 	private command : CommandService,
@@ -38,6 +43,8 @@ export class GraphViewerComponent implements OnInit {
     get helpMode() : boolean { return this.mode == BottomPaneMode.HELP; }
 
     properties : Properties = new Properties();
+
+    nodeDialogVisible = false;
 
     ngOnInit() : void {
 
@@ -57,15 +64,22 @@ export class GraphViewerComponent implements OnInit {
 	    ev => {
 		this.properties = ev;
 		this.mode = BottomPaneMode.DETAIL;
+		this.nodeDialogVisible = true;
 	    }
 	);
 
-	this.events.nodeDeselectEvents().subscribe(
+	this.events.nodeDeselectedEvents().subscribe(
 	    () => {
 		this.mode = BottomPaneMode.EMPTY;
 	    }
 	);
 
+    }
+
+    closeDialog() {
+	this.nodeDialogVisible = false;
+	// FIXME:
+	this.events.unselect();
     }
 
     ngAfterViewInit(): void {

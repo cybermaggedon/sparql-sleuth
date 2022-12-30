@@ -31,7 +31,7 @@ export class RemoveEdgeEvent {
     id : Uri = new Uri("");
 };
 
-export class NodeSelectEvent {
+export class NodeSelectedEvent {
     node : Node = new Node();
 };
 
@@ -53,8 +53,9 @@ export class EventService {
     private removeNodeSubject = new Subject<RemoveNodeEvent>;
     private addEdgeSubject = new Subject<AddEdgeEvent>;
     private removeEdgeSubject = new Subject<RemoveEdgeEvent>;
-    private nodeSelectSubject = new Subject<NodeSelectEvent>;
-    private nodeDeselectSubject = new Subject<null>;
+    private nodeSelectedSubject = new Subject<NodeSelectedEvent>;
+    private nodeDeselectedSubject = new Subject<null>;
+    private nodeUnselectSubject = new Subject<null>;
     private resetSubject = new Subject<null>;
     private recentreSubject = new Subject<RecentreEvent>;
     private schemaSubject = new Subject<null>;
@@ -63,8 +64,9 @@ export class EventService {
     removeNodeEvents() { return this.removeNodeSubject; }
     addEdgeEvents() { return this.addEdgeSubject; }
     removeEdgeEvents() { return this.removeEdgeSubject; }
-    nodeSelectEvents() { return this.nodeSelectSubject; }
-    nodeDeselectEvents() { return this.nodeDeselectSubject; }
+    nodeSelectedEvents() { return this.nodeSelectedSubject; }
+    nodeDeselectedEvents() { return this.nodeDeselectedSubject; }
+    nodeUnselectEvents() { return this.nodeUnselectSubject; }
     resetEvents() { return this.resetSubject; }
     recentreEvents() { return this.recentreSubject; }
     schemaEvents() { return this.schemaSubject; }
@@ -93,14 +95,18 @@ export class EventService {
 	this.removeEdgeSubject.next(ev);
     }
 
-    select(n : Node) {
-	let ev = new NodeSelectEvent();
+    selected(n : Node) {
+	let ev = new NodeSelectedEvent();
 	ev.node = n;
-	this.nodeSelectSubject.next(ev);
+	this.nodeSelectedSubject.next(ev);
     }
 
-    deselect() {
-	this.nodeDeselectSubject.next(null);
+    deselected() {
+	this.nodeDeselectedSubject.next(null);
+    }
+
+    unselect() {
+	this.nodeUnselectSubject.next(null);
     }
 
     reset() {

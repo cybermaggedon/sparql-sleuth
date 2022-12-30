@@ -34,7 +34,7 @@ export class ControlsComponent implements OnInit {
 	private events : EventService,
     ) {
 
-	this.events.nodeSelectEvents().subscribe(
+	this.events.nodeSelectedEvents().subscribe(
 	    ev => {
 
 		this.selection = ev.node;
@@ -49,7 +49,7 @@ export class ControlsComponent implements OnInit {
 	    
 	);
 
-	this.events.nodeDeselectEvents().subscribe(
+	this.events.nodeDeselectedEvents().subscribe(
 	    () => {
 		this.selection = null;
 		this.relationships = [];
