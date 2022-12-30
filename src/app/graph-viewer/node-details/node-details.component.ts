@@ -35,5 +35,10 @@ export class NodeDetailsComponent implements OnInit {
 	this.command.relationship(this.selection, rel);
     }
 
+    recentre() {
+	if (this.selection)
+	    this.command.recentre(this.selection.id);
+    }
+
 }
 
