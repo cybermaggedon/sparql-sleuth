@@ -12,6 +12,7 @@ import { SidebarModule } from 'primeng/sidebar';
 import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
+import { ChipModule } from 'primeng/chip';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -56,6 +57,7 @@ import { DatasetComponent } from './dataset/dataset.component';
 	TabViewModule,
 	ToolbarModule,
 	PanelModule,
+	ChipModule,
 
     ],
     exports: [

@@ -22,15 +22,29 @@
 
       </ng-template>
 
-      <p *ngIf="row['description'].value()">{{row["description"].value()}}</p>
+      <p *ngIf="row['description'].value()">
+	{{row["description"].value()}}
+      </p>
 
-      <p *ngIf="row['author'].value()">Author: {{row["author"].value()}}</p>
+      <p *ngIf="row['author'].value()">
+	Author: {{row["author"].value()}}
+      </p>
 
       <p *ngIf="row['url'].value()">
 	Source: <a href="{{row['url'].value()}}">
 	  {{row["url"].value()}}
 	</a>
       </p>
+
+      <div *ngIf="row['keywords'].value()"
+	   style="display: flex; flex-wrap: wrap;">
+	<span *ngFor="let keyword of row['keywords'].value().split(',')"
+	      >
+	  <!--	  {{row["keywords"].value()}}-->
+	  <p-chip label="{{keyword}}" [style]="{'margin': '0.2rem'}">
+	  </p-chip>
+	</span>
+      </div>
 
     </p-panel>
     
