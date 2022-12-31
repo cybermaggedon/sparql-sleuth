@@ -10,20 +10,24 @@
 
   <div *ngFor="let row of results">
 
-    <p-panel [style]="{'margin-bottom': '1rem'}">
+    <p-panel *ngIf="row['title'].value()"
+	     [style]="{'margin-bottom': '1rem'}">
 
       <ng-template pTemplate="header">
+
         <button pButton pRipple type="button" class="p-button-text"
-		(click)="select(row['s'])">
+		(click)="select(row['dataset'])">
 	  {{row['title'].value()}}
 	</button>
+
       </ng-template>
 
-      <p>{{row['s'].value()}}</p>
-      <p>{{row["description"].value()}}</p>
+      <p *ngIf="row['description'].value()">{{row["description"].value()}}</p>
 
-      <p>
-	Source: <a href="{{row['url'].value()">
+      <p *ngIf="row['author'].value()">Author: {{row["author"].value()}}</p>
+
+      <p *ngIf="row['url'].value()">
+	Source: <a href="{{row['url'].value()}}">
 	  {{row["url"].value()}}
 	</a>
       </p>

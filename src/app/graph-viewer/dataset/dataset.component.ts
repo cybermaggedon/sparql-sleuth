@@ -6,6 +6,7 @@ import { map, mergeMap } from 'rxjs/operators';
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../../rdf/defs';
 import { Uri, Value } from '../../rdf/triple';
 import { POQuery } from '../../query/p-o-query';
+import { RawQuery } from '../../query/raw-query';
 import { Row } from '../../query/query';
 
 import { QueryService } from '../../query/query.service';
@@ -33,27 +34,17 @@ export class DatasetComponent implements OnInit {
 
     runQuery() {
 
-	new POQuery(
-	    "Acquire schema", IS_A, new Uri("http://www.w3.org/ns/dcat#Dataset"), 50
+	const qry = "PREFIX schema: <https://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?dataset ?title ?description ?url ?author WHERE { ?dataset a schema:Dataset . OPTIONAL { ?dataset rdfs:label ?title } OPTIONAL { ?dataset schema:description ?description } OPTIONAL { ?dataset schema:url ?url } OPTIONAL { ?dataset schema:author ?authorid . ?authorid rdfs:label ?author } } LIMIT 40";
+
+	new RawQuery(
+	    "Acquire schema", qry
 	).run(
 	    this.query
 	).pipe(
-	    this.transform.mapToLabel("s", "slabel"),
-	    this.transform.mapToProperty(
-		"s", new Uri("http://purl.org/dc/terms/title"),
-		"title"
-	    ),
-	    this.transform.mapToProperty(
-		"s", new Uri("http://purl.org/dc/terms/description"),
-		"description"
-	    ),
-	    this.transform.mapToProperty(
-		"s", new Uri("http://xmlns.com/foaf/0.1/homepage"),
-		"url"
-	    ),
 	    map(qr => qr.data),
 	).subscribe(
 	    result => {
+		console.log(result);
 		this.results = result;
 	    }
 	);
