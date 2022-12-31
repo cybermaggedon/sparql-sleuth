@@ -4,7 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../../rdf/defs';
-import { Uri } from '../../rdf/triple';
+import { Uri, Value } from '../../rdf/triple';
 import { POQuery } from '../../query/p-o-query';
 import { Row } from '../../query/query';
 
@@ -54,16 +54,14 @@ export class DatasetComponent implements OnInit {
 	    map(qr => qr.data),
 	).subscribe(
 	    result => {
-		console.log(result);
 		this.results = result;
 	    }
 	);
 
     }
 
-    select(id : Uri) {
-	console.log(id);
-	this.graph.includeNode(id);
+    select(id : Value) {
+	this.graph.includeNode(id as Uri);
     }
 
 }
