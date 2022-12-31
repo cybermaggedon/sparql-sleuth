@@ -98,7 +98,7 @@ export class GraphComponent implements OnInit {
 	    },
 	    physics: {
 		barnesHut: {
-		    gravitationalConstant: -7000,
+		    gravitationalConstant: -30000,
 		}
 	    }
 	};

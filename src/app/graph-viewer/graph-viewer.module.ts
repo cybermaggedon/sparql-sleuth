@@ -13,6 +13,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
 import { ChipModule } from 'primeng/chip';
+import { ImageModule } from 'primeng/image';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -58,6 +59,7 @@ import { DatasetComponent } from './dataset/dataset.component';
 	ToolbarModule,
 	PanelModule,
 	ChipModule,
+	ImageModule,
 
     ],
     exports: [

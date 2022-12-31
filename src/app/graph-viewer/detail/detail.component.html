@@ -3,11 +3,13 @@
 
   <h2>{{label}}</h2>
 
-  <div *ngIf="link">
+  <p *ngIf="link">
     <a href="{{link}}">{{link}}</a>
-  </div>
+  </p>
 
-  <img *ngIf="thumbnail" class="icon" src="{{thumbnail}}"/>
+  <p-image *ngIf="thumbnail"
+	   src="{{thumbnail}}" alt="thumbnail" width="250" [preview]="true">
+  </p-image>
 
   <p-table [value]="table" styleClass="p-datatable-striped"
 	   [tableStyle]="{'min-width': '20rem'}">
