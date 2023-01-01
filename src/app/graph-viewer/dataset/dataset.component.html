@@ -3,7 +3,11 @@
 
 <div *ngIf="results.length == 0">
   There is no dataset catalogue information in the dataset.  SPARQL Explorer
-  looks for DCAT specification dataset information.
+  looks for schema.org's Dataset specification information.
+</div>
+
+<div *ngIf="results.length > 0">
+  The following datasets have been described in the knowledge base.
 </div>
 
 <div *ngIf="results.length > 0">
@@ -29,16 +33,21 @@
 	</a>
       </p>
 
-      <button pButton pRipple type="button" class="p-button-raised p-button-text"
+      <button pButton type="button" label="{{row['title'].value()}}"
+	      id="locate-node"
+	      class="p-button-sm p-button-rounded"
 	      (click)="select(row['dataset'])">
-	Locate node
       </button>
 
       <div *ngIf="row['keywords'].value()"
 	   style="display: flex; flex-wrap: wrap;">
 	<span *ngFor="let keyword of keywords(row)">
-	  <p-tag value="{{keyword}}" [style]="{'margin': '0.2rem'}">
-	  </p-tag>
+	  <button pButton type="button"
+		  class="p-button-sm p-button-rounded p-button-outlined tag"
+		  label="{{keyword}}"
+		  (click)="tag(keyword)"
+		  >
+	  </button>
 	</span>
       </div>
 

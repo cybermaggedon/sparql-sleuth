@@ -13,6 +13,8 @@ import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
 
+const DATASET = new Uri("https://schema.org/Dataset");
+
 @Component({
   selector: 'dataset',
   templateUrl: './dataset.component.html',
@@ -60,6 +62,27 @@ export class DatasetComponent implements OnInit {
 
     select(id : Value) {
 	this.graph.includeNode(id as Uri);
+    }
+
+    // FIXME: Injectable in a non-read-only store
+    tag(tag : string) {
+
+	const qry = 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "' + tag + '" . } LIMIT 40';
+
+	new RawQuery(
+	    "Keyword search " + tag, qry
+	).run(
+	    this.query
+	).pipe(
+	    this.transform.addFixedColumn("p", IS_A),
+	    this.transform.addFixedColumn("o", DATASET),
+	    this.transform.queryResultToTriples(),
+	).subscribe(
+	    result => {
+		this.graph.includeTriples(result);
+	    }
+	);
+
     }
 
 }
