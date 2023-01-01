@@ -50,6 +50,14 @@ export class DatasetComponent implements OnInit {
 
     }
 
+    keywords(row : Row) {
+	return row['keywords'].value().split(',').map(
+	    x => x.trim()
+	).filter(
+	    x => x != ""
+	)
+    }
+
     select(id : Value) {
 	this.graph.includeNode(id as Uri);
     }

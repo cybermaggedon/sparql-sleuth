@@ -38,11 +38,11 @@
 
       <div *ngIf="row['keywords'].value()"
 	   style="display: flex; flex-wrap: wrap;">
-	<span *ngFor="let keyword of row['keywords'].value().split(',')"
+	<span *ngFor="let keyword of keywords(row)"
 	      >
 	  <!--	  {{row["keywords"].value()}}-->
-	  <p-chip label="{{keyword}}" [style]="{'margin': '0.2rem'}">
-	  </p-chip>
+	  <p-tag value="{{keyword}}" [style]="{'margin': '0.2rem'}">
+	  </p-tag>
 	</span>
       </div>
 

@@ -12,7 +12,7 @@ import { SidebarModule } from 'primeng/sidebar';
 import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
-import { ChipModule } from 'primeng/chip';
+import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
 import { MenuModule } from 'primeng/menu';
 
@@ -63,7 +63,7 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 	TabViewModule,
 	ToolbarModule,
 	PanelModule,
-	ChipModule,
+	TagModule,
 	ImageModule,
 	MenuModule,
 	ToastModule,
