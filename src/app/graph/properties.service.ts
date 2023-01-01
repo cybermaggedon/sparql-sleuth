@@ -129,8 +129,12 @@ export class PropertiesService {
     mapToProperties() {
 	return mergeMap((qr : QueryResult) => {
 
+	    if (qr.data.length == 0) {
+	        return of([]);
+	    }
+
 	    let obs : any[] = [];
-	    
+
 	    for (let row of qr.data) {
 		obs.push(this.mapToProperty(row));
 	    }

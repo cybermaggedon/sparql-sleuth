@@ -44,7 +44,6 @@ export class DatasetComponent implements OnInit {
 	    map(qr => qr.data),
 	).subscribe(
 	    result => {
-		console.log(result);
 		this.results = result;
 	    }
 	);

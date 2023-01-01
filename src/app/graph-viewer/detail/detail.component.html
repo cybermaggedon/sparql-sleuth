@@ -1,31 +1,39 @@
 
 <div class="box info" id="selection">
 
-  <h2>{{label}}</h2>
+  <h2 *ngIf="label">{{label}}</h2>
 
-  <p *ngIf="link">
+  <div *ngIf="link">
     <a href="{{link}}">{{link}}</a>
-  </p>
+  </div>
 
-  <p-image *ngIf="thumbnail"
-	   src="{{thumbnail}}" alt="thumbnail" width="250" [preview]="true">
-  </p-image>
+  <div *ngIf="thumbnail">
+    <p-image
+      src="{{thumbnail}}" alt="thumbnail" width="250" [preview]="true">
+    </p-image>
+  </div>
 
-  <p-table [value]="table" styleClass="p-datatable-striped"
-	   [tableStyle]="{'min-width': '20rem'}">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Key</th>
-        <th>Value</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-table>
-      <tr>
-        <td>{{table.key}}</td>
-        <td>{{table.value}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <div *ngIf="noProperties()">
+    Object has no properties
+  </div>
+
+  <div *ngIf="!noProperties()">
+    <p-table [value]="table" styleClass="p-datatable-striped"
+	     [tableStyle]="{'min-width': '20rem'}">
+      <ng-template pTemplate="header">
+	<tr>
+          <th>Key</th>
+          <th>Value</th>
+	</tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-table>
+	<tr>
+          <td>{{table.key}}</td>
+          <td>{{table.value}}</td>
+	</tr>
+      </ng-template>
+    </p-table>
+  </div>
 
 </div>
 

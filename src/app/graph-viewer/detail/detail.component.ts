@@ -20,6 +20,10 @@ export class DetailComponent implements OnInit {
 
     get properties() { return this.allProperties.properties; }
 
+    noProperties() : boolean {
+	return Object.keys(this.properties).length == 0;
+    }
+
     get table() {
 
 	let rows : {key: string, value: string}[] = [];
