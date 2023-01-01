@@ -6,8 +6,8 @@ export type Activity = string;
 
 export class ProgressEvent {
     progress : Set<Activity> = new Set<Activity>();
-    get complete() : boolean {
-	return this.progress.size == 0;
+    working() : boolean {
+	return this.progress.size != 0;
     };
 };
 
