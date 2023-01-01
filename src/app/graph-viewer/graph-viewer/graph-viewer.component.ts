@@ -224,12 +224,13 @@ export class GraphViewerComponent implements OnInit {
 	    }
 	);
 
-	timer(10).subscribe(
-	    () => {
+	timer(1).subscribe(
+	    ()=> {
 		this.messageService.add({
 		    severity: "info",
 		    summary: "Getting started",
-		    detail: "Click here to see the the Getting Started " +
+		    detail: "Welcome to SPARQL Explorer!\n\n" +
+			"Click here to see the the Getting Started " +
 			"guide, also available on the menu",
 		    key: "announce",
 		    life: 5000,
