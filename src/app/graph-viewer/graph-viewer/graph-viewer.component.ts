@@ -21,6 +21,7 @@ enum DialogState {
     SCHEMA,
     INFO,
     DATASET,
+    ABOUT,
 };
 
 @Component({
@@ -71,6 +72,11 @@ export class GraphViewerComponent implements OnInit {
 		    label: "Getting started",
 		    icon: "pi pi-question-circle",
 		    command: () => { this.info(); }
+		},
+		{
+		    label: "About...",
+		    icon: "pi pi-info-circle",
+		    command: () => { this.about(); }
 		}
 	    ]
 	}
@@ -86,6 +92,7 @@ export class GraphViewerComponent implements OnInit {
     get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
     get infoDialogVisible() { return this.state == DialogState.INFO; }
     get datasetDialogVisible() { return this.state == DialogState.DATASET; }
+    get aboutDialogVisible() { return this.state == DialogState.ABOUT; }
 
     selection? : Node;
 
@@ -157,6 +164,11 @@ export class GraphViewerComponent implements OnInit {
 	    this.state = DialogState.NONE;
     }
 
+    closeAboutDialog() {
+	if (this.state == DialogState.ABOUT)
+	    this.state = DialogState.NONE;
+    }
+
     closeInfoDialog() {
 	if (this.state == DialogState.INFO)
 	    this.state = DialogState.NONE;
@@ -168,6 +180,10 @@ export class GraphViewerComponent implements OnInit {
 
     dataset() {
 	this.state = DialogState.DATASET;
+    }
+
+    about() {
+	this.state = DialogState.ABOUT;
     }
 
     ngAfterViewInit(): void {

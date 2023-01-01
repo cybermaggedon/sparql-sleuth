@@ -30,6 +30,7 @@ import { DatasetDialogComponent } from './dataset-dialog/dataset-dialog.componen
 import { DatasetComponent } from './dataset/dataset.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { ToastModule } from 'primeng/toast';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { ToastModule } from 'primeng/toast';
         DatasetDialogComponent,
         DatasetComponent,
         InfoDialogComponent,
+        AboutDialogComponent,
     ],
     imports: [
 

@@ -1,0 +1,45 @@
+
+<p-sidebar class="dialog" position="right" [style]="{width:'40vw'}"
+	  [(visible)]="display" [modal]="false"
+	  (onHide)="onHide()">
+
+  <h2>About...</h2>
+
+  <p>
+    SPARQL Explorer is an open-source knowledge exploration tool for
+    knowledge represented in RDF.  It can search and explore a knowledge base
+    by querying a knowledge graph which supports the SPARQL query language.
+  </p>
+
+
+  <p>
+    Also available by the same author is SPARQL Service, a simple RDF
+    knowledge store, which allows RDF data to be queried using SPARQL.
+  </p>
+
+  <p>
+    Both tools are hosted on Github here:
+  </p>
+
+  <p>
+    <a href="https://github.com/cybermaggedon/sparql-explorer">
+      <code>https://github.com/cybermaggedon/sparql-explorer</code>
+    </a>
+  </p>
+
+  <p>
+    <a href="https://github.com/cybermaggedon/sparql-explorer">
+      <code>https://github.com/cybermaggedon/sparql-explorer</code>
+    </a>
+  </p>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-sidebar>
+
+
