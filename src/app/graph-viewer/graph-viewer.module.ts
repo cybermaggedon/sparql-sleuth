@@ -11,6 +11,7 @@ import { DialogModule } from 'primeng/dialog'; // Unused?
 import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
+import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
 import { MenuModule } from 'primeng/menu';
@@ -61,9 +62,10 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 	TabViewModule,
 	ToolbarModule,
 	PanelModule,
-	TagModule,
+	CardModule,
 	ImageModule,
 	MenuModule,
+	TagModule,
 	ToastModule,
 
     ],

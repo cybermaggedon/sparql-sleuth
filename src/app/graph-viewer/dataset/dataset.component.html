@@ -10,18 +10,11 @@
 
   <div *ngFor="let row of results">
 
-    <p-panel *ngIf="row['title'].value()"
-	     [style]="{'margin-bottom': '1rem'}">
-
-      <ng-template pTemplate="header">
-
-        <button pButton pRipple type="button" class="p-button-text"
-		(click)="select(row['dataset'])">
-	  {{row['title'].value()}}
-	</button>
-
-      </ng-template>
-
+    <p-card *ngIf="row['title'].value()"
+	    header="{{row['title'].value()}}"
+	    [style]="{'margin-bottom': '1rem'}"
+	    styleClass="p-card-shadow">
+      
       <p *ngIf="row['description'].value()">
 	{{row["description"].value()}}
       </p>
@@ -36,17 +29,20 @@
 	</a>
       </p>
 
+      <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	      (click)="select(row['dataset'])">
+	Locate node
+      </button>
+
       <div *ngIf="row['keywords'].value()"
 	   style="display: flex; flex-wrap: wrap;">
-	<span *ngFor="let keyword of keywords(row)"
-	      >
-	  <!--	  {{row["keywords"].value()}}-->
+	<span *ngFor="let keyword of keywords(row)">
 	  <p-tag value="{{keyword}}" [style]="{'margin': '0.2rem'}">
 	  </p-tag>
 	</span>
       </div>
 
-    </p-panel>
+    </p-card>
     
   </div>
 
