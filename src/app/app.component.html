@@ -1,6 +1,8 @@
-<div class="centre" *ngIf="working">
+<div class="centre" *ngIf="working || !working">
   <div class="spinner">
-    <p-progressSpinner>
+    <p-progressSpinner
+      [style]="{width: '50px', height: '50px'}"
+      styleClass="progress" strokeWidth="6" animationDuration=".5s">
     </p-progressSpinner>
   </div>
 </div>
