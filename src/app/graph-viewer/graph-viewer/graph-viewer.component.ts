@@ -3,6 +3,8 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
+import { MenuItem, MessageService } from 'primeng/api';
+
 import { Uri } from '../../rdf/triple';
 import { Node, Relationship } from '../../graph/graph';
 
@@ -17,6 +19,7 @@ enum DialogState {
     NODE,
     SEARCH,
     SCHEMA,
+    INFO,
     DATASET,
 };
 
@@ -34,7 +37,42 @@ export class GraphViewerComponent implements OnInit {
 	private events : EventService,
 	private relationship : RelationshipService,
     ) {
+	
     }
+
+    menuItems : MenuItem[] = [
+	{
+	    label: "Graph",
+	    icon: "pi pi-graph",
+	    items: [
+		{
+		    label: "Search",
+		    icon: "pi pi-search",
+		    command: () => { this.search(); }
+		},
+		{
+		    label: "Schema",
+		    icon: "pi pi-list",
+		    command: () => { this.schema(); }
+		},
+		{
+		    label: "Datasets",
+		    icon: "pi pi-book",
+		    command: () => { this.dataset(); }
+		}
+	    ]
+	},
+	{
+	    label: "Info",
+	    items: [
+		{
+		    label: "Getting started",
+		    icon: "pi pi-question-circle",
+		    command: () => { this.info(); }
+		}
+	    ]
+	}
+    ];
 
     state : DialogState = DialogState.NONE;
 
@@ -44,6 +82,7 @@ export class GraphViewerComponent implements OnInit {
     get nodeDialogVisible() { return this.state == DialogState.NODE; }
     get searchDialogVisible() { return this.state == DialogState.SEARCH; }
     get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
+    get infoDialogVisible() { return this.state == DialogState.INFO; }
     get datasetDialogVisible() { return this.state == DialogState.DATASET; }
 
     selection? : Node;
@@ -85,9 +124,10 @@ export class GraphViewerComponent implements OnInit {
     }
 
     closeNodeDialog() {
-	if (this.state == DialogState.NODE)
+	if (this.state == DialogState.NODE) {
 	    this.state = DialogState.NONE;
-	this.events.unselect();
+	    this.events.unselect();
+	}
     }
 
     search() {
@@ -99,9 +139,10 @@ export class GraphViewerComponent implements OnInit {
     }
 
     closeSearchDialog() {
-	if (this.state == DialogState.SEARCH)
+	if (this.state == DialogState.SEARCH) {
 	    this.state = DialogState.NONE;
-	this.events.unselect();
+	    this.events.unselect();
+	}
     }
 
     closeSchemaDialog() {
@@ -112,6 +153,15 @@ export class GraphViewerComponent implements OnInit {
     closeDatasetDialog() {
 	if (this.state == DialogState.DATASET)
 	    this.state = DialogState.NONE;
+    }
+
+    closeInfoDialog() {
+	if (this.state == DialogState.INFO)
+	    this.state = DialogState.NONE;
+    }
+
+    info() {
+	this.state = DialogState.INFO;
     }
 
     dataset() {
@@ -149,7 +199,7 @@ export class GraphViewerComponent implements OnInit {
 
 		} else {
 
-		  // Do nothing if node not specified.
+		    // Do nothing if node not specified.
 
 		}
 

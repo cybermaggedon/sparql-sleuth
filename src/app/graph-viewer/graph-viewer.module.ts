@@ -14,6 +14,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
 import { ChipModule } from 'primeng/chip';
 import { ImageModule } from 'primeng/image';
+import { MenuModule } from 'primeng/menu';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -28,6 +29,7 @@ import { SchemaDialogComponent } from './schema-dialog/schema-dialog.component';
 import { SchemaComponent } from './schema/schema.component';
 import { DatasetDialogComponent } from './dataset-dialog/dataset-dialog.component';
 import { DatasetComponent } from './dataset/dataset.component';
+import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +46,7 @@ import { DatasetComponent } from './dataset/dataset.component';
         SchemaComponent,
         DatasetDialogComponent,
         DatasetComponent,
+        InfoDialogComponent,
     ],
     imports: [
 	BrowserModule,
@@ -60,6 +63,7 @@ import { DatasetComponent } from './dataset/dataset.component';
 	PanelModule,
 	ChipModule,
 	ImageModule,
+	MenuModule,
 
     ],
     exports: [

@@ -1,0 +1,16 @@
+
+<p-sidebar class="dialog" position="right" [style]="{width:'40vw'}"
+	  [(visible)]="display" [modal]="false"
+	  (onHide)="onHide()">
+
+  <info></info>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-sidebar>
+

@@ -1,29 +1,21 @@
 
-<p-tabView>
+<p-toolbar>
+  <div class="p-toolbar-group-left">
 
-  <p-tabPanel header="Graph" leftIcon="pi pi-globe">
-    <p-toolbar>
-      <div class="p-toolbar-group-left">
-	<p-button label="Search" (click)="search()" icon="pi pi-search">
-	</p-button>
-	<p-button label="Schema" (click)="schema()" icon="pi pi-list">
-	</p-button>
-	<p-button label="Datasets" (click)="dataset()" icon="pi pi-book">
-	</p-button>
-      </div>
-    </p-toolbar>
-    <div class="container">
-      <div class="graph">
-	<graph></graph>
-      </div>
-    </div>
-  </p-tabPanel>
+    <p-button type="button" icon="pi pi-ellipsis-v"
+	      (click)="menu.toggle($event)">
+    </p-button>
 
-  <p-tabPanel header="Help" leftIcon="pi pi-question-circle">
-    <info></info>
-  </p-tabPanel>
+    <p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
 
-</p-tabView>
+  </div>
+</p-toolbar>
+
+<div class="container">
+  <div class="graph">
+    <graph></graph>
+  </div>
+</div>
 
 <node-dialog
   [display]="nodeDialogVisible"
@@ -51,4 +43,10 @@
   (onClose)="closeDatasetDialog()"
   >
 </dataset-dialog>
+
+<info-dialog
+  [display]="infoDialogVisible"
+  (onClose)="closeInfoDialog()"
+  >
+</info-dialog>
 
