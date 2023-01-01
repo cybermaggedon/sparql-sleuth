@@ -6,6 +6,7 @@ import { Observable, forkJoin, mergeMap, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueryService } from '../query/query.service';
 import { LabelQuery } from '../query/label-query';
+import { RawQuery } from '../query/raw-query';
 import { SPQuery } from '../query/s-p-query';
 import { Uri, Value, Literal, Triple } from '../rdf/triple';
 import { THUMBNAIL, SEE_ALSO, IS_A } from '../rdf/defs';
@@ -355,5 +356,74 @@ export class TransformService {
 	);
     };
     
+    addCount(row : Row, src : string, dest : string) : Observable<Row> {
+
+	// This only works on URIs.  Just append the value otherwise.
+	if (!row[src].is_uri()) {
+	    row[dest] = row[src];
+	    return of(row);
+	}
+
+	return new Observable<Row>(
+	    sub => {
+
+		if (!(row[src].is_uri()))
+		    throw new Error("Can't call appendLabel on non-URI");
+
+	        let qry = "SELECT (COUNT(*) AS ?count) WHERE {  ?s a " +
+		    row[src].term() + ". }";
+
+		new RawQuery("Count " + row[src].value(), qry).run(
+		    this.query
+		).pipe(
+		    map(res => {
+			if (res.data.length > 0) {
+			    let key = res.vars[0];
+			    return res.data[0][key].value();
+			} else {
+			    return "0";
+			}
+		    })
+		).subscribe(
+		    (label : string | null) => {
+			if (!label) label = this.makeLabel(row[src] as Uri);
+			row[dest] = new Literal(label);
+			sub.next(row);
+			sub.complete();
+		    }
+		);
+
+	    }
+	);
+    }
+
+    mapToEntityCount(src : string, dest : string) {
+
+        return mergeMap((qr : QueryResult) => {
+
+            if (qr.data.length == 0) {
+                return of(qr);
+            }
+
+            let res : any[] = [];
+
+            for (let row of qr.data) {
+                res.push(this.addCount(row, src, dest));
+            }
+
+            return forkJoin(res).pipe(
+                map(
+                    (rows : Row[]) => {
+                        return {
+                            vars: qr.vars.concat(dest),
+                            data: rows,
+                        };
+                    }
+                )
+            );
+
+        });
+    }
+
 }
 

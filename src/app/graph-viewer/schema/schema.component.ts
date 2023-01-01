@@ -42,6 +42,7 @@ export class SchemaComponent implements OnInit {
 	    this.transform.addFixedColumn("p", IS_A),
 	    this.transform.mapToLabel("p", "plabel"),
 	    this.transform.addFixedColumn("o", CLASS),
+	    this.transform.mapToEntityCount("s", "count"),
 	    map((x : any) => x.data),
 	).subscribe(
 	    result => {
@@ -52,7 +53,6 @@ export class SchemaComponent implements OnInit {
     }
 
     select(id : Uri) {
-	console.log(id);
 	this.graph.includeNode(id);
     }
 
