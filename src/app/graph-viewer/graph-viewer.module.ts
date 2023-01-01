@@ -18,7 +18,6 @@ import { MenuModule } from 'primeng/menu';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
-import { ControlsComponent } from './controls/controls.component';
 import { DetailComponent } from './detail/detail.component';
 import { SearchComponent } from './search/search.component';
 import { InfoComponent } from './info/info.component';
@@ -36,7 +35,6 @@ import { ToastModule } from 'primeng/toast';
     declarations: [
 	GraphViewerComponent,
 	GraphComponent,
-	ControlsComponent,
 	DetailComponent,
 	SearchComponent,
 	InfoComponent,
@@ -50,6 +48,7 @@ import { ToastModule } from 'primeng/toast';
         InfoDialogComponent,
     ],
     imports: [
+
 	BrowserModule,
 	FormsModule,
 	ReactiveFormsModule,
