@@ -15,6 +15,8 @@ export class AppComponent implements OnInit {
 
     info : string[] = [];
 
+    active : Set<string> = new Set<string>();
+
     constructor(
         private progress : ProgressService,
     ) {
@@ -22,15 +24,33 @@ export class AppComponent implements OnInit {
 	    // This skips a whole heap of events means some stuff won't be
 	    // shown on the screen, but accuracy isn't important here, more
 	    // the indication of activity.
-	    debounceTime(10),
+//	    debounceTime(10),
 	).subscribe(
-	    p => {
+	    prog => {
 
-		this.working = p.working();
+		this.working = prog.working();
 
-		this.info = Array.from(p.progress.values()).slice(0, 4).map(
-		    x => x + "..."
-		);
+		if (!this.working) {
+		    this.info = [];
+		    return;
+		}
+
+		for(let p of prog.progress) {
+		    if (!(p in this.active)) {
+			this.info.push(p + "...");
+			this.active.add(p);
+		    }
+		}
+
+		for(let a of this.active) {
+		    if (!(a in prog.progress)) {
+			this.info.push(a + "... done");
+		    }
+		}
+
+		this.info = this.info.slice(-5);
+
+		this.active = prog.progress;
 
 	    }
 	);
