@@ -28,21 +28,25 @@ export class AppComponent implements OnInit {
 	}
 
 	for(let p of progress.progress) {
-	    if (!(p in this.active)) {
+	    if (!this.active.has(p)) {
 		this.info.push(p + "...");
 		this.active.add(p);
 	    }
 	}
 
+	let dels = [];
+	
 	for(let a of this.active) {
-	    if (!(a in progress.progress)) {
+	    if (!progress.progress.has(a)) {
 		this.info.push(a + "... done");
+		dels.push(a);
 	    }
 	}
 
-	this.info = this.info.slice(-5);
+	for(let del of dels)
+	    this.active.delete(del);
 
-	this.active = progress.progress;
+	this.info = this.info.slice(-5);
 	
     }
 
