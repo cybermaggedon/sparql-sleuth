@@ -26,7 +26,7 @@ export class NodeDetailsComponent implements OnInit {
     }
 
     get outward() {
-	return this.relationships.filter( x => x.inward );
+	return this.relationships.filter( x => !x.inward );
     }
 
     @Input()

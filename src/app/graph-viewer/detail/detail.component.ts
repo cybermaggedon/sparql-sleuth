@@ -18,7 +18,9 @@ export class DetailComponent implements OnInit {
 
     @Input("properties") allProperties : Properties = new Properties();
 
-    get properties() { return this.allProperties.properties; }
+    get properties() {
+	return this.allProperties.properties;
+    }
 
     noProperties() : boolean {
 	return Object.keys(this.properties).length == 0;
