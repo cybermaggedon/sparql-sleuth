@@ -31,6 +31,7 @@ import { DatasetComponent } from './dataset/dataset.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { ToastModule } from 'primeng/toast';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+import { AccordionModule } from 'primeng/accordion';
 
 @NgModule({
     declarations: [
@@ -67,6 +68,7 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 	MenuModule,
 	TagModule,
 	ToastModule,
+	AccordionModule,
 
     ],
     exports: [

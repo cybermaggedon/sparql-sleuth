@@ -1,5 +1,5 @@
-<p-tabView>
-  <p-tabPanel header="Introduction">
+<p-accordion>
+  <p-accordionTab header="Introduction" [selected]="true">
 
     <h2>Welcome to SPARQL Explorer!</h2>
 
@@ -18,9 +18,9 @@
       can navigate to find out more about what is in the graph.
     </p>
 
-  </p-tabPanel>
+  </p-accordionTab>
 
-  <p-tabPanel header="Getting started">
+  <p-accordionTab header="Getting started">
 
     <h2>Getting started</h2>
 
@@ -56,9 +56,9 @@
       </li>
     </ul>
 
-  </p-tabPanel>
+  </p-accordionTab>
 
-  <p-tabPanel header="Search">
+  <p-accordionTab header="Search">
 
     <h2>Search</h2>
 
@@ -92,9 +92,9 @@
       close the search dialogue to find the nodes.
     </p>
 
-  </p-tabPanel>
+  </p-accordionTab>
 
-  <p-tabPanel header="Node Interaction">
+  <p-accordionTab header="Node Interaction">
 
     <h2>Node interaction</h2>
 
@@ -113,8 +113,26 @@
     </p>
 
     <p>
+      Nodes can have a URL associate with them, linking to a web page
+      containing further information.  Nodes may also have image information
+      associate, in which case a preview thumbnail image will be shown.
+      Images are not stored in the knowledge graph, SPARQL Explorer shows
+      images by following the image URL links.
+    </p>
+
+    <p>
       Also in this dialogue are navigation buttons to allow
-      you to explore nodes related to this node through edges.
+      you to explore nodes related to this node through relationship
+      edges.
+    </p>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Relationships">
+
+    <h2>Node interaction</h2>
+
+    <p>      
       The relationship buttons are shown on the node display
       and have arrow icons <b>&#x2b95;</b>.
       Clicking one of these relationship buttons causes SPARQL Explorer
@@ -156,17 +174,9 @@
       This is essentially asking "Show me all nodes which have this type?".
     </p>
 
-    <p>
-      Nodes can have a URL associate with them, linking to a web page
-      containing further information.  Nodes may also have image information
-      associate, in which case a preview thumbnail image will be shown.
-      Images are not stored in the knowledge graph, SPARQL Explorer shows
-      images by following the image URL links.
-    </p>
+  </p-accordionTab>
 
-  </p-tabPanel>
-
-  <p-tabPanel header="Schema">
+  <p-accordionTab header="Schema">
 
     <p>
       Select the menu icon and click <b>Schema</b> to see a list of graph
@@ -178,9 +188,9 @@
       exist in the dataset.
     </p>
     
-  </p-tabPanel>
+  </p-accordionTab>
   
-  <p-tabPanel header="Datasets">
+  <p-accordionTab header="Datasets">
 
     <p>
       The <b>Datasets</b> dialogue shows you information about the datasets in
@@ -199,6 +209,6 @@
       dataset.
     </p>
     
-  </p-tabPanel>
+  </p-accordionTab>
 
-</p-tabView>
+</p-accordion>
