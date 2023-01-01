@@ -26,7 +26,8 @@ enum DialogState {
 @Component({
     selector: 'graph-viewer',
     templateUrl: './graph-viewer.component.html',
-    styleUrls: ['./graph-viewer.component.scss']
+    styleUrls: ['./graph-viewer.component.scss'],
+    providers: [MessageService],
 })
 export class GraphViewerComponent implements OnInit {
 
@@ -36,6 +37,7 @@ export class GraphViewerComponent implements OnInit {
 	private propertyService : PropertiesService,
 	private events : EventService,
 	private relationship : RelationshipService,
+	private messageService : MessageService,
     ) {
 	
     }
@@ -203,6 +205,20 @@ export class GraphViewerComponent implements OnInit {
 
 		}
 
+	    }
+	);
+
+	timer(10).subscribe(
+	    () => {
+		this.messageService.add({
+		    severity: "info",
+		    summary: "Getting started",
+		    detail: "Click here to see the the Getting Started " +
+			"guide, also available on the menu",
+		    key: "announce",
+		    life: 5000,
+		    closable: true,
+		});
 	    }
 	);
 

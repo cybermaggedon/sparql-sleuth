@@ -30,6 +30,7 @@ import { SchemaComponent } from './schema/schema.component';
 import { DatasetDialogComponent } from './dataset-dialog/dataset-dialog.component';
 import { DatasetComponent } from './dataset/dataset.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
     declarations: [
@@ -64,6 +65,7 @@ import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 	ChipModule,
 	ImageModule,
 	MenuModule,
+	ToastModule,
 
     ],
     exports: [
