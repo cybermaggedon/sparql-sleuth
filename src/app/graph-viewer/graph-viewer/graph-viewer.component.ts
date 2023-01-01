@@ -11,6 +11,15 @@ import { CommandService } from '../../graph/command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
 
+// Which dialog is open.  Can only be 1 at once.
+enum DialogState {
+    NONE,
+    NODE,
+    SEARCH,
+    SCHEMA,
+    DATASET,
+};
+
 @Component({
     selector: 'graph-viewer',
     templateUrl: './graph-viewer.component.html',
@@ -25,16 +34,17 @@ export class GraphViewerComponent implements OnInit {
 	private events : EventService,
 	private relationship : RelationshipService,
     ) {
-
     }
+
+    state : DialogState = DialogState.NONE;
 
     properties : Properties = new Properties();
 
     // FIXME: quad-state type needed.
-    nodeDialogVisible = false;
-    searchDialogVisible = false;
-    schemaDialogVisible = false;
-    datasetDialogVisible = false;
+    get nodeDialogVisible() { return this.state == DialogState.NODE; }
+    get searchDialogVisible() { return this.state == DialogState.SEARCH; }
+    get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
+    get datasetDialogVisible() { return this.state == DialogState.DATASET; }
 
     selection? : Node;
 
@@ -59,8 +69,8 @@ export class GraphViewerComponent implements OnInit {
 
 	this.events.nodeDeselectedEvents().subscribe(
 	    ev => {
-		if (this.nodeDialogVisible)
-		    this.nodeDialogVisible = false;
+		if (this.state == DialogState.NODE)
+		    this.state = DialogState.NONE;
 	    }
 	    
 	);
@@ -68,53 +78,44 @@ export class GraphViewerComponent implements OnInit {
 	this.propertyService.propertiesEvents().subscribe(
             ev => {
 		this.properties = ev;
-		this.nodeDialogVisible = true;
-		this.searchDialogVisible = false;
-		this.schemaDialogVisible = false;
-		this.datasetDialogVisible = false;
+		this.state = DialogState.NODE;
             }
 	);
 
     }
 
     closeNodeDialog() {
-	this.nodeDialogVisible = false;
-	// FIXME:
+	if (this.state == DialogState.NODE)
+	    this.state = DialogState.NONE;
 	this.events.unselect();
     }
 
     search() {
-	this.searchDialogVisible = true;
-	this.nodeDialogVisible = false;
-	this.schemaDialogVisible = false;
-	this.datasetDialogVisible = false;
+	this.state = DialogState.SEARCH;
     }
 
     schema() {
-	this.schemaDialogVisible = true;
-	this.nodeDialogVisible = false;
-	this.searchDialogVisible = false;
-	this.datasetDialogVisible = false;
+	this.state = DialogState.SCHEMA;
     }
 
     closeSearchDialog() {
-	this.searchDialogVisible = false;
+	if (this.state == DialogState.SEARCH)
+	    this.state = DialogState.NONE;
 	this.events.unselect();
     }
 
     closeSchemaDialog() {
-	this.schemaDialogVisible = false;
+	if (this.state == DialogState.SCHEMA)
+	    this.state = DialogState.NONE;
     }
 
     closeDatasetDialog() {
-	this.datasetDialogVisible = false;
+	if (this.state == DialogState.DATASET)
+	    this.state = DialogState.NONE;
     }
 
     dataset() {
-	this.datasetDialogVisible = true;
-	this.schemaDialogVisible = false;
-	this.nodeDialogVisible = false;
-	this.searchDialogVisible = false;
+	this.state = DialogState.DATASET;
     }
 
     ngAfterViewInit(): void {
