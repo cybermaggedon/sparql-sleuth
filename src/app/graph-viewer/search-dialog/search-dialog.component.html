@@ -1,7 +1,9 @@
 
-<p-sidebar class="dialog" position="right" [style]="{width:'40vw'}"
+<p-dialog class="dialog" position="right"
 	  [(visible)]="display" [modal]="false"
-	  (onHide)="onHide()">
+	  [breakpoints]="{'1200px': '40rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '50rem'}"
+	   (onHide)="onHide()">
 
   <search></search>
 
@@ -12,4 +14,4 @@
     </button>
   </ng-template>
 
-</p-sidebar>
+</p-dialog>

@@ -8,7 +8,6 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog'; // Unused?
-import { SidebarModule } from 'primeng/sidebar';
 import { TabViewModule } from 'primeng/tabview';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
@@ -59,7 +58,6 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 	TableModule,
 	InputTextModule,
 	DialogModule,
-	SidebarModule,
 	TabViewModule,
 	ToolbarModule,
 	PanelModule,

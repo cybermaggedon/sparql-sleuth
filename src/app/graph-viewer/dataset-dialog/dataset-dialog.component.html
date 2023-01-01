@@ -1,7 +1,9 @@
 
-<p-sidebar class="dialog" position="right" [style]="{width:'40vw'}"
-	  [(visible)]="display" [modal]="false"
-	  (onHide)="onHide()">
+<p-dialog class="dialog"
+	  [(visible)]="display" [modal]="false" position="right"
+	  [breakpoints]="{'1200px': '25rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '30rem'}"
+	   (onHide)="onHide()">
 
   <dataset></dataset>
 
@@ -12,5 +14,5 @@
     </button>
   </ng-template>
 
-</p-sidebar>
+</p-dialog>
 

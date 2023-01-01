@@ -1,7 +1,9 @@
 
-<p-sidebar class="dialog" position="right" [style]="{width:'40vw'}"
+<p-dialog class="dialog"
 	  [(visible)]="display" [modal]="false"
-	  (onHide)="onHide()">
+	  [breakpoints]="{'1200px': '25rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '30rem'}"
+	   (onHide)="onHide()">
 
   <h2>About...</h2>
 
@@ -28,8 +30,8 @@
   </p>
 
   <p>
-    <a href="https://github.com/cybermaggedon/sparql-explorer">
-      <code>https://github.com/cybermaggedon/sparql-explorer</code>
+    <a href="https://github.com/cybermaggedon/sparql-service">
+      <code>https://github.com/cybermaggedon/sparql-service</code>
     </a>
   </p>
 
@@ -40,6 +42,6 @@
     </button>
   </ng-template>
 
-</p-sidebar>
+</p-dialog>
 
 
