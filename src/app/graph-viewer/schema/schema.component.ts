@@ -35,9 +35,7 @@ export class SchemaComponent implements OnInit {
 	    () => {
 
 		if (this.schema.length > 0) return;
-
 		this.runQuery();
-
 	    }
 	);
 

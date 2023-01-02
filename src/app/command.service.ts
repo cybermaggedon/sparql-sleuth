@@ -22,7 +22,7 @@ export enum Command {
 };
 
 class CommandEvent {
-    kind: Command = Command.RELATIONSHIP;
+    kind: Command = Command.ABOUT;
     relationship : RelationshipEvent = new RelationshipEvent();
     recentre : RecentreEvent = new RecentreEvent();
 };
@@ -80,12 +80,6 @@ export class CommandService {
 	let ev = new CommandEvent();
 	ev.kind = Command.RECENTRE;
 	ev.recentre.id = id;
-	this.commandSubject.next(ev);
-    }
-
-    showSchema() {
-	let ev = new CommandEvent();
-	ev.kind = Command.SCHEMA;
 	this.commandSubject.next(ev);
     }
 
