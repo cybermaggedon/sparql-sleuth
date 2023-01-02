@@ -73,16 +73,6 @@ export class GraphService {
 	    }
 	);
 
-	// This is weird. The schema event can occur in two observable systems,
-	// the command one, and the event one.  This bridges the event off of
-	// the command system to the event system.
-	this.command.command(Command.SCHEMA).subscribe(
-	    ev => {
-		this.events.reset();
-		this.events.schema();
-	    }
-	);
-
 	this.command.command(Command.RELATIONSHIP).subscribe(
 	    ev => this.relationship(
 		ev.relationship.node,
