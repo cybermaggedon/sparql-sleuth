@@ -8,6 +8,7 @@ import { Network, DataSet } from 'vis-network/standalone';
 
 import { Triple } from '../../rdf/triple';
 import { EventService } from '../../graph/event.service';
+import { StateService } from '../../graph/state.service';
 
 @Component({
     selector: 'graph',
@@ -19,73 +20,14 @@ export class GraphComponent implements OnInit {
     @ViewChild("network") networkContainer: ElementRef | undefined;
 
     public network: any = null;
-    edges : any = new DataSet([]);
-    nodes : any = new DataSet([]);
 
-    treeData : any = {
-	edges: this.edges,
-	nodes: this.nodes,
-    }
-
-    wrap(s : string | null) : string {
-	if (s == null) return "";
-	return s.replace(
-	    /(?![^\n]{1,32}$)([^\n]{1,32})\s/g, '$1\n'
-	);
-    }
+    state : any;
 
     constructor(
 	private events : EventService,
+	private graphState : StateService,
     ) {
-
-	this.events.addNodeEvents().subscribe(
-	    ev => {
-		if (this.nodes.get(ev.node.id) == null) {
-		    this.nodes.add({
-			id: ev.node.id,
-			node: ev.node,
-			label: this.wrap(ev.node.label),
-		    });
-		}
-	    }
-	)
-
-	this.events.removeNodeEvents().subscribe(
-	    ev => {
-		if (this.nodes.get(ev.id))
-		    this.nodes.remove(ev.id);
-	    }
-	)
-
-	this.events.addEdgeEvents().subscribe(
-	    ev => {
-		if (this.edges.get(ev.edge.id) == null) {
-		    this.edges.add({
-			id: ev.edge.id,
-			edge: ev.edge,
-			label: this.wrap(ev.edge.label),
-			from: ev.edge.from,
-			to: ev.edge.to,
-			arrows: "to",
-		    });
-		}
-	    }
-	)
-
-	this.events.removeEdgeEvents().subscribe(
-	    ev => {
-		if (this.edges.get(ev.id))
-		    this.edges.remove(ev.id);
-	    }
-	)
-
-	this.events.resetEvents().subscribe(
-	    ev => {
-		this.nodes.clear();
-		this.edges.clear();
-	    }
-	)
-
+	this.state = this.graphState.graphState();
     }
 
     ngOnInit() {
@@ -105,17 +47,15 @@ export class GraphComponent implements OnInit {
 
 	var container = this.networkContainer?.nativeElement;
 	
-	this.network = new Network(container, this.treeData, options);
-
-	let cmp = this;
+	this.network = new Network(container, this.state, options);
 
 	this.network.on("select", (params: any) => {
 	    if (params.nodes.length == 1) {
 		let id = params.nodes[0];
-		let node = cmp.nodes.get(id).node;
-		cmp.events.selected(node);
+		let node = this.state.nodes.get(id).node;
+		this.events.selected(node);
 	    } else {
-		cmp.events.deselected();
+		this.events.deselected();
 	    }
 	});
 
