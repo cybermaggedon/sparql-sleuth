@@ -1,4 +1,6 @@
 
+import { Node, Edge } from './graph';
+
 import { Injectable } from '@angular/core';
 
 import { Observable, of } from 'rxjs';
@@ -19,17 +21,39 @@ export class SerialisationService {
 
 	let dump = JSON.parse(enc);
 
-	console.log(dump);
-
 	let gst = this.state.treeData;
 
 	gst.nodes.clear();
+	gst.edges.clear();
 
-	for(let node of dump["nodes"])
+	let nmap : any = {};
+
+	for(let node of dump["nodes"]) {
+
+	    let n = new Node();
+	    n.id = node["id"];
+	    n.label = node["label"];
+	    nmap[node["id"]] = n;
+
+	    node["node"] = n;
+
 	    gst.nodes.add(node);
 
-	for(let edge of dump["edges"])
+	}
+
+	for(let edge of dump["edges"]) {
+
+	    let e = new Edge();
+	    e.id = edge["id"];
+	    e.label = edge["label"];
+	    e.from = edge["from"];
+	    e.to = edge["to"];
+
+	    edge["arrows"] = "to";
+	    edge["edge"] = e;
 	    gst.edges.add(edge);
+
+	}
 
 	return of("");
     }
@@ -51,6 +75,7 @@ export class SerialisationService {
 
 			state.nodes.forEach(
 			    (n : any) => {
+				console.log(n);
 				
 				let node : any = {
 				    id: n.id,
@@ -69,7 +94,6 @@ export class SerialisationService {
 			
 			state.edges.forEach(
 			    (e : any) => {
-
 				console.log(e);
 				
 				let edge : any = {
