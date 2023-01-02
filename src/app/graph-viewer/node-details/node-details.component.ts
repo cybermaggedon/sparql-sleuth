@@ -21,14 +21,6 @@ export class NodeDetailsComponent implements OnInit {
     @Input()
     relationships : Relationship[] = [];
 
-    get inward() {
-	return this.relationships.filter( x => x.inward );
-    }
-
-    get outward() {
-	return this.relationships.filter( x => !x.inward );
-    }
-
     @Input()
     properties : Properties = new Properties();
 
@@ -36,16 +28,6 @@ export class NodeDetailsComponent implements OnInit {
     selection? : Node;
 
     ngOnInit(): void {
-    }
-
-    reln(rel : Relationship) {
-	if (!this.selection) return;
-	this.command.relationship(this.selection, rel);
-    }
-
-    recentre() {
-	if (this.selection)
-	    this.command.recentre(this.selection.id);
     }
 
 }

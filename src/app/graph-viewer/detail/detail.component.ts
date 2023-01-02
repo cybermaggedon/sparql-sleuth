@@ -3,6 +3,8 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { GraphService } from '../../graph/graph.service';
 import { Properties, PropertyMap } from '../../graph/properties.service';
+import { Node, Relationship } from '../../graph/graph';
+import { CommandService, Direction } from '../../command.service';
 
 @Component({
     selector: 'detail',
@@ -16,7 +18,21 @@ export class DetailComponent implements OnInit {
     selectedThumbnail : string | undefined;
     selectedLink : string | undefined;
 
+    @Input()
+    relationships : Relationship[] = [];
+
+    @Input()
+    selection? : Node;
+
     @Input("properties") allProperties : Properties = new Properties();
+
+    get inward() {
+	return this.relationships.filter( x => x.inward );
+    }
+
+    get outward() {
+	return this.relationships.filter( x => !x.inward );
+    }
 
     get properties() {
 	return this.allProperties.properties;
@@ -42,6 +58,7 @@ export class DetailComponent implements OnInit {
 
     constructor(
 	private graph : GraphService,
+	private command : CommandService,
     ) { }
 
     ngOnInit(): void {
@@ -68,6 +85,16 @@ export class DetailComponent implements OnInit {
 	    return this.properties["thumbnail"].value();
 	else
 	    return "";
+    }
+
+    recentre() {
+	if (this.selection)
+	    this.command.recentre(this.selection.id);
+    }
+
+    reln(rel : Relationship) {
+	if (!this.selection) return;
+	this.command.relationship(this.selection, rel);
     }
 
 }

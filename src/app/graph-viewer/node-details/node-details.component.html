@@ -1,29 +1,4 @@
 
-<div class="buttonbox">
-  <button *ngIf="selection"
-	  pButton pRipple type="button" label="Re-centre"
-	  icon="pi pi-plus-circle"	  
-	  class="p-button-raised p-button-text p-button-warning"
-	  style="color: #e04040"
-	  (click)="recentre()">
-  </button>
-
-  <button *ngFor="let rel of inward"
-	  (click)="reln(rel)"
-	  pButton pRipple type="button" label="{{rel.name}}"
-	  icon="pi pi-arrow-right" iconPos="left"
-	  class="p-button-raised p-button-text p-button-secondary"
-	  >
-  </button>
-
-  <button *ngFor="let rel of outward" (click)="reln(rel)"
-	  pButton pRipple type="button" label="{{rel.name}}"
-	  icon="pi pi-arrow-right" iconPos="right"
-	  class="p-button-raised p-button-text"
-	  >
-  </button>
-
-</div>
-
-<detail class="detail" [properties]="properties">
+<detail class="detail" [properties]="properties"
+	[relationships]="relationships" [selection]="selection">
 </detail>
