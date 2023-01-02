@@ -11,7 +11,7 @@ import { Row } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
-import { CommandService } from '../../command.service';
+import { CommandService, Command } from '../../command.service';
 
 @Component({
   selector: 'schema',
@@ -31,7 +31,7 @@ export class SchemaComponent implements OnInit {
 
     ngOnInit(): void {
 
-	this.command.schemaEvents().subscribe(
+	this.command.command(Command.SCHEMA).subscribe(
 	    () => {
 
 		if (this.schema.length > 0) return;

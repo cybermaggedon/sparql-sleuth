@@ -1,14 +1,31 @@
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { Node, Relationship } from './graph/graph';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export enum Direction {
   IN = 0,
   OUT,
   BOTH,
 }
+
+export enum Command {
+    RELATIONSHIP,
+    RECENTRE,
+    SCHEMA,
+    BEGIN_SEARCH,
+    INFO,
+    ABOUT,
+    DATASETS,
+};
+
+class CommandEvent {
+    kind: Command = Command.RELATIONSHIP;
+    relationship : RelationshipEvent = new RelationshipEvent();
+    recentre : RecentreEvent = new RecentreEvent();
+};
 
 export class RelationshipEvent {
     node : Node = new Node();
@@ -29,69 +46,77 @@ export class CommandService {
     ) {
 
 	// We'll deal with the recentre events here, just re-route.
-	this.recentreEvents().subscribe(
+	this.command(Command.RECENTRE).subscribe(
 	    ev => 
 	    this.route.navigate(
 		['/graph'],
-		{ queryParams: { 'node': ev.id }}
+		{ queryParams: { 'node': ev.recentre.id }}
 	    )
 	);
 
     }
 
-    private relationshipSubject = new Subject<RelationshipEvent>;
-    private recentreSubject = new Subject<RecentreEvent>;
-    private showSchemaSubject = new Subject<void>;
-    private beginSearchSubject = new Subject<void>;
-    private infoSubject = new Subject<void>;
-    private aboutSubject = new Subject<void>;
-    private schemaSubject = new Subject<void>;
-    private datasetsSubject = new Subject<void>;
+    private commandSubject = new Subject<CommandEvent>;
 
-    relationshipEvents() { return this.relationshipSubject; }
-    recentreEvents() { return this.recentreSubject; }
-    showSchemaEvents() { return this.showSchemaSubject; }
-    beginSearchEvents() { return this.beginSearchSubject; }
-    infoEvents() { return this.infoSubject; }
-    aboutEvents() { return this.aboutSubject; }
-    schemaEvents() { return this.schemaSubject; }
-    datasetsEvents() { return this.datasetsSubject; }
+    events() { return this.commandSubject; }
+
+    command(command : Command) {
+	return this.events().pipe(
+	    filter(
+		c => c.kind == command
+	    )
+	);
+    }
 
     relationship(node : Node, rel : Relationship) {
-	let ev = new RelationshipEvent;
-	ev.node = node;
-	ev.relationship = rel;
-	this.relationshipSubject.next(ev);
+	let ev = new CommandEvent;
+	ev.kind = Command.RELATIONSHIP;
+	ev.relationship.node = node;
+	ev.relationship.relationship = rel;
+	this.commandSubject.next(ev);
     }
 
     recentre(id : string) {
-	let ev = new RecentreEvent();
-	ev.id = id;
-	this.recentreSubject.next(ev);
+	let ev = new CommandEvent();
+	ev.kind = Command.RECENTRE;
+	ev.recentre.id = id;
+	this.commandSubject.next(ev);
     }
 
     showSchema() {
-	this.showSchemaSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.SCHEMA;
+	this.commandSubject.next(ev);
     }
 
     beginSearch() {
-	this.beginSearchSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.BEGIN_SEARCH;
+	this.commandSubject.next(ev);
     }
 
     info() {
-	this.infoSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.INFO;
+	this.commandSubject.next(ev);
     }
 
     about() {
-	this.aboutSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.ABOUT;
+	this.commandSubject.next(ev);
     }
 
     schema() {
-	this.schemaSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.SCHEMA;
+	this.commandSubject.next(ev);
     }
 
     datasets() {
-	this.datasetsSubject.next();
+	let ev = new CommandEvent();
+	ev.kind = Command.DATASETS;
+	this.commandSubject.next(ev);
     }
 
 }

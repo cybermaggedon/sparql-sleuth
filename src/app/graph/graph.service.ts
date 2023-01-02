@@ -12,7 +12,7 @@ import { Triple, Literal, Value, Uri } from '../rdf/triple';
 import { Node, Edge } from './graph';
 
 import { QueryService } from '../query/query.service';
-import { CommandService, Direction } from '../command.service';
+import { CommandService, Direction, Command } from '../command.service';
 import { TransformService } from '../transform/transform.service';
 
 import { POQuery } from '../query/p-o-query';
@@ -76,15 +76,18 @@ export class GraphService {
 	// This is weird. The schema event can occur in two observable systems,
 	// the command one, and the event one.  This bridges the event off of
 	// the command system to the event system.
-	this.command.showSchemaEvents().subscribe(
+	this.command.command(Command.SCHEMA).subscribe(
 	    ev => {
 		this.events.reset();
 		this.events.schema();
 	    }
 	);
 
-	this.command.relationshipEvents().subscribe(
-	    ev => this.relationship(ev.node, ev.relationship)
+	this.command.command(Command.RELATIONSHIP).subscribe(
+	    ev => this.relationship(
+		ev.relationship.node,
+		ev.relationship.relationship
+	    )
 	);
 
     }

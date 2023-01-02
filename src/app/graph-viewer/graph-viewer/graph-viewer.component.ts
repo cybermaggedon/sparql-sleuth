@@ -9,7 +9,7 @@ import { Uri } from '../../rdf/triple';
 import { Node, Relationship } from '../../graph/graph';
 
 import { RelationshipService } from '../../graph/relationship.service';
-import { CommandService } from '../../command.service';
+import { CommandService, Command } from '../../command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
 
@@ -92,23 +92,23 @@ export class GraphViewerComponent implements OnInit {
             }
 	);
 
-	this.command.beginSearchEvents().subscribe(
+	this.command.command(Command.BEGIN_SEARCH).subscribe(
 	    () => this.state = DialogState.SEARCH
 	);
 
-	this.command.schemaEvents().subscribe(
+	this.command.command(Command.SCHEMA).subscribe(
 	    () => this.state = DialogState.SCHEMA
 	);
 
-	this.command.datasetsEvents().subscribe(
+	this.command.command(Command.DATASETS).subscribe(
 	    () => this.state = DialogState.DATASETS
 	);
 
-	this.command.infoEvents().subscribe(
+	this.command.command(Command.INFO).subscribe(
 	    () => this.state = DialogState.INFO
 	);
 
-	this.command.aboutEvents().subscribe(
+	this.command.command(Command.ABOUT).subscribe(
 	    () => this.state = DialogState.ABOUT
 	);
 

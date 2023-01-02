@@ -12,7 +12,7 @@ import { Row } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
-import { CommandService } from '../../command.service';
+import { CommandService, Command } from '../../command.service';
 
 const DATASET = new Uri("https://schema.org/Dataset");
 
@@ -34,7 +34,7 @@ export class DatasetsComponent implements OnInit {
 
     ngOnInit(): void {
 
-	this.command.datasetsEvents().subscribe(
+	this.command.command(Command.DATASETS).subscribe(
 	    () => {
 
 		if (this.datasets.length > 0) return;
