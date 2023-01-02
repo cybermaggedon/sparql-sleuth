@@ -4,7 +4,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { RelationshipService } from '../../graph/relationship.service';
 import { Properties } from '../../graph/properties.service';
 import { Node, Relationship } from '../../graph/graph';
-import { CommandService, Direction } from '../../graph/command.service';
+import { CommandService, Direction } from '../../command.service';
 
 @Component({
     selector: 'node-details',

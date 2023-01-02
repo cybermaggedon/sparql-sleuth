@@ -9,7 +9,7 @@ import { Uri } from '../../rdf/triple';
 import { Node, Relationship } from '../../graph/graph';
 
 import { RelationshipService } from '../../graph/relationship.service';
-import { CommandService } from '../../graph/command.service';
+import { CommandService } from '../../command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
 
@@ -20,7 +20,7 @@ enum DialogState {
     SEARCH,
     SCHEMA,
     INFO,
-    DATASET,
+    DATASETS,
     ABOUT,
 };
 
@@ -51,17 +51,17 @@ export class GraphViewerComponent implements OnInit {
 		{
 		    label: "Search",
 		    icon: "pi pi-search",
-		    command: () => { this.search(); }
+		    command: () => { this.command.beginSearch(); }
 		},
 		{
 		    label: "Schema",
 		    icon: "pi pi-list",
-		    command: () => { this.schema(); }
+		    command: () => { this.command.schema(); }
 		},
 		{
 		    label: "Datasets",
 		    icon: "pi pi-book",
-		    command: () => { this.dataset(); }
+		    command: () => { this.command.datasets(); }
 		}
 	    ]
 	},
@@ -71,12 +71,12 @@ export class GraphViewerComponent implements OnInit {
 		{
 		    label: "Getting started",
 		    icon: "pi pi-question-circle",
-		    command: () => { this.info(); }
+		    command: () => { this.command.info(); }
 		},
 		{
 		    label: "About...",
 		    icon: "pi pi-info-circle",
-		    command: () => { this.about(); }
+		    command: () => { this.command.about(); }
 		}
 	    ]
 	}
@@ -91,7 +91,7 @@ export class GraphViewerComponent implements OnInit {
     get searchDialogVisible() { return this.state == DialogState.SEARCH; }
     get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
     get infoDialogVisible() { return this.state == DialogState.INFO; }
-    get datasetDialogVisible() { return this.state == DialogState.DATASET; }
+    get datasetDialogVisible() { return this.state == DialogState.DATASETS; }
     get aboutDialogVisible() { return this.state == DialogState.ABOUT; }
 
     selection? : Node;
@@ -130,6 +130,30 @@ export class GraphViewerComponent implements OnInit {
             }
 	);
 
+	this.command.beginSearchEvents().subscribe(
+	    () => this.state = DialogState.SEARCH
+	);
+
+	this.command.schemaEvents().subscribe(
+	    () => this.state = DialogState.SCHEMA
+	);
+
+	this.command.datasetsEvents().subscribe(
+	    () => this.state = DialogState.DATASETS
+	);
+
+	this.command.infoEvents().subscribe(
+	    () => this.state = DialogState.INFO
+	);
+
+	this.command.aboutEvents().subscribe(
+	    () => this.state = DialogState.ABOUT
+	);
+
+    }
+
+    info() {
+	this.command.info();
     }
 
     closeNodeDialog() {
@@ -137,14 +161,6 @@ export class GraphViewerComponent implements OnInit {
 	    this.state = DialogState.NONE;
 	    this.events.unselect();
 	}
-    }
-
-    search() {
-	this.state = DialogState.SEARCH;
-    }
-
-    schema() {
-	this.state = DialogState.SCHEMA;
     }
 
     closeSearchDialog() {
@@ -160,7 +176,7 @@ export class GraphViewerComponent implements OnInit {
     }
 
     closeDatasetDialog() {
-	if (this.state == DialogState.DATASET)
+	if (this.state == DialogState.DATASETS)
 	    this.state = DialogState.NONE;
     }
 
@@ -172,18 +188,6 @@ export class GraphViewerComponent implements OnInit {
     closeInfoDialog() {
 	if (this.state == DialogState.INFO)
 	    this.state = DialogState.NONE;
-    }
-
-    info() {
-	this.state = DialogState.INFO;
-    }
-
-    dataset() {
-	this.state = DialogState.DATASET;
-    }
-
-    about() {
-	this.state = DialogState.ABOUT;
     }
 
     ngAfterViewInit(): void {

@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Node, Relationship } from '../graph/graph';
+import { Node, Relationship } from './graph/graph';
 
 export enum Direction {
   IN = 0,
@@ -43,13 +43,19 @@ export class CommandService {
     private recentreSubject = new Subject<RecentreEvent>;
     private showSchemaSubject = new Subject<void>;
     private beginSearchSubject = new Subject<void>;
-    private helpSubject = new Subject<void>;
+    private infoSubject = new Subject<void>;
+    private aboutSubject = new Subject<void>;
+    private schemaSubject = new Subject<void>;
+    private datasetsSubject = new Subject<void>;
 
     relationshipEvents() { return this.relationshipSubject; }
     recentreEvents() { return this.recentreSubject; }
     showSchemaEvents() { return this.showSchemaSubject; }
     beginSearchEvents() { return this.beginSearchSubject; }
-    helpEvents() { return this.helpSubject; }
+    infoEvents() { return this.infoSubject; }
+    aboutEvents() { return this.aboutSubject; }
+    schemaEvents() { return this.schemaSubject; }
+    datasetsEvents() { return this.datasetsSubject; }
 
     relationship(node : Node, rel : Relationship) {
 	let ev = new RelationshipEvent;
@@ -72,8 +78,20 @@ export class CommandService {
 	this.beginSearchSubject.next();
     }
 
-    help() {
-	this.helpSubject.next();
+    info() {
+	this.infoSubject.next();
+    }
+
+    about() {
+	this.aboutSubject.next();
+    }
+
+    schema() {
+	this.schemaSubject.next();
+    }
+
+    datasets() {
+	this.datasetsSubject.next();
     }
 
 }

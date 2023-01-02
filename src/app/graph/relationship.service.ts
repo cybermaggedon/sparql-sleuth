@@ -7,7 +7,6 @@ import { Value, Uri } from '../rdf/triple';
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf/defs';
 
 import { QueryService } from '../query/query.service';
-import { CommandService } from './command.service';
 
 import { RelationshipQuery } from '../query/relationship-query';
 import { GraphService} from './graph.service';
@@ -20,7 +19,6 @@ import { Node, Edge, Relationship } from './graph';
 export class RelationshipService {
 
     constructor(
-	private command : CommandService,
 	private query : QueryService,
 	private graph : GraphService,
     ) {
