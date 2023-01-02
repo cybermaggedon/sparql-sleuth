@@ -20,6 +20,7 @@ export enum Command {
     ABOUT,
     DATASETS,
     SERIALISE,
+    DESERIALISE,
 };
 
 class CommandEvent {
@@ -117,6 +118,12 @@ export class CommandService {
     serialise() {
 	let ev = new CommandEvent();
 	ev.kind = Command.SERIALISE;
+	this.commandSubject.next(ev);
+    }
+
+    deserialise() {
+	let ev = new CommandEvent();
+	ev.kind = Command.DESERIALISE;
 	this.commandSubject.next(ev);
     }
 

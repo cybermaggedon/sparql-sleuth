@@ -50,6 +50,11 @@ export class MenuComponent implements OnInit {
 		    label: "Serialise",
 		    icon: "pi pi-",
 		    command: () => { this.command.serialise(); }
+		},
+		{
+		    label: "Deserialise",
+		    icon: "pi pi-",
+		    command: () => { this.command.deserialise(); }
 		}
 	    ]
 	}

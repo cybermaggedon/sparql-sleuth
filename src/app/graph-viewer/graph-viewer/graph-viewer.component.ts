@@ -121,6 +121,16 @@ export class GraphViewerComponent implements OnInit {
 	    )
 	);
 
+	this.command.command(Command.DESERIALISE).subscribe(
+	    () => {
+
+	    let enc = '{"nodes":[{"id":"http://pivotlabs.vc/innov/dataset/dasa-challenges","x":-212,"y":-176},{"id":"https://schema.org/Dataset","x":17,"y":37},{"id":"http://pivotlabs.vc/innov/dataset/ktn-challenges","x":313,"y":125},{"id":"http://pivotlabs.vc/innov/dataset/ktnie-challenges","x":-141,"y":310},{"id":"http://pivotlabs.vc/innov/dataset/ncsc-challenges","x":277,"y":-150},{"id":"http://pivotlabs.vc/innov/dataset/organisations","x":129,"y":332},{"id":"http://pivotlabs.vc/innov/dataset/ukri-challenges","x":41,"y":-278},{"id":"http://pivotlabs.vc/innov/dataset/ukri-organogram","x":-301,"y":83}],"edges":[{"from":"http://pivotlabs.vc/innov/dataset/dasa-challenges","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/ktn-challenges","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/ktnie-challenges","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/ncsc-challenges","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/organisations","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/ukri-challenges","to":"https://schema.org/Dataset"},{"from":"http://pivotlabs.vc/innov/dataset/ukri-organogram","to":"https://schema.org/Dataset"}]}';
+	    this.serialisation.deserialise(enc).subscribe(
+		() => { console.log("DESER"); }
+	    )
+	    }
+	);
+
     }
 
     closeNodeDialog() {

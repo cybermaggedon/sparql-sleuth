@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { StateService } from './state.service';
 
@@ -14,6 +14,12 @@ export class SerialisationService {
 	private state : StateService,
     ) {
     }
+
+    deserialise(enc : string) {
+	console.log("DEC", enc);
+	return of("YES");
+    }
+
 
     serialise() {
 
