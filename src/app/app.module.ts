@@ -21,7 +21,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
     declarations: [
 	AppComponent,
 	ToastComponent,
- SpinnerComponent,
+	SpinnerComponent,
     ],
     imports: [
 	BrowserModule,
@@ -37,7 +37,8 @@ import { SpinnerComponent } from './spinner/spinner.component';
 	QueryEditorModule,
 	TableViewerModule,
     ],
-    providers: [],
+    providers: [
+    ],
     bootstrap: [
 	AppComponent
     ]

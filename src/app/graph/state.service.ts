@@ -1,5 +1,6 @@
 
 import { Injectable } from '@angular/core';
+import { Subject, take, tap, of, Observable } from 'rxjs';
 
 import { DataSet } from 'vis-network/standalone';
 import { EventService } from './event.service';
@@ -9,6 +10,10 @@ import { EventService } from './event.service';
 })
 export class StateService {
 
+    // Clunky linkage to get position information from graph components
+    requestPositions = new Subject<void>;
+    reportPositions = new Subject<any>;
+
     edges : any = new DataSet([]);
     nodes : any = new DataSet([]);
 
@@ -17,10 +22,28 @@ export class StateService {
 	nodes: this.nodes,
     }
 
+    getPositions() {
+
+	return new Observable<any>(
+	    subs => {
+
+		this.reportPositions.pipe(
+		    take(1)
+		).subscribe(
+		    res => { subs.next(res); subs.complete(); }
+		);
+
+		this.requestPositions.next();
+
+	    }
+	);
+
+    }
+
     constructor(
 	private events : EventService,
     ) {
-	
+
 	this.events.addNodeEvents().subscribe(
 	    ev => {
 		if (this.nodes.get(ev.node.id) == null) {
@@ -31,6 +54,7 @@ export class StateService {
 		    });
 		}
 	    }
+
 	)
 
 	this.events.removeNodeEvents().subscribe(

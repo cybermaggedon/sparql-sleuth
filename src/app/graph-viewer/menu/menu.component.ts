@@ -45,6 +45,11 @@ export class MenuComponent implements OnInit {
 		    label: "About...",
 		    icon: "pi pi-info-circle",
 		    command: () => { this.command.about(); }
+		},
+		{
+		    label: "Serialise",
+		    icon: "pi pi-",
+		    command: () => { this.command.serialise(); }
 		}
 	    ]
 	}

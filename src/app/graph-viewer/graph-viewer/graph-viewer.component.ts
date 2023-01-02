@@ -13,6 +13,8 @@ import { CommandService, Command } from '../../command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
 
+import { SerialisationService } from '../../graph/serialisation.service';
+
 // Which dialog is open.  Can only be 1 at once.
 enum DialogState {
     NONE,
@@ -39,6 +41,7 @@ export class GraphViewerComponent implements OnInit {
 	private events : EventService,
 	private relationship : RelationshipService,
 	private messageService : MessageService,
+	private serialisation : SerialisationService,
     ) {
 	
     }
@@ -110,6 +113,12 @@ export class GraphViewerComponent implements OnInit {
 
 	this.command.command(Command.ABOUT).subscribe(
 	    () => this.state = DialogState.ABOUT
+	);
+
+	this.command.command(Command.SERIALISE).subscribe(
+	    () => this.serialisation.serialise().subscribe(
+		res => console.log(res)
+	    )
 	);
 
     }

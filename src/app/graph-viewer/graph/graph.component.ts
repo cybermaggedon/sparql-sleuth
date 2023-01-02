@@ -27,7 +27,15 @@ export class GraphComponent implements OnInit {
 	private events : EventService,
 	private graphState : StateService,
     ) {
+
 	this.state = this.graphState.graphState();
+
+	this.graphState.requestPositions.subscribe(
+	    () => {
+		this.graphState.reportPositions.next(this.network.getPositions());
+	    }
+	);
+
     }
 
     ngOnInit() {
