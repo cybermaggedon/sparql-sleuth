@@ -11,6 +11,7 @@ import { Row } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
+import { CommandService } from '../../command.service';
 
 @Component({
   selector: 'schema',
@@ -23,12 +24,23 @@ export class SchemaComponent implements OnInit {
 	private query : QueryService,
 	private graph : GraphService,
 	private transform : TransformService,
+	private command : CommandService,
     ) { }
 
-    results : Row[] = [];
+    schema : Row[] = [];
 
     ngOnInit(): void {
-	this.runQuery();
+
+	this.command.schemaEvents().subscribe(
+	    () => {
+
+		if (this.schema.length > 0) return;
+
+		this.runQuery();
+
+	    }
+	);
+
     }
 
     runQuery() {
@@ -46,7 +58,7 @@ export class SchemaComponent implements OnInit {
 	    map((x : any) => x.data),
 	).subscribe(
 	    result => {
-		this.results = result;
+		this.schema = result;
 	    }
 	);
 

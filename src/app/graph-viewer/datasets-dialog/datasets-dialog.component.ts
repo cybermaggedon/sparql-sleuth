@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
-  selector: 'dataset-dialog',
-  templateUrl: './dataset-dialog.component.html',
-  styleUrls: ['./dataset-dialog.component.scss']
+  selector: 'datasets-dialog',
+  templateUrl: './datasets-dialog.component.html',
+  styleUrls: ['./datasets-dialog.component.scss']
 })
-export class DatasetDialogComponent implements OnInit {
+export class DatasetsDialogComponent implements OnInit {
 
     @Input() display = false;
 

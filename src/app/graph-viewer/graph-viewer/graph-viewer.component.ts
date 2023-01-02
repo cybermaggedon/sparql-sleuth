@@ -91,7 +91,7 @@ export class GraphViewerComponent implements OnInit {
     get searchDialogVisible() { return this.state == DialogState.SEARCH; }
     get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
     get infoDialogVisible() { return this.state == DialogState.INFO; }
-    get datasetDialogVisible() { return this.state == DialogState.DATASETS; }
+    get datasetsDialogVisible() { return this.state == DialogState.DATASETS; }
     get aboutDialogVisible() { return this.state == DialogState.ABOUT; }
 
     selection? : Node;
@@ -175,7 +175,7 @@ export class GraphViewerComponent implements OnInit {
 	    this.state = DialogState.NONE;
     }
 
-    closeDatasetDialog() {
+    closeDatasetsDialog() {
 	if (this.state == DialogState.DATASETS)
 	    this.state = DialogState.NONE;
     }

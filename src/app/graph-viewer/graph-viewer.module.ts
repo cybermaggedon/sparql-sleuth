@@ -26,8 +26,8 @@ import { NodeDialogComponent } from './node-dialog/node-dialog.component';
 import { SearchDialogComponent } from './search-dialog/search-dialog.component';
 import { SchemaDialogComponent } from './schema-dialog/schema-dialog.component';
 import { SchemaComponent } from './schema/schema.component';
-import { DatasetDialogComponent } from './dataset-dialog/dataset-dialog.component';
-import { DatasetComponent } from './dataset/dataset.component';
+import { DatasetsDialogComponent } from './datasets-dialog/datasets-dialog.component';
+import { DatasetsComponent } from './datasets/datasets.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { ToastModule } from 'primeng/toast';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
@@ -45,8 +45,8 @@ import { AccordionModule } from 'primeng/accordion';
         SearchDialogComponent,
         SchemaDialogComponent,
         SchemaComponent,
-        DatasetDialogComponent,
-        DatasetComponent,
+        DatasetsDialogComponent,
+        DatasetsComponent,
         InfoDialogComponent,
         AboutDialogComponent,
     ],

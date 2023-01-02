@@ -1,18 +1,18 @@
 
 <h2>Datasets</h2>
 
-<div *ngIf="results.length == 0">
+<div *ngIf="datasets.length == 0">
   There is no dataset catalogue information in the dataset.  SPARQL Explorer
   looks for schema.org's Dataset specification information.
 </div>
 
-<div *ngIf="results.length > 0">
+<div *ngIf="datasets.length > 0">
   The following datasets have been described in the knowledge base.
 </div>
 
-<div *ngIf="results.length > 0">
+<div *ngIf="datasets.length > 0">
 
-  <div *ngFor="let row of results">
+  <div *ngFor="let row of datasets">
 
     <p-card *ngIf="row['title'].value()"
 	    header="{{row['title'].value()}}"

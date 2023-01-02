@@ -12,26 +12,38 @@ import { Row } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
+import { CommandService } from '../../command.service';
 
 const DATASET = new Uri("https://schema.org/Dataset");
 
 @Component({
-  selector: 'dataset',
-  templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']
+  selector: 'datasets',
+  templateUrl: './datasets.component.html',
+  styleUrls: ['./datasets.component.scss']
 })
-export class DatasetComponent implements OnInit {
+export class DatasetsComponent implements OnInit {
 
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
 	private transform : TransformService,
+	private command : CommandService,
     ) { }
 
-    results : Row[] = [];
+    datasets : Row[] = [];
 
     ngOnInit(): void {
-	this.runQuery();
+
+	this.command.datasetsEvents().subscribe(
+	    () => {
+
+		if (this.datasets.length > 0) return;
+
+		this.runQuery();
+
+	    }
+	);
+
     }
 
     runQuery() {
@@ -39,14 +51,14 @@ export class DatasetComponent implements OnInit {
 	const qry = 'PREFIX schema: <https://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?dataset ?title ?description ?url ?author (GROUP_CONCAT(?keyword,",") as ?keywords) WHERE { ?dataset a schema:Dataset . OPTIONAL { ?dataset rdfs:label ?title } OPTIONAL { ?dataset schema:description ?description } OPTIONAL { ?dataset schema:url ?url } OPTIONAL { ?dataset schema:author ?authorid . ?authorid rdfs:label ?author } OPTIONAL { ?dataset schema:keywords ?keyword } } GROUP BY ?dataset LIMIT 40';
 
 	new RawQuery(
-	    "Acquire schema", qry
+	    "Acquire datasets", qry
 	).run(
 	    this.query
 	).pipe(
 	    map(qr => qr.data),
 	).subscribe(
 	    result => {
-		this.results = result;
+		this.datasets = result;
 	    }
 	);
 

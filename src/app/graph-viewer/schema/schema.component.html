@@ -6,8 +6,8 @@
   not all classes may be used as a type for objects.
 </p>
 
-<div *ngIf="results.length > 0">
-  <p-table [value]="results" styleClass="p-datatable-striped"
+<div *ngIf="schema.length > 0">
+  <p-table [value]="schema" styleClass="p-datatable-striped"
 	   [tableStyle]="{'min-width': '20rem'}" >
 
     <ng-template pTemplate="header">
