@@ -152,10 +152,6 @@ export class GraphViewerComponent implements OnInit {
 
     }
 
-    info() {
-	this.command.info();
-    }
-
     closeNodeDialog() {
 	if (this.state == DialogState.NODE) {
 	    this.state = DialogState.NONE;
@@ -225,21 +221,6 @@ export class GraphViewerComponent implements OnInit {
 
 		}
 
-	    }
-	);
-
-	timer(1).subscribe(
-	    ()=> {
-		this.messageService.add({
-		    severity: "info",
-		    summary: "Getting started",
-		    detail: "Welcome to SPARQL Explorer!\n\n" +
-			"Click here to see the the Getting Started " +
-			"guide, also available on the menu",
-		    key: "announce",
-		    life: 5000,
-		    closable: true,
-		});
 	    }
 	);
 

@@ -29,7 +29,6 @@ import { SchemaComponent } from './schema/schema.component';
 import { DatasetsDialogComponent } from './datasets-dialog/datasets-dialog.component';
 import { DatasetsComponent } from './datasets/datasets.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
-import { ToastModule } from 'primeng/toast';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { AccordionModule } from 'primeng/accordion';
 
@@ -67,7 +66,6 @@ import { AccordionModule } from 'primeng/accordion';
 	ImageModule,
 	MenuModule,
 	TagModule,
-	ToastModule,
 	AccordionModule,
 
     ],
