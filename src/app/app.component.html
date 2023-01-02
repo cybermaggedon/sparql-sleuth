@@ -1,16 +1,12 @@
-<div class="centre" *ngIf="working">
-  <div class="spinner">
-    <p-progressSpinner
-      [style]="{width: '50px', height: '50px'}"
-      styleClass="progress" strokeWidth="6" animationDuration=".5s">
-    </p-progressSpinner>
-  </div>
-</div>
 
 <div class="infobox" *ngIf="working">
   <div *ngFor="let i of info">
     {{i}}
   </div>
+</div>
+
+<div class="spinner">
+  <spinner></spinner>
 </div>
 
 <router-outlet></router-outlet>

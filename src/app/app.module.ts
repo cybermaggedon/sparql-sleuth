@@ -15,11 +15,13 @@ import { QueryEditorModule } from './query-editor/query-editor.module';
 import { TableViewerModule } from './table-viewer/table-viewer.module';
 
 import { ToastComponent } from './toast/toast.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 @NgModule({
     declarations: [
 	AppComponent,
 	ToastComponent,
+ SpinnerComponent,
     ],
     imports: [
 	BrowserModule,
