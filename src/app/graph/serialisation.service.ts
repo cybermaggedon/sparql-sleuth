@@ -16,8 +16,22 @@ export class SerialisationService {
     }
 
     deserialise(enc : string) {
-	console.log("DEC", enc);
-	return of("YES");
+
+	let dump = JSON.parse(enc);
+
+	console.log(dump);
+
+	let gst = this.state.treeData;
+
+	gst.nodes.clear();
+
+	for(let node of dump["nodes"])
+	    gst.nodes.add(node);
+
+	for(let edge of dump["edges"])
+	    gst.edges.add(edge);
+
+	return of("");
     }
 
 
@@ -38,11 +52,14 @@ export class SerialisationService {
 			state.nodes.forEach(
 			    (n : any) => {
 				
-				let node : any = { id: n.id };
+				let node : any = {
+				    id: n.id,
+				    label: n.label,
+				};
 				
 				if (n.id in pos) {
-				    node["x"] = pos[n.id]["x"];
-				    node["y"] = pos[n.id]["y"];
+				    node["x"] = pos[n.id].x;
+				    node["y"] = pos[n.id].y;
 				}
 
 				nodes.push(node);
@@ -52,10 +69,14 @@ export class SerialisationService {
 			
 			state.edges.forEach(
 			    (e : any) => {
+
+				console.log(e);
 				
 				let edge : any = {
-				    from: e["from"],
-				    to: e["to"],
+				    id: e.id,
+				    label: e.label,
+				    from: e.from,
+				    to: e.to,
 				};
 				
 				edges.push(edge);
