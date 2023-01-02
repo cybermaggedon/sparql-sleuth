@@ -19,8 +19,8 @@ export enum Command {
     INFO,
     ABOUT,
     DATASETS,
-    SERIALISE,
-    DESERIALISE,
+    EXPORT,
+    IMPORT,
 };
 
 class CommandEvent {
@@ -115,15 +115,15 @@ export class CommandService {
 	this.commandSubject.next(ev);
     }
 
-    serialise() {
+    graphImport() {
 	let ev = new CommandEvent();
-	ev.kind = Command.SERIALISE;
+	ev.kind = Command.IMPORT;
 	this.commandSubject.next(ev);
     }
-
-    deserialise() {
+    
+    graphExport() {
 	let ev = new CommandEvent();
-	ev.kind = Command.DESERIALISE;
+	ev.kind = Command.EXPORT;
 	this.commandSubject.next(ev);
     }
 

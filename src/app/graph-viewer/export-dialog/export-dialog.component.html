@@ -1,0 +1,22 @@
+
+<p-dialog class="dialog"
+	  [(visible)]="display" [modal]="false" position="right"
+	  [breakpoints]="{'1200px': '40rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '50rem'}"
+	   (onHide)="onHide()">
+
+  <textarea pInputTextarea [(ngModel)]="data"
+	    [rows]="9" [cols]="50"
+	    [autoResize]="true"
+	    >
+  </textarea>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+

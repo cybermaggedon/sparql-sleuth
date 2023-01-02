@@ -47,3 +47,15 @@
   (onClose)="closeAboutDialog()"
   >
 </about-dialog>
+
+<import-dialog
+  [display]="importDialogVisible"
+  (onClose)="closeImportDialog()"
+  >
+</import-dialog>
+
+<export-dialog
+  [display]="exportDialogVisible"
+  (onClose)="closeExportDialog()"
+  >
+</export-dialog>

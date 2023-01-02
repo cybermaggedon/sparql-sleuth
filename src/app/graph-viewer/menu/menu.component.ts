@@ -47,14 +47,14 @@ export class MenuComponent implements OnInit {
 		    command: () => { this.command.about(); }
 		},
 		{
-		    label: "Serialise",
-		    icon: "pi pi-",
-		    command: () => { this.command.serialise(); }
+		    label: "Export",
+		    icon: "pi pi-file-export",
+		    command: () => { this.command.graphExport(); }
 		},
 		{
-		    label: "Deserialise",
-		    icon: "pi pi-",
-		    command: () => { this.command.deserialise(); }
+		    label: "Import",
+		    icon: "pi pi-file-import",
+		    command: () => { this.command.graphImport(); }
 		}
 	    ]
 	}

@@ -15,6 +15,7 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
 import { MenuModule } from 'primeng/menu';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -31,6 +32,8 @@ import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { AccordionModule } from 'primeng/accordion';
 import { MenuComponent } from './menu/menu.component';
+import { ImportDialogComponent } from './import-dialog/import-dialog.component';
+import { ExportDialogComponent } from './export-dialog/export-dialog.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +51,8 @@ import { MenuComponent } from './menu/menu.component';
         InfoDialogComponent,
         AboutDialogComponent,
         MenuComponent,
+        ImportDialogComponent,
+        ExportDialogComponent,
     ],
     imports: [
 
@@ -67,6 +72,7 @@ import { MenuComponent } from './menu/menu.component';
 	MenuModule,
 	TagModule,
 	AccordionModule,
+	InputTextareaModule,
 
     ],
     exports: [

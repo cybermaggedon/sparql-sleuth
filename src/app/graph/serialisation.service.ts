@@ -75,7 +75,7 @@ export class SerialisationService {
 
 			state.nodes.forEach(
 			    (n : any) => {
-				console.log(n);
+//				console.log(n);
 				
 				let node : any = {
 				    id: n.id,
@@ -94,7 +94,7 @@ export class SerialisationService {
 			
 			state.edges.forEach(
 			    (e : any) => {
-				console.log(e);
+//				console.log(e);
 				
 				let edge : any = {
 				    id: e.id,
