@@ -18,7 +18,6 @@ import { MenuModule } from 'primeng/menu';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
-import { DetailComponent } from './detail/detail.component';
 import { SearchComponent } from './search/search.component';
 import { InfoComponent } from './info/info.component';
 import { NodeDetailsComponent } from './node-details/node-details.component';
@@ -37,7 +36,6 @@ import { MenuComponent } from './menu/menu.component';
     declarations: [
 	GraphViewerComponent,
 	GraphComponent,
-	DetailComponent,
 	SearchComponent,
 	InfoComponent,
         NodeDetailsComponent,
