@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 
-import { MessageService } from 'primeng/api';
+//import { MessageService } from 'primeng/api';
 
 import { CommandService } from '../command.service';
 
@@ -15,11 +15,11 @@ export class ToastComponent implements OnInit {
 
     constructor(
 	private command : CommandService,
-	private messageService : MessageService,
+//	private messageService : MessageService,
     ) { }
 
     ngOnInit(): void {
-
+/*
 
 	timer(1).subscribe(
 	    ()=> {
@@ -36,7 +36,7 @@ export class ToastComponent implements OnInit {
 	    }
 	);
 
-
+*/
     }
 
     info() {

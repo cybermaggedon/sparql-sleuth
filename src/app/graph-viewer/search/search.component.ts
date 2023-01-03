@@ -6,6 +6,7 @@ import { FormBuilder } from '@angular/forms';
 import { Uri } from '../../rdf/triple';
 import { GraphService } from '../../graph/graph.service';
 import { SearchService, SearchResult } from '../../graph/search.service';
+import { CommandService, Command } from '../../command.service';
 
 class Row {
     id : string = "";
@@ -25,6 +26,7 @@ export class SearchComponent implements OnInit {
 	private graph : GraphService,
 	private searchService : SearchService,
 	private formBuilder: FormBuilder,
+	private command : CommandService,
     ) { }
 
     searchForm = this.formBuilder.group({
@@ -32,6 +34,13 @@ export class SearchComponent implements OnInit {
     });
 
     ngOnInit(): void {
+
+	this.command.command(Command.SEARCH).subscribe(
+	    ev => {
+		this.executeSearch(ev.search);
+	    }
+	);
+
     }
 
     results : Row[] = [];
@@ -45,6 +54,10 @@ export class SearchComponent implements OnInit {
     }
 
     search(text : string) {
+	this.command.search(text);
+    }
+
+    executeSearch(text : string) {
 
 	// Not doing this search, it fetches everything.
 	if (text == "") {

@@ -20,4 +20,26 @@ export class MessageService {
 		    closable: true,
 		});
     }
+
+    announced = false;
+    
+    announce() {
+
+	if (this.announced) return;
+
+	this.announced = true;
+    
+	this.messageService.add({
+	    severity: "info",
+	    summary: "Getting started",
+	    detail: "Welcome to SPARQL Explorer!\n\n" +
+		"Click here to see the the Getting Started " +
+		"guide, also available on the menu",
+	    key: "announce",
+	    life: 5000,
+	    closable: true,
+	});
+    }
+
 }
+

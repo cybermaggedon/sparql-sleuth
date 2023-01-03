@@ -16,6 +16,7 @@ export enum Command {
     RECENTRE,
     SCHEMA,
     BEGIN_SEARCH,
+    SEARCH,
     INFO,
     ABOUT,
     DATASETS,
@@ -30,6 +31,7 @@ class CommandEvent {
     relationship : RelationshipEvent = new RelationshipEvent();
     recentre : RecentreEvent = new RecentreEvent();
     galleryItem : string = "";
+    search : string = "";
 };
 
 export class RelationshipEvent {
@@ -91,6 +93,13 @@ export class CommandService {
     beginSearch() {
 	let ev = new CommandEvent();
 	ev.kind = Command.BEGIN_SEARCH;
+	this.commandSubject.next(ev);
+    }
+
+    search(text : string) {
+	let ev = new CommandEvent();
+	ev.kind = Command.SEARCH;
+	ev.search = text;
 	this.commandSubject.next(ev);
     }
 

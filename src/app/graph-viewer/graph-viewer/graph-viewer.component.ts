@@ -3,7 +3,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 
 import { Uri } from '../../rdf/triple';
 import { Node, Relationship } from '../../graph/graph';
@@ -12,6 +12,9 @@ import { RelationshipService } from '../../graph/relationship.service';
 import { CommandService, Command } from '../../command.service';
 import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
+import { MessageService } from '../../message.service';
+import { GalleryService } from '../../gallery.service';
+import { SerialisationService } from '../../graph/serialisation.service';
 
 // Which dialog is open.  Can only be 1 at once.
 enum DialogState {
@@ -31,7 +34,6 @@ enum DialogState {
     selector: 'graph-viewer',
     templateUrl: './graph-viewer.component.html',
     styleUrls: ['./graph-viewer.component.scss'],
-    providers: [MessageService],
 })
 export class GraphViewerComponent implements OnInit {
 
@@ -41,7 +43,9 @@ export class GraphViewerComponent implements OnInit {
 	private propertyService : PropertiesService,
 	private events : EventService,
 	private relationship : RelationshipService,
-	private messageService : MessageService,
+	private message : MessageService,
+	private gallery : GalleryService,
+	private ss : SerialisationService,
     ) {
 	
     }
@@ -99,6 +103,10 @@ export class GraphViewerComponent implements OnInit {
 	);
 
 	this.command.command(Command.BEGIN_SEARCH).subscribe(
+	    () => this.state = DialogState.SEARCH
+	);
+
+	this.command.command(Command.SEARCH).subscribe(
 	    () => this.state = DialogState.SEARCH
 	);
 
@@ -222,6 +230,16 @@ export class GraphViewerComponent implements OnInit {
 			() => this.command.gallery()
 		    );
 
+		if (params["search"] && params["search"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.beginSearch()
+		    );
+
+		if (params["run-search"])
+		    timer(1).subscribe(
+			() => this.command.search(params["run-search"])
+		    );
+
 		if (params["schema"] && params["schema"] == "yes")
 		    timer(1).subscribe(
 			() => this.command.schema()
@@ -230,6 +248,36 @@ export class GraphViewerComponent implements OnInit {
 		if (params["datasets"] && params["datasets"] == "yes")
 		    timer(1).subscribe(
 			() => this.command.datasets()
+		    );
+
+		if (!params["announce"] || !(params["announce"] == "no")) {
+		    timer(1).subscribe(
+			() => this.message.announce()
+		    );
+		}
+
+		if (params["load-gallery"])
+		    timer(1).subscribe(
+			() => {
+
+			    let wanted = params["load-gallery"];
+
+			    this.gallery.getGallery().subscribe(
+				gallery => {
+
+				    for(let item of gallery) {
+
+					if (item["title"] == wanted) {
+					    this.ss.deserialise(item["graph"]);
+					    break;
+					}
+					
+				    }
+
+				}
+			    );
+			    
+			}
 		    );
 
 	    }
