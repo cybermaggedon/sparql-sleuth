@@ -4,6 +4,8 @@ import { Observable, of, Subject, retry, mergeMap } from 'rxjs';
 
 import { ProgressService } from './progress.service';
 
+const CONFIG_PATH = "/assets/asdconfig.json";
+
 export interface GalleryConfigurationItem {
     title : string;
     description : string;
@@ -25,7 +27,7 @@ export class ConfigService {
 	this.progress.add("Loading config");
 
 	this.httpClient.get<any>(
-	    "/assets/config.json"
+	    CONFIG_PATH
 	).pipe(
 	    retry(3),
 	).subscribe({

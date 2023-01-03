@@ -21,11 +21,6 @@ export class GalleryDialogComponent implements OnInit {
     ) { }
     
     ngOnInit(): void {
-	this.command.command(Command.GALLERY).subscribe(
-	    () => {
-	        console.log("FIXME, should load gallery");
-	    }
-	);
     }
 
     data : string = "";

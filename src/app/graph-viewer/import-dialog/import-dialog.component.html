@@ -5,6 +5,16 @@
 	  [style]="{width: '30rem'}"
 	   (onHide)="onHide()">
 
+  <ng-template pTemplate="header">
+    <h2>Import graph</h2>
+  </ng-template>
+
+  <p>
+    You can keep a copy of the graph layout by exporting a graph on the
+    export dialogue.  Paste the graph state into the box below and
+    click <b>Import</b> to load the graph into the same state.
+  </p>
+
   <textarea pInputTextarea [(ngModel)]="data"
 	    [rows]="9" [cols]="50"
 	    [autoResize]="false"
@@ -26,3 +36,4 @@
   </ng-template>
 
 </p-dialog>
+

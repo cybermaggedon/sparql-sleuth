@@ -32,8 +32,10 @@
     }
     
     .grid-item {
+
         margin: .5em;
         border: 1px solid var(--surface-border);
+	height: 30rem;
     
         .grid-item-top,
         .grid-item-bottom {
