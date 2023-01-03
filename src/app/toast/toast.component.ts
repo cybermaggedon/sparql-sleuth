@@ -10,7 +10,6 @@ import { CommandService } from '../command.service';
     selector: 'toast',
     templateUrl: './toast.component.html',
     styleUrls: ['./toast.component.scss'],
-    providers: [ MessageService ],
 })
 export class ToastComponent implements OnInit {
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, Subject, retry, mergeMap } from 'rxjs';
 
+import { MessageService } from './message.service';
 import { ProgressService } from './progress.service';
 
 const CONFIG_PATH = "/assets/asdconfig.json";
@@ -22,6 +23,7 @@ export class ConfigService {
     constructor(
 	private httpClient : HttpClient,
 	private progress : ProgressService,
+	private message : MessageService,
     ) {
 
 	this.progress.add("Loading config");
@@ -39,6 +41,7 @@ export class ConfigService {
 		this.loadComplete.next();
 	    },
 	    error: (err) => {
+		this.message.error(err);
 		this.progress.delete("Loading config");
 		this.config = this.defaultConfig
 		this.loaded = true;

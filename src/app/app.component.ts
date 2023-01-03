@@ -2,13 +2,14 @@
 import { Component, OnInit } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { timer } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 import { ProgressService, ProgressEvent } from './progress.service';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
 

@@ -14,6 +14,8 @@ import { GraphViewerModule } from './graph-viewer/graph-viewer.module';
 import { QueryEditorModule } from './query-editor/query-editor.module';
 import { TableViewerModule } from './table-viewer/table-viewer.module';
 
+import { MessageService } from 'primeng/api';
+
 import { ToastComponent } from './toast/toast.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 
@@ -38,6 +40,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 	TableViewerModule,
     ],
     providers: [
+    MessageService,
     ],
     bootstrap: [
 	AppComponent
