@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { GalleryService, GalleryItem } from '../../gallery.service';
-import { SerialisationService } from '../../graph/serialisation.service';
+import { CommandService } from '../../command.service';
 
 @Component({
   selector: 'gallery',
@@ -12,7 +12,7 @@ export class GalleryComponent implements OnInit {
 
     constructor(
 	private galleryService : GalleryService,
-	private ss : SerialisationService,
+	private command : CommandService,
     ) {
     }
 
@@ -29,7 +29,7 @@ export class GalleryComponent implements OnInit {
     filterby = "";
 
     load(graph : any) {
-	this.ss.deserialise(graph["graph"]);
+	this.command.loadGalleryItem(graph["graph"]);
     }
 
 }

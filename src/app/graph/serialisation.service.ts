@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import { StateService } from './state.service';
+import { CommandService, Command } from '../command.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,13 @@ export class SerialisationService {
 
     constructor(
 	private state : StateService,
+	private command : CommandService,
     ) {
+
+	this.command.command(Command.LOAD_GALLERY_ITEM).subscribe(
+	    g => this.deserialise(g.galleryItem)
+	);
+
     }
 
     deserialise(enc : string) {

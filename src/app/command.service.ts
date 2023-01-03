@@ -22,12 +22,14 @@ export enum Command {
     EXPORT,
     IMPORT,
     GALLERY,
+    LOAD_GALLERY_ITEM,
 };
 
 class CommandEvent {
     kind: Command = Command.ABOUT;
     relationship : RelationshipEvent = new RelationshipEvent();
     recentre : RecentreEvent = new RecentreEvent();
+    galleryItem : string = "";
 };
 
 export class RelationshipEvent {
@@ -131,6 +133,13 @@ export class CommandService {
     graphExport() {
 	let ev = new CommandEvent();
 	ev.kind = Command.EXPORT;
+	this.commandSubject.next(ev);
+    }
+
+    loadGalleryItem(g : string) {
+	let ev = new CommandEvent();
+	ev.kind = Command.LOAD_GALLERY_ITEM;
+	ev.galleryItem = g;
 	this.commandSubject.next(ev);
     }
 

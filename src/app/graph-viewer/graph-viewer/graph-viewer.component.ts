@@ -130,6 +130,11 @@ export class GraphViewerComponent implements OnInit {
 	    () => this.state = DialogState.EXPORT
 	);
 
+	// Close the gallery dialog once an item has been selected for loading
+	this.command.command(Command.LOAD_GALLERY_ITEM).subscribe(
+	    () => this.state = DialogState.NONE
+	);
+
     }
 
     closeNodeDialog() {
@@ -210,11 +215,22 @@ export class GraphViewerComponent implements OnInit {
 			);
 		    }
 
-		} else {
-
-		    // Do nothing if node not specified.
-
 		}
+
+		if (params["gallery"] && params["gallery"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.gallery()
+		    );
+
+		if (params["schema"] && params["schema"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.schema()
+		    );
+
+		if (params["datasets"] && params["datasets"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.datasets()
+		    );
 
 	    }
 	);
