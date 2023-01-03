@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
+import { SerialisationService } from '../../graph/serialisation.service';
+
 @Component({
     selector: 'import-dialog',
     templateUrl: './import-dialog.component.html',
@@ -11,9 +13,21 @@ export class ImportDialogComponent implements OnInit {
 
     @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
-    constructor() { }
+    constructor(
+	private ss : SerialisationService,
+    ) { }
     
     ngOnInit(): void {
+    }
+
+    data : string = "";
+
+    import() {
+	this.ss.deserialise(this.data).subscribe(
+	    (res : any) => {
+		console.log(res);
+	    }
+	);
     }
 
     close() {

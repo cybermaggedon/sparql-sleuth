@@ -5,7 +5,18 @@
 	  [style]="{width: '30rem'}"
 	   (onHide)="onHide()">
 
-  BUNCHES
+  <textarea pInputTextarea [(ngModel)]="data"
+	    [rows]="9" [cols]="50"
+	    [autoResize]="false"
+	    >
+  </textarea>
+
+  <div>
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="import()">
+      Import
+    </button>
+  </div>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple type="button" class="p-button-raised p-button-text"
