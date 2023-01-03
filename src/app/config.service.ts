@@ -5,7 +5,7 @@ import { Observable, of, Subject, retry, mergeMap } from 'rxjs';
 import { MessageService } from './message.service';
 import { ProgressService } from './progress.service';
 
-const CONFIG_PATH = "/assets/asdconfig.json";
+const CONFIG_PATH = "/assets/config.json";
 
 export interface GalleryConfigurationItem {
     title : string;
