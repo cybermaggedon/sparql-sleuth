@@ -22,16 +22,11 @@ export class GalleryComponent implements OnInit {
 	this.galleryService.getGallery().subscribe(
 	    g => {
 		this.gallery = g;
-		console.log(g);
 	    }
 	);
     }
 
     filterby = "";
-
-    filter() {
-	console.log(this.filterby);
-    }
 
     load(graph : any) {
 	this.ss.deserialise(graph["graph"]);

@@ -28,20 +28,29 @@ export class ConfigService {
 	    "/assets/config.json"
 	).pipe(
 	    retry(3),
-	).subscribe(
-	    config => {
-
+	).subscribe({
+	    next: config => {
 		this.progress.delete("Loading config");
-
 		// FIXME: Is a race condition here?
 		this.config = config;
 		this.loaded = true;
 		this.loadComplete.next();
-
-	    }
-	);
+	    },
+	    error: (err) => {
+		this.progress.delete("Loading config");
+		this.config = this.defaultConfig
+		this.loaded = true;
+		this.loadComplete.next();
+	    },
+	    complete: () => {}
+	});
 
     }
+
+    defaultConfig: any = {
+	"sparql-url": "/sparql",
+	"gallery": []
+    };
 
     loadComplete = new Subject<void>();
     loaded = false;

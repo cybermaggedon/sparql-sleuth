@@ -36,6 +36,15 @@
 	    "keywords": [
 		"innovation", "quantum", "technology"
 	    ]
+	},
+	{
+	    "title": "UKRI Corporate Structure",
+	    "description": "The organisational parts of Innovate UK",
+	    "graph": "/assets/graph5.json",
+	    "image": "/assets/thumb5.png",
+	    "keywords": [
+		"innovation", "organogram", "ukri", "innovate uk"
+	    ]
 	}
     ]
 }
