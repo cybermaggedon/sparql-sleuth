@@ -24,6 +24,7 @@ enum DialogState {
     ABOUT,
     EXPORT,
     IMPORT,
+    GALLERY,
 };
 
 @Component({
@@ -59,6 +60,7 @@ export class GraphViewerComponent implements OnInit {
     get aboutDialogVisible() { return this.state == DialogState.ABOUT; }
     get exportDialogVisible() { return this.state == DialogState.EXPORT; }
     get importDialogVisible() { return this.state == DialogState.IMPORT; }
+    get galleryDialogVisible() { return this.state == DialogState.GALLERY; }
 
     selection? : Node;
 
@@ -120,6 +122,10 @@ export class GraphViewerComponent implements OnInit {
 	    () => this.state = DialogState.IMPORT
 	);
 
+	this.command.command(Command.GALLERY).subscribe(
+	    () => this.state = DialogState.GALLERY
+	);
+
 	this.command.command(Command.EXPORT).subscribe(
 	    () => this.state = DialogState.EXPORT
 	);
@@ -162,6 +168,11 @@ export class GraphViewerComponent implements OnInit {
 
     closeImportDialog() {
 	if (this.state == DialogState.IMPORT)
+	    this.state = DialogState.NONE;
+    }
+
+    closeGalleryDialog() {
+	if (this.state == DialogState.GALLERY)
 	    this.state = DialogState.NONE;
     }
 

@@ -30,6 +30,26 @@ export class MenuComponent implements OnInit {
 		    label: "Datasets",
 		    icon: "pi pi-book",
 		    command: () => { this.command.datasets(); }
+		},
+		{
+		    label: "Gallery",
+		    icon: "pi pi-images",
+		    command: () => { this.command.gallery(); }
+		},
+	    ],
+	},
+	{
+	    label: "Sharing",
+	    items: [
+		{
+		    label: "Export",
+		    icon: "pi pi-file-export",
+		    command: () => { this.command.graphExport(); }
+		},
+		{
+		    label: "Import",
+		    icon: "pi pi-file-import",
+		    command: () => { this.command.graphImport(); }
 		}
 	    ]
 	},
@@ -46,16 +66,6 @@ export class MenuComponent implements OnInit {
 		    icon: "pi pi-info-circle",
 		    command: () => { this.command.about(); }
 		},
-		{
-		    label: "Export",
-		    icon: "pi pi-file-export",
-		    command: () => { this.command.graphExport(); }
-		},
-		{
-		    label: "Import",
-		    icon: "pi pi-file-import",
-		    command: () => { this.command.graphImport(); }
-		}
 	    ]
 	}
     ];

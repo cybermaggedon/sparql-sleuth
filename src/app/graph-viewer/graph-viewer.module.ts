@@ -16,6 +16,7 @@ import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
 import { MenuModule } from 'primeng/menu';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { DataViewModule } from 'primeng/dataview';
 
 import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 import { GraphComponent } from './graph/graph.component';
@@ -34,6 +35,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { MenuComponent } from './menu/menu.component';
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { ExportDialogComponent } from './export-dialog/export-dialog.component';
+import { GalleryDialogComponent } from './gallery-dialog/gallery-dialog.component';
+import { GalleryComponent } from './gallery/gallery.component';
 
 @NgModule({
     declarations: [
@@ -53,6 +56,8 @@ import { ExportDialogComponent } from './export-dialog/export-dialog.component';
         MenuComponent,
         ImportDialogComponent,
         ExportDialogComponent,
+        GalleryDialogComponent,
+        GalleryComponent,
     ],
     imports: [
 
@@ -73,6 +78,7 @@ import { ExportDialogComponent } from './export-dialog/export-dialog.component';
 	TagModule,
 	AccordionModule,
 	InputTextareaModule,
+	DataViewModule,
 
     ],
     exports: [

@@ -21,6 +21,7 @@ export enum Command {
     DATASETS,
     EXPORT,
     IMPORT,
+    GALLERY,
 };
 
 class CommandEvent {
@@ -112,6 +113,12 @@ export class CommandService {
     datasets() {
 	let ev = new CommandEvent();
 	ev.kind = Command.DATASETS;
+	this.commandSubject.next(ev);
+    }
+
+    gallery() {
+	let ev = new CommandEvent();
+	ev.kind = Command.GALLERY;
 	this.commandSubject.next(ev);
     }
 

@@ -8,6 +8,7 @@ import { LRUCache } from 'typescript-lru-cache';
 import { Query, QueryResult, QueryEngine } from './query';
 import { Triple, Value, Literal, Uri, Unbound } from '../rdf/triple';
 import { ProgressService, Activity } from '../progress.service';
+import { ConfigService } from '../config.service';
 
 class QueryRequest {
     constructor(q : Query, ret : Subscriber<any>) {
@@ -47,6 +48,7 @@ export class QueryService implements QueryEngine {
     constructor(
 	private httpClient : HttpClient,
 	private progress : ProgressService,
+	private config : ConfigService,
     ) {
 
 	let svc = this;
@@ -119,11 +121,19 @@ export class QueryService implements QueryEngine {
 
 	let query = q.getQueryString();
 
-	return this.httpClient.post<SparqlResult>(
-	    "/sparql",
-	    query,
-	    {},
-	).pipe(
+	return this.config.getSparqlUrl().pipe(
+//	    tap(x => console.log("SPARQL:", x)),
+	    mergeMap(
+		sparqlUrl => {
+
+		    return this.httpClient.post<SparqlResult>(
+			sparqlUrl,
+			query,
+			{},
+		    )
+
+		}
+	    ),
 	    retry(3),
 	    map(res => this.transform(res)),
 	);
