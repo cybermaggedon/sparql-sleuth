@@ -36,6 +36,11 @@ export class DefinitionsService {
 		d["label"], d["p"], d["o"], d["limit"]
 	    );
 	},
+	raw: (d : any) => {
+	    return new RawQuery(
+		d["label"], d["query"]
+	    );
+	},
     };
 
     pipes : { [key : string] : any } = {
@@ -48,7 +53,14 @@ export class DefinitionsService {
 	"join-property": (d : any) => {
 	    return this.transform.joinProperty(
 		d["input"], d["output"],
-		this.fromMapping(d["query"])
+		this.fromInnerQuery(d["query"])
+
+	    );
+	},
+	"join-property-array": (d : any) => {
+	    return this.transform.joinPropertyArray(
+		d["input"], d["output"],
+		this.fromInnerQuery(d["query"])
 
 	    );
 	},
@@ -58,31 +70,33 @@ export class DefinitionsService {
 
     };
 
-    mappings : { [key : string] : any } = {
+    innerQueries : { [key : string] : any } = {
 	"to-count": (d : any) => {
 	    return (id : any) => this.toCount(id);
+	},
+	"to-property": (d : any) => {
+	    return (id : any) => this.toProperty(id, d["p"]);
 	}
     };
 
-    fromMapping(d : any) {
+    fromInnerQuery(d : any) {
 
-	let mapFactory = this.mappings[d["kind"]];
+	let mapFactory = this.innerQueries[d["kind"]];
 
-	let mapping = mapFactory(d);
+	let innerQuery = mapFactory(d);
 
 	if ("pipe" in d) {
 	    let pipes = d["pipe"].map(
 		(d : any) => {
 		    let pipeFactory = this.pipes[d["kind"]];
-		    
 		    return pipeFactory(d);
 		}
 	    );
 
-	    return mapping.pipe(...pipes);
+	    return innerQuery.pipe(...pipes);
 
 	} else {
-	    return mapping;
+	    return innerQuery;
 	}
     }
 
@@ -103,57 +117,94 @@ export class DefinitionsService {
 
     }
 
-    fromDef(d : any) {
-	return this.fromQuery(d);
+    fromDef(id : string) {
+	return this.fromQuery(this.defs[id]);
     }
 
-    schemaQuery() {
-
-	let def = {
-	    label: "Acquire schema",
-	    kind: "po",
-	    p: IS_A,
-	    o: CLASS,
-	    limit: 50,
+    defs : { [key : string] : any } = {
+	schema: {
+	    label: "Acquire schema", kind: "po", p: IS_A, o: CLASS, limit: 50,
 	    pipe: [
 		{
-		    kind: "join-label",
-		    input: "s",
-		    output: "slabel"
+		    kind: "join-label", input: "s", output: "slabel"
 		},
 		{
-		    kind: "add-constant-column",
-		    column: "p",
-		    value: IS_A
+		    kind: "add-constant-column", column: "p", value: IS_A
 		},
 		{
-		    kind: "join-label",
-		    input: "p",
-		    output: "plabel"
+		    kind: "join-label", input: "p", output: "plabel"
 		},
 		{
-		    kind: "add-constant-column",
-		    column: "o",
-		    value: CLASS
+		    kind: "add-constant-column", column: "o", value: CLASS
 		},
 		{
-		    kind: "join-property",
-		    input: "s",
-		    output: "count",
-		    query: {
-			label: "Count",
-			kind: "to-count"
-		    }
+		    kind: "join-property", input: "s", output: "count",
+		    query: { kind: "to-count" }
                 },
 		{
 		    kind: "to-data"
 		}
 	    ]
-	};
+	},
+	datasets: {
+	    label: "Acquire datasets", kind: "raw",
+	    query: "PREFIX schema: <https://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?dataset WHERE { ?dataset a schema:Dataset . } GROUP BY ?dataset LIMIT 40",
+	    pipe: [
+		{
+		    kind: "join-property", input: "dataset", output: "title",
+		    query: { "kind": "to-property", "p": LABEL }
+		},
+		{
+		    kind: "join-property", input: "dataset", output: "url",
+		    query: {
+			"kind": "to-property",
+			"p": new Uri("https://schema.org/url")
+		    }
+		},
+		{
+		    kind: "join-property", input: "dataset",
+		    output: "description",
+		    query: {
+			"kind": "to-property",
+			"p": new Uri("https://schema.org/description")
+		    }
+		},
+		{
+		    kind: "join-property", input: "dataset",
+		    output: "authorid",
+		    query: {
+			"kind": "to-property",
+			"p": new Uri("https://schema.org/author")
+		    }
+		},
+		{
+		    kind: "join-property", input: "authorid",
+		    output: "author",
+		    query: {
+			"kind": "to-property", "p": LABEL
+		    }
+		},
+		{
+		    kind: "join-property-array", input: "dataset",
+		    output: "keywords",
+		    query: {
+			"kind": "to-property",
+			"p": new Uri("https://schema.org/keywords")
+		    }
+		},
+		{
+		    kind: "to-data"
+		}		
+	    ]
+	}
+    };
 
-	let qry = this.fromDef(def);
+/*
+	 
+*/
 
-	return qry;
+    schemaQuery() {
+	return this.fromDef("schema");
 
     }
 
@@ -184,6 +235,10 @@ export class DefinitionsService {
     }
 
     datasetsQuery() {
+	return this.fromDef("datasets");
+    }
+
+    OLDdatasetsQuery() {
 
 		const qry = `
 PREFIX schema: <https://schema.org/>

@@ -70,7 +70,8 @@ LIMIT 40
 */
 
 	this.definitions.datasetsQuery().subscribe(
-	    result => {
+	    // FIXME: any
+	    (result : any) => {
 		this.datasets = result;
 	    }
 	);
