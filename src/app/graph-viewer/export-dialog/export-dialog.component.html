@@ -14,12 +14,21 @@
     Later you can paste it into the import dialog to reload a graph in the
     same state.
   </p>
-  
-  <textarea pInputTextarea [(ngModel)]="data"
-	    [rows]="9" [cols]="50"
-	    [autoResize]="true"
-	    >
-  </textarea>
+
+  <div>
+    <textarea #text pInputTextarea [(ngModel)]="data"
+	      [autoResize]="true"
+	      [style]="{'width':'90%'}"
+	      >
+    </textarea>
+    </div>
+
+  <div>
+    <button pButton pRipple type="button"
+	    class="p-button-raised p-button-rounded" icon="pi pi-copy"
+	    (click)="copy()">
+    </button>
+  </div>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple type="button" class="p-button-raised p-button-text"

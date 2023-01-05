@@ -47,27 +47,6 @@ export class DatasetsComponent implements OnInit {
     }
 
     runQuery() {
-/*
-	const qry = `
-PREFIX schema: <https://schema.org/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT ?dataset ?title ?description ?url ?author (GROUP_CONCAT(?keyword,",") as ?keywords)
-WHERE {
-    ?dataset a schema:Dataset .
-    OPTIONAL { ?dataset rdfs:label ?title }
-    OPTIONAL { ?dataset schema:description ?description }
-    OPTIONAL { ?dataset schema:url ?url }
-    OPTIONAL {
-        ?dataset schema:author ?authorid .
-        ?authorid rdfs:label ?author
-    }
-    OPTIONAL { ?dataset schema:keywords ?keyword }
-}
-GROUP BY ?dataset
-LIMIT 40
-`;
-*/
 
 	this.definitions.datasetsQuery().subscribe(
 	    // FIXME: any
@@ -76,15 +55,6 @@ LIMIT 40
 	    }
 	);
 
-    }
-
-    keywords(row : Row) {
-	return [];
-//	return row['keywords'].value().split(',').map(
-//	    x => x.trim()
-//	).filter(
-//	    x => x != ""
-//	)
     }
 
     select(id : Value) {
@@ -97,7 +67,7 @@ LIMIT 40
 	const qry = 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "' + tag + '" . } LIMIT 40';
 
 	this.definitions.tagQuery(tag).subscribe(
-	    result => {
+	    (result : any) => {
 		this.graph.includeTriples(result);
 	    }
 	);

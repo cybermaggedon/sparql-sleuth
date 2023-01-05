@@ -41,6 +41,13 @@ export class DefinitionsService {
 		d["label"], d["query"]
 	    );
 	},
+	"raw-1": (d : any) => {
+	    let text = d["label"].replace(/%%VAR%%/, d["id"]);
+	    let query = d["query"].replace(/%%VAR%%/, d["id"]);
+	    return new RawQuery(
+		text, query
+	    );
+	},
     };
 
     pipes : { [key : string] : any } = {
@@ -67,7 +74,9 @@ export class DefinitionsService {
 	"to-data": (d : any) => {
 	    return map((x : any) => x.data)
 	},
-
+	"to-triples": (d : any) => {
+	    return this.transform.queryResultToTriples();
+	},
     };
 
     innerQueries : { [key : string] : any } = {
@@ -119,6 +128,12 @@ export class DefinitionsService {
 
     fromDef(id : string) {
 	return this.fromQuery(this.defs[id]);
+    }
+
+    fromDef1(id : string, id2 : string) {
+	let def = this.defs[id];
+	def["id"] = id2;
+	return this.fromQuery(def);
     }
 
     defs : { [key : string] : any } = {
@@ -196,12 +211,23 @@ export class DefinitionsService {
 		    kind: "to-data"
 		}		
 	    ]
+	},
+	tag: {
+	    label: "Keyword search %%VAR%%", kind: "raw-1",
+	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "%%VAR%%" . } LIMIT 40',
+	    pipe: [
+		{
+		    kind: "add-constant-column", column: "p", value: IS_A
+		},
+		{
+		    kind: "add-constant-column", column: "o", value: DATASET
+		},
+		{
+		    kind: "to-triples"
+		}
+	    ]
 	}
     };
-
-/*
-	 
-*/
 
     schemaQuery() {
 	return this.fromDef("schema");
@@ -238,82 +264,11 @@ export class DefinitionsService {
 	return this.fromDef("datasets");
     }
 
-    OLDdatasetsQuery() {
-
-		const qry = `
-PREFIX schema: <https://schema.org/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT ?dataset
-WHERE {
-    ?dataset a schema:Dataset .
-}
-GROUP BY ?dataset
-LIMIT 40
-`;
-
-	return new RawQuery(
-	    "Acquire datasets", qry
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.joinProperty(
-		"dataset", "title",
-		(id) => this.toProperty(id, LABEL)
-	    ),
-	    this.transform.joinProperty(
-		"dataset",
-		"url",
-		(id) => this.toProperty(id, new Uri("https://schema.org/url"))
-	    ),
-	    this.transform.joinProperty(
-		"dataset",
-		"description",
-		(id) => this.toProperty(
-		    id, new Uri("https://schema.org/description")
-		)
-	    ),
-	    this.transform.joinProperty(
-		"dataset",
-		"authorid",
-		(id) => this.toProperty(
-		    id, new Uri("https://schema.org/author")
-		)
-	    ),
-	    this.transform.joinProperty(
-		"authorid",
-		"author",
-		(id) => this.toProperty(id, LABEL)
-	    ),
-	    this.transform.joinPropertyArray(
-		"dataset",
-		"keywords",
-		(id) => this.toProperty(
-		    id, new Uri("https://schema.org/keywords")
-		)
-	    ),
-	    map(qr => qr.data),
-
-	)
-    }
-
     // FIXME: Injectable in a non-read-only store
     tagQuery(tag : string) {
-
-	const qry = 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "' + tag + '" . } LIMIT 40';
-
-	return new RawQuery(
-	    "Keyword search " + tag, qry
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addConstantColumn("p", IS_A),
-	    this.transform.addConstantColumn("o", DATASET),
-	    this.transform.queryResultToTriples(),
-	);
-
+	return this.fromDef1("tag", tag);
     }
-
+    
     textSearchResults = 100;
 
     textSearch(text : string) {
@@ -448,3 +403,30 @@ LIMIT 40
 
 }
 
+
+
+/*
+
+  Alternative datasets query
+
+  
+	const qry = `
+PREFIX schema: <https://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?dataset ?title ?description ?url ?author (GROUP_CONCAT(?keyword,",") as ?keywords)
+WHERE {
+    ?dataset a schema:Dataset .
+    OPTIONAL { ?dataset rdfs:label ?title }
+    OPTIONAL { ?dataset schema:description ?description }
+    OPTIONAL { ?dataset schema:url ?url }
+    OPTIONAL {
+        ?dataset schema:author ?authorid .
+        ?authorid rdfs:label ?author
+    }
+    OPTIONAL { ?dataset schema:keywords ?keyword }
+}
+GROUP BY ?dataset
+LIMIT 40
+`;
+*/

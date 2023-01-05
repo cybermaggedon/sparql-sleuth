@@ -1,5 +1,6 @@
 
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter,
+	 ViewChild, ElementRef } from '@angular/core';
 
 import { SerialisationService } from '../../graph/serialisation.service';
 import { CommandService, Command } from '../../command.service';
@@ -14,6 +15,8 @@ export class ExportDialogComponent implements OnInit {
     @Input() display = false;
 
     @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
+
+    @ViewChild('text') textElt? : ElementRef;
 
     constructor(
         private ss : SerialisationService,
@@ -45,6 +48,16 @@ export class ExportDialogComponent implements OnInit {
 
     onHide() {
 	this.onClose.emit();
+    }
+
+    copy() {
+
+	if (this.textElt) {
+
+	    this.textElt.nativeElement.select();
+	    document.execCommand('copy');
+
+	}
     }
 
 }
