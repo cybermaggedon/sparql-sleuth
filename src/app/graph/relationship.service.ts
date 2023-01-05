@@ -9,6 +9,7 @@ import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf/defs';
 import { QueryService } from '../query/query.service';
 
 import { RelationshipQuery } from '../query/relationship-query';
+import { DefinitionsService } from '../query/definitions.service';
 import { GraphService} from './graph.service';
 import { Node, Edge, Relationship } from './graph';
 
@@ -21,11 +22,10 @@ export class RelationshipService {
     constructor(
 	private query : QueryService,
 	private graph : GraphService,
+	private definitions : DefinitionsService,
     ) {
 
     }
-
-    relationshipEdges = 25;
 
     ignoreRelationship(p : Value) {
 	if (!p.is_uri()) return false;
@@ -35,13 +35,7 @@ export class RelationshipService {
     }
 
     getRelationshipsIn(node : Node) : Observable<Value[]> {
-
-    	return new RelationshipQuery(
-	    "Relationships to " + node.id, new Uri(node.id), true,
-	    this.relationshipEdges
-	).run(
-	    this.query
-	).pipe(
+	return this.definitions.relationshipKindsIn(node.id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)
@@ -53,12 +47,7 @@ export class RelationshipService {
 
     getRelationshipsOut(node : Node) : Observable<Value[]> {
 
-    	return new RelationshipQuery(
-	    "Relationships from " + node.id, new Uri(node.id), false,
-	    this.relationshipEdges
-	).run(
-	    this.query
-	).pipe(
+	return this.definitions.relationshipKindsOut(node.id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)

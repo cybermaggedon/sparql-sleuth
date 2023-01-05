@@ -3,7 +3,8 @@ import { Value } from '../rdf/triple';
 import { Observable } from 'rxjs';
 
 export type Row = {
-    [key : string] : Value
+// FIXME: Should be value
+    [key : string] : any
 };
 
 export class QueryResult {

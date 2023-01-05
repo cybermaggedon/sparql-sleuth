@@ -24,6 +24,7 @@ export enum Command {
     IMPORT,
     GALLERY,
     LOAD_GALLERY_ITEM,
+    RESET,
 };
 
 class CommandEvent {
@@ -51,15 +52,6 @@ export class CommandService {
     constructor(
 	private route : Router,
     ) {
-
-	// We'll deal with the recentre events here, just re-route.
-	this.command(Command.RECENTRE).subscribe(
-	    ev => 
-	    this.route.navigate(
-		['/graph'],
-		{ queryParams: { 'node': ev.recentre.id }}
-	    )
-	);
 
     }
 
@@ -149,6 +141,12 @@ export class CommandService {
 	let ev = new CommandEvent();
 	ev.kind = Command.LOAD_GALLERY_ITEM;
 	ev.galleryItem = g;
+	this.commandSubject.next(ev);
+    }
+
+    reset() {
+	let ev = new CommandEvent();
+	ev.kind = Command.RESET;
 	this.commandSubject.next(ev);
     }
 

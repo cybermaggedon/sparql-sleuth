@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject, Subscriber, of } from 'rxjs';
 import { map, retry, mergeMap, tap } from 'rxjs/operators';
 import { LRUCache } from 'typescript-lru-cache';
@@ -122,14 +122,20 @@ export class QueryService implements QueryEngine {
 	let query = q.getQueryString();
 
 	return this.config.getSparqlUrl().pipe(
-//	    tap(x => console.log("SPARQL:", x)),
 	    mergeMap(
 		sparqlUrl => {
+
+		    let headers = new HttpHeaders({
+			"Content-Type": "application/x-www-form-urlencoded",
+			"Accept": "application/sparql-results+json",
+		    });
 
 		    return this.httpClient.post<SparqlResult>(
 			sparqlUrl,
 			query,
-			{},
+			{
+			    headers: headers,
+			},
 		    )
 
 		}

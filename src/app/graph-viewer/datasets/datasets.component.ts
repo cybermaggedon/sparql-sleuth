@@ -12,9 +12,8 @@ import { Row } from '../../query/query';
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
+import { DefinitionsService } from '../../query/definitions.service';
 import { CommandService, Command } from '../../command.service';
-
-const DATASET = new Uri("https://schema.org/Dataset");
 
 @Component({
   selector: 'datasets',
@@ -28,6 +27,7 @@ export class DatasetsComponent implements OnInit {
 	private graph : GraphService,
 	private transform : TransformService,
 	private command : CommandService,
+	private definitions : DefinitionsService,
     ) { }
 
     datasets : Row[] = [];
@@ -47,16 +47,29 @@ export class DatasetsComponent implements OnInit {
     }
 
     runQuery() {
+/*
+	const qry = `
+PREFIX schema: <https://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?dataset ?title ?description ?url ?author (GROUP_CONCAT(?keyword,",") as ?keywords)
+WHERE {
+    ?dataset a schema:Dataset .
+    OPTIONAL { ?dataset rdfs:label ?title }
+    OPTIONAL { ?dataset schema:description ?description }
+    OPTIONAL { ?dataset schema:url ?url }
+    OPTIONAL {
+        ?dataset schema:author ?authorid .
+        ?authorid rdfs:label ?author
+    }
+    OPTIONAL { ?dataset schema:keywords ?keyword }
+}
+GROUP BY ?dataset
+LIMIT 40
+`;
+*/
 
-	const qry = 'PREFIX schema: <https://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?dataset ?title ?description ?url ?author (GROUP_CONCAT(?keyword,",") as ?keywords) WHERE { ?dataset a schema:Dataset . OPTIONAL { ?dataset rdfs:label ?title } OPTIONAL { ?dataset schema:description ?description } OPTIONAL { ?dataset schema:url ?url } OPTIONAL { ?dataset schema:author ?authorid . ?authorid rdfs:label ?author } OPTIONAL { ?dataset schema:keywords ?keyword } } GROUP BY ?dataset LIMIT 40';
-
-	new RawQuery(
-	    "Acquire datasets", qry
-	).run(
-	    this.query
-	).pipe(
-	    map(qr => qr.data),
-	).subscribe(
+	this.definitions.datasetsQuery().subscribe(
 	    result => {
 		this.datasets = result;
 	    }
@@ -65,11 +78,12 @@ export class DatasetsComponent implements OnInit {
     }
 
     keywords(row : Row) {
-	return row['keywords'].value().split(',').map(
-	    x => x.trim()
-	).filter(
-	    x => x != ""
-	)
+	return [];
+//	return row['keywords'].value().split(',').map(
+//	    x => x.trim()
+//	).filter(
+//	    x => x != ""
+//	)
     }
 
     select(id : Value) {
@@ -77,19 +91,11 @@ export class DatasetsComponent implements OnInit {
     }
 
     // FIXME: Injectable in a non-read-only store
-    tag(tag : string) {
+    handleKeyword(tag : string) {
 
 	const qry = 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "' + tag + '" . } LIMIT 40';
 
-	new RawQuery(
-	    "Keyword search " + tag, qry
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addFixedColumn("p", IS_A),
-	    this.transform.addFixedColumn("o", DATASET),
-	    this.transform.queryResultToTriples(),
-	).subscribe(
+	this.definitions.tagQuery(tag).subscribe(
 	    result => {
 		this.graph.includeTriples(result);
 	    }

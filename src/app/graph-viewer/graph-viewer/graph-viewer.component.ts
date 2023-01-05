@@ -1,6 +1,6 @@
 
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 
 import { MenuItem } from 'primeng/api';
@@ -40,6 +40,7 @@ export class GraphViewerComponent implements OnInit {
     constructor(
 	private command : CommandService,
 	private route : ActivatedRoute,
+	private router : Router,
 	private propertyService : PropertiesService,
 	private events : EventService,
 	private relationship : RelationshipService,
@@ -102,6 +103,14 @@ export class GraphViewerComponent implements OnInit {
             }
 	);
 
+	// We'll deal with the recentre events here, just re-route.
+	this.command.command(Command.RECENTRE).subscribe(
+	    ev => {
+		this.events.recentre(new Uri(ev.recentre.id));
+	    }
+
+	);
+
 	this.command.command(Command.BEGIN_SEARCH).subscribe(
 	    () => this.state = DialogState.SEARCH
 	);
@@ -136,6 +145,13 @@ export class GraphViewerComponent implements OnInit {
 
 	this.command.command(Command.EXPORT).subscribe(
 	    () => this.state = DialogState.EXPORT
+	);
+
+	this.command.command(Command.RESET).subscribe(
+	    () => {
+		this.events.reset();
+		this.state = DialogState.NONE;
+	    }
 	);
 
 	// Close the gallery dialog once an item has been selected for loading
@@ -250,6 +266,26 @@ export class GraphViewerComponent implements OnInit {
 			() => this.command.datasets()
 		    );
 
+		if (params["export"] && params["export"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.graphExport()
+		    );
+
+		if (params["import"] && params["import"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.graphImport()
+		    );
+
+		if (params["info"] && params["info"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.info()
+		    );
+
+		if (params["about"] && params["about"] == "yes")
+		    timer(1).subscribe(
+			() => this.command.about()
+		    );
+
 		if (!params["announce"] || !(params["announce"] == "no")) {
 		    timer(1).subscribe(
 			() => this.message.announce()
@@ -258,31 +294,31 @@ export class GraphViewerComponent implements OnInit {
 
 		if (params["load-gallery"])
 		    timer(1).subscribe(
-			() => {
-
-			    let wanted = params["load-gallery"];
-
-			    this.gallery.getGallery().subscribe(
-				gallery => {
-
-				    for(let item of gallery) {
-
-					if (item["title"] == wanted) {
-					    this.ss.deserialise(item["graph"]);
-					    break;
-					}
-					
-				    }
-
-				}
-			    );
-			    
-			}
+			() => this.loadGallery(params["load-gallery"])
 		    );
 
 	    }
 	);
 
+    }
+
+    loadGallery(wanted : string) {
+
+	this.gallery.getGallery().subscribe(
+	    gallery => {
+
+		for(let item of gallery) {
+
+		    if (item["title"] == wanted) {
+			this.command.loadGalleryItem(item["graph"]);
+			break;
+		    }
+		    
+		}
+		
+	    }
+	);
+	
     }
 
 }

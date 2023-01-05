@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { MenuItem } from 'primeng/api';
 
@@ -19,22 +20,58 @@ export class MenuComponent implements OnInit {
 		{
 		    label: "Search",
 		    icon: "pi pi-search",
-		    command: () => { this.command.beginSearch(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "search": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 		{
 		    label: "Schema",
 		    icon: "pi pi-list",
-		    command: () => { this.command.schema(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "schema": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 		{
 		    label: "Datasets",
 		    icon: "pi pi-book",
-		    command: () => { this.command.datasets(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "datasets": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 		{
 		    label: "Gallery",
 		    icon: "pi pi-images",
-		    command: () => { this.command.gallery(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "gallery": "yes",
+			    "announce": "no",
+			} }
+		    )
+		},
+		{
+		    label: "Reset",
+		    icon: "pi pi-images",
+		    command: () => {
+			this.command.reset();
+			this.router.navigate(
+			    ["/graph"],
+			    { queryParams: {
+			    } }
+			)
+		    }
 		},
 	    ],
 	},
@@ -44,12 +81,24 @@ export class MenuComponent implements OnInit {
 		{
 		    label: "Export",
 		    icon: "pi pi-file-export",
-		    command: () => { this.command.graphExport(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "export": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 		{
 		    label: "Import",
 		    icon: "pi pi-file-import",
-		    command: () => { this.command.graphImport(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "import": "yes",
+			    "announce": "no",
+			} }
+		    )
 		}
 	    ]
 	},
@@ -59,12 +108,24 @@ export class MenuComponent implements OnInit {
 		{
 		    label: "Getting started",
 		    icon: "pi pi-question-circle",
-		    command: () => { this.command.info(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "info": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 		{
 		    label: "About...",
 		    icon: "pi pi-info-circle",
-		    command: () => { this.command.about(); }
+		    command: () => this.router.navigate(
+			["/graph"],
+			{ queryParams: {
+			    "about": "yes",
+			    "announce": "no",
+			} }
+		    )
 		},
 	    ]
 	}
@@ -72,6 +133,7 @@ export class MenuComponent implements OnInit {
 
     constructor(
 	private command : CommandService,
+	private router : Router,
     ) { }
 
     ngOnInit(): void {

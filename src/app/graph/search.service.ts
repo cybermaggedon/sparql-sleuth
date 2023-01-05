@@ -12,6 +12,7 @@ import { QueryService } from '../query/query.service';
 import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';
 import { TransformService } from '../transform/transform.service';
+import { DefinitionsService } from '../query/definitions.service';
 
 export interface SearchResult {
     s : Value,
@@ -30,22 +31,14 @@ export class SearchService {
 	private query : QueryService,
 	private graph : GraphService,
 	private transform : TransformService,
+	private definitions : DefinitionsService,
     ) {
     }
 
-    textSearchResults = 100;
 
     search(text : string) : Observable<SearchResult[]> {
 
-	return new TextSearchQuery(
-	    "Search " + text,
-	    text,
-	    this.textSearchResults,
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.mapToLabel("s", "slabel"),
-	    this.transform.mapToLabel("p", "plabel"),
+	return this.definitions.textSearch(text).pipe(
 	    map(x => {
 		if ("data" in x)
 		    return x.data.map(
@@ -63,8 +56,8 @@ export class SearchService {
 		    return [];
 	    }),
 	);
-
     }
+
 
 }
 

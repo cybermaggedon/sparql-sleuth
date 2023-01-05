@@ -37,13 +37,13 @@
 	      (click)="select(row['dataset'])">
       </button>
 
-      <div *ngIf="row['keywords'].value()"
+      <div *ngIf="row['keywords']"
 	   style="display: flex; flex-wrap: wrap;">
-	<span *ngFor="let keyword of keywords(row)">
+	<span *ngFor="let keyword of row['keywords']">
 	  <button pButton type="button"
 		  class="p-button-sm p-button-rounded p-button-outlined tag"
-		  label="{{keyword}}"
-		  (click)="tag(keyword)"
+		  label="{{keyword.value()}}"
+		  (click)="handleKeyword(keyword.value())"
 		  >
 	  </button>
 	</span>

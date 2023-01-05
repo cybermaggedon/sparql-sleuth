@@ -19,11 +19,11 @@ import { POQuery } from '../query/p-o-query';
 import { OQuery } from '../query/o-query';
 import { SQuery } from '../query/s-query';
 import { SPQuery } from '../query/s-p-query';
-import { TextSearchQuery } from '../query/text-search-query';
 import { LabelQuery } from '../query/label-query';
 
 import { Relationship } from './graph';
 import { EventService } from './event.service';
+import { DefinitionsService } from '../query/definitions.service';
 
 @Injectable({
     providedIn: 'root'
@@ -35,6 +35,7 @@ export class GraphService {
 	private query : QueryService,
 	private events : EventService,
 	private transform : TransformService,
+	private definitions: DefinitionsService,
     ) {
 
 	this.events.recentreEvents().subscribe(
@@ -68,8 +69,7 @@ export class GraphService {
 	// place.
 	this.events.schemaEvents().subscribe(
 	    ev => {
-		this.events.reset();
-		this.addSchema();
+	    // This is a legacy event
 	    }
 	);
 
@@ -82,36 +82,11 @@ export class GraphService {
 
     }
 
-    addSchema() {
-
-	new POQuery(
-	    "Acquire schema", IS_A, CLASS, 50
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addFixedColumn("p", IS_A),
-	    this.transform.addFixedColumn("o", CLASS),
-	    this.transform.queryResultToTriples(),
-	).subscribe(
-	    result => {
-		this.includeTriples(result);
-	    }
-	);
-
-    }
-
-    fetchEdges = 40;
 
     relationshipIn(id : Uri) {
 
-	new OQuery(
-	    "Relationship in " + id.value(),
-	    id,
-	    this.fetchEdges,
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addFixedColumn("o", id),
+	return this.definitions.relationshipsIn(id).pipe(
+	    this.transform.addConstantColumn("o", id),
 	    this.transform.filterNonProperties(),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
@@ -124,14 +99,8 @@ export class GraphService {
 
     relationshipOut(id : Uri) {
 
-	new SQuery(
-	    "Relationship out " + id.value(),
-	    id,
-	    this.fetchEdges,
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addFixedColumn("s", id),
+	this.definitions.relationshipsOut(id).pipe(
+	    this.transform.addConstantColumn("s", id),
 	    this.transform.filterNonProperties(),
 	    this.transform.queryResultToTriples(),
 	).subscribe(
@@ -147,17 +116,10 @@ export class GraphService {
 	if (rel.inward) {
 
 	    let o = new Uri(node.id);
-	    
-	    new POQuery(
-		"Relationship to " + node.id,
-		rel.id,
-		o,
-		this.fetchEdges,
-	    ).run(
-		this.query
-	    ).pipe(
-		this.transform.addFixedColumn("p", rel.id),
-		this.transform.addFixedColumn("o", o),
+
+	    this.definitions.relationshipsInward(node.id, rel.id).pipe(
+		this.transform.addConstantColumn("p", rel.id),
+		this.transform.addConstantColumn("o", o),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
@@ -169,16 +131,9 @@ export class GraphService {
 
 	    let s = new Uri(node.id);
 	    
-	    new SPQuery(
-		"Relationship to " + node.id,
-		s,
-		rel.id,
-		this.fetchEdges,
-	    ).run(
-		this.query
-	    ).pipe(
-		this.transform.addFixedColumn("s", s),
-		this.transform.addFixedColumn("p", rel.id),
+	    this.definitions.relationshipsOutwards(node.id, rel.id).pipe(
+		this.transform.addConstantColumn("s", s),
+		this.transform.addConstantColumn("p", rel.id),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
 		result => {
@@ -226,9 +181,7 @@ export class GraphService {
 	n.id = id.value();
 
 	// FIXME: Can be wrapped in transform?
-	new LabelQuery("Label " + id.value(), id).run(
-	    this.query
-	).subscribe(
+	this.definitions.labelQuery(id).subscribe(
 	    lbl => {
 		if (lbl)
 		    n.label = lbl;
@@ -247,9 +200,7 @@ export class GraphService {
 	link.from = from.value();
 	link.to = to.value();
 
-	new LabelQuery("Label " + rel.value(), rel).run(
-	    this.query
-	).subscribe(
+	this.definitions.labelQuery(rel).subscribe(
 	    lbl => {
 		if (lbl)
 		    link.label = lbl;
@@ -263,9 +214,7 @@ export class GraphService {
 
     getLabel(id : Uri) : Observable<string> {
 
-	return new LabelQuery("Label " + id.value(), id).run(
-	    this.query
-	).pipe(
+	return this.definitions.labelQuery(id).pipe(
 	    map(
 		res => {
 		    if (res)
@@ -276,7 +225,6 @@ export class GraphService {
 	);
 
     }
-
 
 }
 

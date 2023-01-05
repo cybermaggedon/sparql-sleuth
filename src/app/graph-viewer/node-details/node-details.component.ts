@@ -1,5 +1,6 @@
 
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { GraphService } from '../../graph/graph.service';
 import { Properties, PropertyMap } from '../../graph/properties.service';
@@ -25,6 +26,12 @@ export class NodeDetailsComponent implements OnInit {
     selection? : Node;
 
     @Input("properties") allProperties : Properties = new Properties();
+
+    constructor(
+	private graph : GraphService,
+	private command : CommandService,
+	private router : Router,
+    ) { }
 
     get inward() {
 	return this.relationships.filter( x => x.inward );
@@ -56,11 +63,6 @@ export class NodeDetailsComponent implements OnInit {
 
     }
 
-    constructor(
-	private graph : GraphService,
-	private command : CommandService,
-    ) { }
-
     ngOnInit(): void {
     }
 
@@ -88,8 +90,22 @@ export class NodeDetailsComponent implements OnInit {
     }
 
     recentre() {
-	if (this.selection)
-	    this.command.recentre(this.selection.id);
+	if (this.selection) {
+	    // Hacky.  Makes route reload even if the URL stays the
+	    // same.  Relies on onSameUrlNavigation in router.
+	    this.router.routeReuseStrategy.shouldReuseRoute =
+		function() { return false; };
+		
+	    this.router.navigate(
+		['/graph'],
+		{
+		    queryParams: {
+			"node": this.selection.id,
+			"announce": "no",
+		    }
+		}
+	    );
+	}
     }
 
     reln(rel : Relationship) {

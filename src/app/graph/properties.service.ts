@@ -2,25 +2,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-    BehaviorSubject, Subject, Observable, forkJoin, Subscriber, of,
-    combineLatest, mergeMap
+    Subject, Observable, forkJoin, Subscriber, mergeMap, of
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A } from '../rdf/defs';
 import { Triple, Value, Uri, Literal } from '../rdf/triple';
 
-import { QueryService } from '../query/query.service';
-
-import { TripleQuery } from '../query/triple-query';
-import { SQuery } from '../query/s-query';
 import { QueryResult, Row } from '../query/query';
-import { LabelQuery } from '../query/label-query';
-import { GraphService } from './graph.service';
 import { TransformService } from '../transform/transform.service';
 import { Node } from './graph';
 import { EventService } from './event.service';
-
+import { DefinitionsService } from '../query/definitions.service';
 
 export type PropertyMap = { [key : string] : Value };
 
@@ -34,10 +27,9 @@ export class Properties {
 export class PropertiesService {
 
     constructor(
-	private query : QueryService,
-	private graph : GraphService,
 	private transform : TransformService,
 	private events : EventService,
+	private definitions : DefinitionsService,
     ) {
 
 	this.events.nodeSelectedEvents().subscribe(
@@ -48,20 +40,12 @@ export class PropertiesService {
 
     }
 
-    propertyEdges = 25;
-
     private propertiesSubject = new Subject<Properties>;
 
     propertiesEvents() { return this.propertiesSubject; }
 
     getProperties(node : Node) {
-	new SQuery(
-	    "Fetch " + node.id,
-	    new Uri(node.id),
-	    this.propertyEdges,
-	).run(
-	    this.query
-	).pipe(
+	return this.definitions.propertyQuery(node.id).pipe(
 	    this.transform.filterRelationships(),
 	    this.mapToProperties(),
 	).subscribe(
@@ -75,7 +59,7 @@ export class PropertiesService {
 	);
     }
 
-    mapToProperty(row : Row) {
+    joinProperty(row : Row) {
 	return new Observable<Row>(
 	    sub => {
 		
@@ -136,7 +120,7 @@ export class PropertiesService {
 	    let obs : any[] = [];
 
 	    for (let row of qr.data) {
-		obs.push(this.mapToProperty(row));
+		obs.push(this.joinProperty(row));
 	    }
 
 	    return forkJoin(obs);
@@ -146,9 +130,7 @@ export class PropertiesService {
 
     mapToLiteral(p : Uri, o : Value, sub : Subscriber<Row>) {
 
-	new LabelQuery("Label " + p, p).run(
-	    this.query
-	).subscribe(
+	this.definitions.labelQuery(p).subscribe(
 	    lbl => {
 		if (lbl) {
 		    sub.next({p: new Literal(lbl), o: o});
@@ -168,9 +150,7 @@ export class PropertiesService {
 
 	// IS_A relationship, work out the class name
 
-	new LabelQuery("Label " + id, id,).run(
-	    this.query
-	).subscribe(
+	this.definitions.labelQuery(id).subscribe(
 	    lbl => {
 		if (lbl) {
 		    sub.next({
@@ -196,17 +176,10 @@ export class PropertiesService {
     }
 
     getProps(node : Node) : Observable<any> {
-	
-	return new SQuery(
-	    "Fetch " + node.id,
-	    new Uri(node.id),
-	    this.propertyEdges,
-	).run(
-	    this.query
-	).pipe(
-	    this.transform.addFixedColumn("s", new Uri(node.id)),
-	    this.transform.mapToLabel("s", "slabel"),
-	    this.transform.mapToLabel("p", "plabel"),
+	return this.definitions.propertyQuery(node.id).pipe(
+	    this.transform.addConstantColumn("s", new Uri(node.id)),
+	    this.definitions.joinLabel("s", "slabel"),
+	    this.definitions.joinLabel("p", "plabel"),
 	    map(qr => {
 		let res : { key : string, value : string }[] = [];
 

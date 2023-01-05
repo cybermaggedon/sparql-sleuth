@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { FormBuilder } from '@angular/forms';
 
@@ -27,6 +28,7 @@ export class SearchComponent implements OnInit {
 	private searchService : SearchService,
 	private formBuilder: FormBuilder,
 	private command : CommandService,
+	private router : Router,
     ) { }
 
     searchForm = this.formBuilder.group({
@@ -54,7 +56,16 @@ export class SearchComponent implements OnInit {
     }
 
     search(text : string) {
-	this.command.search(text);
+
+	this.router.navigate(
+	    ["/graph"],
+	    {
+		queryParams: {
+		    "run-search": text,
+		    "announce": "no",
+		}
+	    }
+	);
     }
 
     executeSearch(text : string) {
