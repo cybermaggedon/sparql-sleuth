@@ -29,6 +29,7 @@ export class DefinitionsService {
 
     textSearchResults = 100;
     singlePropertyResults = 100;
+    relationshipEdges = 25;
 
     queries : { [key : string] : any } = {
 	"po-from-defs": (d : any, params : Params) => {
@@ -95,8 +96,17 @@ export class DefinitionsService {
 	    return new LabelQuery(
 		label, params["id"]
 	    );
-	}
+	},
+	"relationship": (d : any, params : Params) => {
+	    let label = d["label"];
+	    label = this.replaceParams(label, params);
+	    return new RelationshipQuery(
+		label, params["id"], d["inward"], d["limit"]
+	    );
+	},
     };
+
+
 
     pipes : { [key : string] : any } = {
 	"join-label": (d : any) => {
@@ -270,6 +280,20 @@ export class DefinitionsService {
 	    pipe: [
 	    ]
 	},
+	"relationship-kinds-in": {
+	    label: "Relationships to %%id%%", inward: true,
+	    kind: "relationship",
+	    limit: this.relationshipEdges,
+	    pipe: [
+	    ]
+	},
+	"relationship-kinds-out": {
+	    label: "Relationships from %%id%%", inward: false,
+	    kind: "relationship",
+	    limit: this.relationshipEdges,
+	    pipe: [
+	    ]
+	},
 	"label": {
 	    label: "Label %%id%%", kind: "label",
 	    pipe: [
@@ -348,7 +372,9 @@ export class DefinitionsService {
     }
 
     fromDef(id : string, params : Params) {
-	return this.fromQuery(this.defs[id], params);
+	let def = this.defs[id];
+	if (!def) throw Error("Definition " + id + " not defined");
+	return this.fromQuery(def, params);
     }
 
     schemaQuery() {
@@ -416,37 +442,33 @@ export class DefinitionsService {
     fetchEdges = 40;
 
     relationshipsInward(id : Uri, rel : Uri) {
-	return this.fromDef(
-	    "relationships-in",
-	    { id: id, pred: rel }
-	);
+	return this.fromDef("relationships-in", { id: id, pred: rel });
     }
 
     relationshipsOutwards(id : Uri, rel : Uri) {
-	return this.fromDef(
-	    "relationships-out",
-	    { id: id, pred: rel }
-	);
+	return this.fromDef("relationships-out", { id: id, pred: rel });
     }
 
-    relationshipEdges = 25;
-
-    relationshipKindsIn(id : string) {
+    relationshipKindsIn(id : Uri) {
+	return this.fromDef("relationship-kinds-in", { id: id });
+/*	
     	return new RelationshipQuery(
 	    "Relationships to " + id, new Uri(id), true,
 	    this.relationshipEdges
 	).run(
 	    this.query
 	);
+*/
     }
 
-    relationshipKindsOut(id : string) {
-   	return new RelationshipQuery(
-	    "Relationships from " + id, new Uri(id), false,
-	    this.relationshipEdges
-	).run(
-	    this.query
-	)
+    relationshipKindsOut(id : Uri) {
+	return this.fromDef("relationship-kinds-out", { id: id });
+//   	return new RelationshipQuery(
+//	    "Relationships from " + id, new Uri(id), false,
+//	    this.relationshipEdges
+//	).run(
+//	    this.query
+//	)
     }
 
     toCount(id : Uri) : Observable<Value[]> {
