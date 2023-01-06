@@ -91,11 +91,6 @@ export class NodeDetailsComponent implements OnInit {
 
     recentre() {
 	if (this.selection) {
-	    // Hacky.  Makes route reload even if the URL stays the
-	    // same.  Relies on onSameUrlNavigation in router.
-	    this.router.routeReuseStrategy.shouldReuseRoute =
-		function() { return false; };
-		
 	    this.router.navigate(
 		['/graph'],
 		{

@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { timer } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -53,8 +54,14 @@ export class AppComponent implements OnInit {
 
     constructor(
         private progress : ProgressService,
+	private router : Router,
     ) {
 
+	// Hacky.  Makes route reload even if the URL stays the
+	// same.  Relies on onSameUrlNavigation in router.
+	this.router.routeReuseStrategy.shouldReuseRoute =
+	    function() { return false; };
+			
     }
 
     ngOnInit() {

@@ -5,15 +5,20 @@ import { map, mergeMap } from 'rxjs/operators';
 
 import { SEE_ALSO, THUMBNAIL, LABEL, IS_A, CLASS } from '../../rdf/defs';
 import { Uri, Literal, Value } from '../../rdf/triple';
-import { POQuery } from '../../query/p-o-query';
-import { RawQuery } from '../../query/raw-query';
-import { Row } from '../../query/query';
+import { Row, QueryResult } from '../../query/query';
 
 import { QueryService } from '../../query/query.service';
 import { GraphService } from '../../graph/graph.service';
 import { TransformService } from '../../transform/transform.service';
 import { DefinitionsService } from '../../query/definitions.service';
 import { CommandService, Command } from '../../command.service';
+
+interface Dataset {
+    title : string;
+    description : string;
+    author : string;
+    keywords : string[];
+};
 
 @Component({
   selector: 'datasets',
@@ -36,11 +41,9 @@ export class DatasetsComponent implements OnInit {
 
 	this.command.command(Command.DATASETS).subscribe(
 	    () => {
-
+		// Load datasets on first command.
 		if (this.datasets.length > 0) return;
-
 		this.runQuery();
-
 	    }
 	);
 
@@ -48,9 +51,22 @@ export class DatasetsComponent implements OnInit {
 
     runQuery() {
 
-	this.definitions.datasetsQuery().subscribe(
-	    // FIXME: any
-	    (result : any) => {
+	this.definitions.datasetsQuery().pipe(
+	    map((res : Row[]) : Dataset[] => res.map(
+		(row : any) : Dataset => {
+		    return {
+			title: row["title"].value(),
+			description: row["description"].value(),
+			author: row["author"].value(),
+			keywords: row["keywords"].map(
+			    (k : Value) => k.value()
+			),
+		    };
+		}
+	    ))
+	).subscribe(
+	    (result : Dataset[]) => {
+		console.log(result);
 		this.datasets = result;
 	    }
 	);
@@ -61,10 +77,9 @@ export class DatasetsComponent implements OnInit {
 	this.graph.includeNode(id as Uri);
     }
 
-    // FIXME: Injectable in a non-read-only store
-    handleKeyword(tag : string) {
+    filterby = "";
 
-	const qry = 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "' + tag + '" . } LIMIT 40';
+    handleKeyword(tag : string) {
 
 	this.definitions.tagQuery(tag).subscribe(
 	    (result : any) => {

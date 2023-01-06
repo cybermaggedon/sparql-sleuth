@@ -31,7 +31,8 @@ export class MenuComponent implements OnInit {
 		{
 		    label: "Schema",
 		    icon: "pi pi-list",
-		    command: () => this.router.navigate(
+		    command: () =>
+		    this.router.navigate(
 			["/graph"],
 			{ queryParams: {
 			    "schema": "yes",

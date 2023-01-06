@@ -10,48 +10,50 @@
 
 <div *ngIf="datasets.length > 0">
 
-  <div *ngFor="let row of datasets">
+  <p-dataView #dv [value]="datasets" [paginator]="true" [rows]="2"
+	      filterBy="title" layout="grid">
 
-    <p-card *ngIf="row['title'].value()"
-	    header="{{row['title'].value()}}"
-	    [style]="{'margin-bottom': '1rem'}"
-	    styleClass="p-card-shadow">
-      
-      <p *ngIf="row['description'].value()">
-	{{row["description"].value()}}
-      </p>
-
-      <p *ngIf="row['author'].value()">
-	Author: {{row["author"].value()}}
-      </p>
-
-      <p *ngIf="row['url'].value()">
-	Source: <a href="{{row['url'].value()}}">
-	  {{row["url"].value()}}
-	</a>
-      </p>
-
-      <button pButton type="button" label="{{row['title'].value()}}"
-	      id="locate-node"
-	      class="p-button-sm p-button-rounded"
-	      (click)="select(row['dataset'])">
-      </button>
-
-      <div *ngIf="row['keywords']"
-	   style="display: flex; flex-wrap: wrap;">
-	<span *ngFor="let keyword of row['keywords']">
-	  <button pButton type="button"
-		  class="p-button-sm p-button-rounded p-button-outlined tag"
-		  label="{{keyword.value()}}"
-		  (click)="handleKeyword(keyword.value())"
-		  >
-	  </button>
+    <ng-template pTemplate="header">
+      <div class="flex flex-column md:flex-row md:justify-content-between">
+	<span class="p-input-icon-left mb-2 md:mb-0">
+          <i class="pi pi-search"></i>
+          <input type="search" pInputText [(ngModel)]="filterby"
+		 placeholder="Search by title"
+		 (input)="dv.filter(this.filterby)">
 	</span>
       </div>
+    </ng-template>
 
-    </p-card>
-    
-  </div>
+    <ng-template let-item pTemplate="gridItem">
+      <div class="col-12 md:col-6 surface-section">
+	<div class="grid-item card">
+
+          <div class="grid-item-content">
+
+            <div class="item-title">{{item.title}}</div>
+            <div class="item-description">{{item.description}}</div>
+	    <div class="item-button">
+	      <button pButton type="button" label="{{item.title}}"
+		      id="locate-node"
+		      class="p-button-sm p-button-rounded"
+		      (click)="select(item['dataset'])">
+	      </button>
+	    </div>
+            <div class="item-keywords">
+	      <span class="item-keyword" *ngFor="let keyword of item.keywords">
+		<button pButton type="button"
+			class="p-button-sm p-button-rounded p-button-outlined tag"
+			label="{{keyword}}"
+			(click)="handleKeyword(keyword)"
+			>
+		</button>
+	      </span>
+	    </div>
+          </div>
+	</div>
+      </div>
+    </ng-template>
+  </p-dataView>
 
 </div>
 
