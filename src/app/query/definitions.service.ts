@@ -286,11 +286,13 @@ export class DefinitionsService {
 	},
 	"relationships-in": {
 	    label: "Properties %%pred%% %%id%%", kind: "po",
+	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	"relationships-out": {
 	    label: "Properties %%id%% %%pred%%", kind: "sp",
+	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
