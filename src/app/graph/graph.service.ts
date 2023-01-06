@@ -80,7 +80,7 @@ export class GraphService {
 		this.transform.addConstantColumn("o", o),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
-		result => {
+		(result : Triple[]) => {
 		    this.includeTriples(result);
 		}
 	    );
@@ -94,7 +94,7 @@ export class GraphService {
 		this.transform.addConstantColumn("p", rel),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
-		result => {
+		(result : Triple[]) => {
 		    this.includeTriples(result);
 		}
 	    );

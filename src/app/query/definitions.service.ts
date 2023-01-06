@@ -27,36 +27,24 @@ type Params = { [key : string] : any };
 })
 export class DefinitionsService {
 
-    constructor(
-        private transform : TransformService,
-	private query : QueryService,
-    ) {
-    }
-
-    replaceParam(input : string, key : string, value : any) {
-	let re = new RegExp("%%" + key + "%%", "g");
-
-	if (value instanceof Uri || value instanceof Literal) {
-	    return input.replace(re, value.value());
-	} else if (typeof value === "string") {
-	    return input.replace(re, value);
-	} else {
-	    console.log("ERROR", value);
-	    throw Error("replaceParam can't handle value");
-	}
-    }
-
-    replaceParams(input : string, params : Params) {
-	for (let p in params) {
-	    input = this.replaceParam(input, p, params[p]);
-	}
-	return input;
-    }
+    textSearchResults = 100;
+    singlePropertyResults = 100;
 
     queries : { [key : string] : any } = {
-	po: (d : any, p : Params) => {
+	"po-from-defs": (d : any, params : Params) => {
+
+	    let label = d["label"];
+	    label = this.replaceParams(label, params);
+
 	    return new POQuery(
-		d["label"], d["p"], d["o"], d["limit"]
+		d["label"], d["pred"], d["id"], d["limit"]
+	    );
+	},
+	po: (d : any, params : Params) => {
+	    let label = d["label"];
+	    label = this.replaceParams(label, params);
+	    return new POQuery(
+		d["label"], params["pred"], params["id"], d["limit"]
 	    );
 	},
 	raw: (d : any, params : Params) => {
@@ -78,7 +66,7 @@ export class DefinitionsService {
 		label, params["text"], this.textSearchResults,
 	    );
 	},
-	"sp": 	(d : any, params : Params) => {
+	"sp": (d : any, params : Params) => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -87,7 +75,18 @@ export class DefinitionsService {
 		label, params["id"], params["pred"],
 		this.singlePropertyResults,
 	    );
-	}
+	},
+	"s": (d : any, params : Params) => {
+
+	    let label = d["label"];
+	    label = this.replaceParams(label, params);
+
+	    return new SQuery(
+		label, params["id"],
+		this.propertyEdges,
+	    );
+	    
+	},
     };
 
     pipes : { [key : string] : any } = {
@@ -135,54 +134,10 @@ export class DefinitionsService {
 	}
     };
 
-    textSearchResults = 100;
-    singlePropertyResults = 100;
-
-    fromInnerQuery(d : any) {
-
-	let mapFactory = this.innerQueries[d["kind"]];
-
-	let innerQuery = mapFactory(d);
-
-	if ("pipe" in d) {
-	    let pipes = d["pipe"].map(
-		(d : any) => {
-		    let pipeFactory = this.pipes[d["kind"]];
-		    return pipeFactory(d);
-		}
-	    );
-
-	    return innerQuery.pipe(...pipes);
-
-	} else {
-	    return innerQuery;
-	}
-    }
-
-    fromQuery(d : any, params : Params) {
-
-	let qryFactory = this.queries[d["kind"]];
-
-	let qry = qryFactory(d, params);
-
-	let pipes = d["pipe"].map(
-	    (d : any) => {
-		let pipeFactory = this.pipes[d["kind"]];
-		return pipeFactory(d);
-	    }
-	);
-
-	return qry.run(this.query).pipe(...pipes);
-
-    }
-
-    fromDef(id : string, params : Params) {
-	return this.fromQuery(this.defs[id], params);
-    }
-
     defs : { [key : string] : any } = {
 	schema: {
-	    label: "Acquire schema", kind: "po", p: IS_A, o: CLASS, limit: 50,
+	    label: "Acquire schema", kind: "po-from-defs",
+	    pred: IS_A, id: CLASS, limit: 50,
 	    pipe: [
 		{
 		    kind: "join-label", input: "s", output: "slabel"
@@ -291,7 +246,96 @@ export class DefinitionsService {
 		}
 	    ]
 	},
+	"property": {
+	    label: "Properties %%id%%", kind: "s",
+	    pipe: [
+	    ]
+	},
+	"relationships-in": {
+	    label: "Properties %%pred%% %%id%%", kind: "po",
+	    pipe: [
+	    ]
+	},
+	"relationships-out": {
+	    label: "Properties %%id%% %%pred%%", kind: "sp",
+	    pipe: [
+	    ]
+	},
     };
+
+    constructor(
+        private transform : TransformService,
+	private query : QueryService,
+    ) {
+    }
+
+    replaceParam(input : string, key : string, value : any) {
+	let re = new RegExp("%%" + key + "%%", "g");
+
+	if (value instanceof Uri || value instanceof Literal) {
+	    return input.replace(re, value.value());
+	} else if (typeof value === "string") {
+	    return input.replace(re, value);
+	} else {
+	    console.log("ERROR", value);
+	    throw Error("replaceParam can't handle value");
+	}
+    }
+
+    replaceParams(input : string, params : Params) {
+	for (let p in params) {
+	    input = this.replaceParam(input, p, params[p]);
+	}
+	return input;
+    }
+
+    fromInnerQuery(d : any) {
+
+	let mapFactory = this.innerQueries[d["kind"]];
+
+	let innerQuery = mapFactory(d);
+
+	if ("pipe" in d) {
+	    let pipes = d["pipe"].map(
+		(d : any) => {
+		    let pipeFactory = this.pipes[d["kind"]];
+		    return pipeFactory(d);
+		}
+	    );
+
+	    return innerQuery.pipe(...pipes);
+
+	} else {
+	    return innerQuery;
+	}
+    }
+
+    fromQuery(d : any, params : Params) {
+
+	if (!d["kind"]) throw Error("Query 'kind' must be provided");
+
+	let qryFactory = this.queries[d["kind"]];
+
+	if (!qryFactory) throw Error(
+	    "Query kind " + d["kind"] + " is not defined"
+	);
+
+	let qry = qryFactory(d, params);
+
+	let pipes = d["pipe"].map(
+	    (d : any) => {
+		let pipeFactory = this.pipes[d["kind"]];
+		return pipeFactory(d);
+	    }
+	);
+
+	return qry.run(this.query).pipe(...pipes);
+
+    }
+
+    fromDef(id : string, params : Params) {
+	return this.fromQuery(this.defs[id], params);
+    }
 
     schemaQuery() {
 	return this.fromDef("schema", {});
@@ -316,17 +360,6 @@ export class DefinitionsService {
 	    "single-property",
 	    { id: id, pred: pred }
 	);
-/*
-	return new SPQuery(
-	    "Property " + id.value() + " " + pred.value(),
-	    id,
-	    pred
-	).run(
-	    this.query
-	).pipe(
-	    map(qr => qr.data.map(row => row["o"])),
-	);
-*/
 
     }
 
@@ -358,16 +391,11 @@ export class DefinitionsService {
 
     propertyEdges = 25;
 
-    propertyQuery(id : string) {
-    
-	return new SQuery(
-	    "Fetch " + id,
-	    new Uri(id),
-	    this.propertyEdges,
-	).run(
-	    this.query
+    propertyQuery(id : Uri) {
+	return this.fromDef(
+	    "property",
+	    { id: id }
 	);
-
     }
 
     labelQuery(id : Uri) {
@@ -379,24 +407,16 @@ export class DefinitionsService {
     fetchEdges = 40;
 
     relationshipsInward(id : Uri, rel : Uri) {
-	return new POQuery(
-	    "Relationship to " + id.value(),
-	    rel,
-	    id,
-	    this.fetchEdges,
-	).run(
-	    this.query
+	return this.fromDef(
+	    "relationships-in",
+	    { id: id, pred: rel }
 	);
     }
 
     relationshipsOutwards(id : Uri, rel : Uri) {
-	return new SPQuery(
-	    "Relationship to " + id.value(),
-	    id,
-	    rel,
-	    this.fetchEdges,
-	).run(
-	    this.query
+	return this.fromDef(
+	    "relationships-out",
+	    { id: id, pred: rel }
 	);
     }
 
