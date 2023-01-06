@@ -132,7 +132,7 @@ export class PropertiesService {
     mapToLiteral(p : Uri, o : Value, sub : Subscriber<Row>) {
 
 	this.definitions.labelQuery(p).subscribe(
-	    lbl => {
+	    (lbl : string) : void => {
 		if (lbl) {
 		    sub.next({p: new Literal(lbl), o: o});
 		    sub.complete();
@@ -152,7 +152,7 @@ export class PropertiesService {
 	// IS_A relationship, work out the class name
 
 	this.definitions.labelQuery(id).subscribe(
-	    lbl => {
+	    (lbl : any) => {
 		if (lbl) {
 		    sub.next({
 			p: new Literal("class"), o: new Literal(lbl)

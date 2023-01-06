@@ -87,6 +87,15 @@ export class DefinitionsService {
 	    );
 	    
 	},
+	"label": (d : any, params : Params) => {
+
+	    let label = d["label"];
+	    label = this.replaceParams(label, params);
+
+	    return new LabelQuery(
+		label, params["id"]
+	    );
+	}
     };
 
     pipes : { [key : string] : any } = {
@@ -261,6 +270,11 @@ export class DefinitionsService {
 	    pipe: [
 	    ]
 	},
+	"label": {
+	    label: "Label %%id%%", kind: "label",
+	    pipe: [
+	    ]
+	},
     };
 
     constructor(
@@ -392,16 +406,11 @@ export class DefinitionsService {
     propertyEdges = 25;
 
     propertyQuery(id : Uri) {
-	return this.fromDef(
-	    "property",
-	    { id: id }
-	);
+	return this.fromDef("property", { id: id });
     }
 
     labelQuery(id : Uri) {
-	return new LabelQuery("Label " + id, id).run(
-	    this.query
-	);
+	return this.fromDef("label", { id: id });
     }
 
     fetchEdges = 40;

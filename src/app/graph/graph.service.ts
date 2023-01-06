@@ -140,7 +140,7 @@ export class GraphService {
 
 	// FIXME: Can be wrapped in transform?
 	this.definitions.labelQuery(id).subscribe(
-	    lbl => {
+	    (lbl : string) => {
 		if (lbl)
 		    n.label = lbl;
 		else
@@ -159,7 +159,7 @@ export class GraphService {
 	link.to = to.value();
 
 	this.definitions.labelQuery(rel).subscribe(
-	    lbl => {
+	    (lbl : string) => {
 		if (lbl)
 		    link.label = lbl;
 		else
