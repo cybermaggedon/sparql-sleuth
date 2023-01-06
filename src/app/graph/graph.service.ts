@@ -60,11 +60,13 @@ export class GraphService {
 	);
 
 	this.command.command(Command.RELATIONSHIP).subscribe(
-	    ev => this.relationship(
-		new Uri(ev.relationship.node.id),
-		ev.relationship.relationship.id,
-		ev.relationship.relationship.inward
-	    )
+	    ev => {
+		this.relationship(
+		    new Uri(ev.relationship.node.id),
+		    ev.relationship.relationship.id,
+		    ev.relationship.relationship.inward
+		);
+	    }		
 	);
 
     }
@@ -76,7 +78,7 @@ export class GraphService {
 	    let o = id;
 
 	    this.definitions.relationshipsInward(id, rel).pipe(
-		this.transform.addConstantColumn("p", id),
+		this.transform.addConstantColumn("p", rel),
 		this.transform.addConstantColumn("o", o),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
