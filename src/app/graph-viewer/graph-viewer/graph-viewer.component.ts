@@ -15,6 +15,7 @@ import { EventService } from '../../graph/event.service';
 import { MessageService } from '../../message.service';
 import { GalleryService } from '../../gallery.service';
 import { SerialisationService } from '../../graph/serialisation.service';
+import { GraphService } from '../../graph/graph.service';
 
 // Which dialog is open.  Can only be 1 at once.
 enum DialogState {
@@ -47,6 +48,7 @@ export class GraphViewerComponent implements OnInit {
 	private message : MessageService,
 	private gallery : GalleryService,
 	private ss : SerialisationService,
+	private graph : GraphService,
     ) {
 	
     }
@@ -80,7 +82,7 @@ export class GraphViewerComponent implements OnInit {
 
 		this.relationships = [];
 
-		this.relationship.getRelationships(ev.node).subscribe(
+		this.relationship.getRelationships(ev.node.id).subscribe(
 		    ev => { this.relationships = ev; }
 		);
 
@@ -210,94 +212,116 @@ export class GraphViewerComponent implements OnInit {
 	    this.state = DialogState.NONE;
     }
 
+    parseParams(params : any) {
+	
+	if (params["node"]) {
+
+	    const id = params["node"];
+
+	    let relationships = "no";
+	    
+	    if (params["relationships"]) {
+		relationships = params["relationships"];
+	    }
+
+	    if (id) {
+		timer(1).subscribe(
+		    () => {
+
+			this.events.recentre(
+			    new Uri(id)
+			);
+
+			if (relationships != "no")
+			    this.relationship.getRelationshipPreds(id).
+			    subscribe(
+				rels => {
+				    for (let rel of rels) {
+
+					if (rel.inward &&
+					    (relationships == "out"))
+					    continue;
+
+					if (!rel.inward && relationships == "in")
+					    continue;
+
+					console.log(rel.id, rel.inward);
+					this.graph.relationship(
+					    new Uri(id),
+					    rel.id,
+					    rel.inward
+					);
+				    }
+				}
+			    );
+		    }
+		);
+	    }
+
+	}
+
+	if (params["gallery"] && params["gallery"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.gallery()
+	    );
+
+	if (params["search"] && params["search"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.beginSearch()
+	    );
+
+	if (params["run-search"])
+	    timer(1).subscribe(
+		() => this.command.search(params["run-search"])
+	    );
+
+	if (params["schema"] && params["schema"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.schema()
+	    );
+
+	if (params["datasets"] && params["datasets"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.datasets()
+	    );
+
+	if (params["export"] && params["export"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.graphExport()
+	    );
+
+	if (params["import"] && params["import"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.graphImport()
+	    );
+
+	if (params["info"] && params["info"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.info()
+	    );
+
+	if (params["about"] && params["about"] == "yes")
+	    timer(1).subscribe(
+		() => this.command.about()
+	    );
+
+	if (!params["announce"] || !(params["announce"] == "no")) {
+	    timer(1).subscribe(
+		() => this.message.announce()
+	    );
+	}
+
+	if (params["load-gallery"])
+	    timer(1).subscribe(
+		() => this.loadGallery(params["load-gallery"])
+	    );
+
+    }
+
     ngAfterViewInit(): void {
 
 	this.route.queryParams.subscribe(
-
-	    params => {
-
-		if (params["node"]) {
-
-		    // Perhaps recentre should be a different event.
-
-		    const id = params["node"];
-
-		    let relationships = "no";
-		    
-		    if (params["relationships"]) {
-			relationships = params["relationships"];
-		    }
-
-		    if (id) {
-			timer(1).subscribe(
-			    () => {
-				this.events.recentre(
-				    new Uri(id),
-				    relationships
-				);
-			    }
-			);
-		    }
-
-		}
-
-		if (params["gallery"] && params["gallery"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.gallery()
-		    );
-
-		if (params["search"] && params["search"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.beginSearch()
-		    );
-
-		if (params["run-search"])
-		    timer(1).subscribe(
-			() => this.command.search(params["run-search"])
-		    );
-
-		if (params["schema"] && params["schema"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.schema()
-		    );
-
-		if (params["datasets"] && params["datasets"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.datasets()
-		    );
-
-		if (params["export"] && params["export"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.graphExport()
-		    );
-
-		if (params["import"] && params["import"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.graphImport()
-		    );
-
-		if (params["info"] && params["info"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.info()
-		    );
-
-		if (params["about"] && params["about"] == "yes")
-		    timer(1).subscribe(
-			() => this.command.about()
-		    );
-
-		if (!params["announce"] || !(params["announce"] == "no")) {
-		    timer(1).subscribe(
-			() => this.message.announce()
-		    );
-		}
-
-		if (params["load-gallery"])
-		    timer(1).subscribe(
-			() => this.loadGallery(params["load-gallery"])
-		    );
-
-	    }
+	    params => this.parseParams(params)
 	);
 
     }

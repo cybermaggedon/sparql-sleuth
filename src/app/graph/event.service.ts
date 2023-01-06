@@ -36,7 +36,6 @@ export class NodeSelectedEvent {
 
 export class RecentreEvent {
     id : Uri = new Uri("");
-    relationship : string = "false";
 };
 
 @Injectable({
@@ -112,10 +111,9 @@ export class EventService {
 	this.resetSubject.next(null);
     }
 
-    recentre(id : Uri, relationship : string = "no") {
+    recentre(id : Uri) {
 	let ev = new RecentreEvent();
 	ev.id = id;
-	ev.relationship = relationship;
 	this.recentreSubject.next(ev);
     }
 

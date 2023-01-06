@@ -16,6 +16,7 @@ import { RelationshipQuery } from './relationship-query';
 
 import { IS_A, CLASS, LABEL } from '../rdf/defs';
 import { Value, Uri, Literal } from '../rdf/triple';
+import { QueryResult, Row } from './query';
 
 const DATASET = new Uri("https://schema.org/Dataset");
 
@@ -32,6 +33,26 @@ export class DefinitionsService {
     ) {
     }
 
+    replaceParam(input : string, key : string, value : any) {
+	let re = new RegExp("%%" + key + "%%", "g");
+
+	if (value instanceof Uri || value instanceof Literal) {
+	    return input.replace(re, value.value());
+	} else if (typeof value === "string") {
+	    return input.replace(re, value);
+	} else {
+	    console.log("ERROR", value);
+	    throw Error("replaceParam can't handle value");
+	}
+    }
+
+    replaceParams(input : string, params : Params) {
+	for (let p in params) {
+	    input = this.replaceParam(input, p, params[p]);
+	}
+	return input;
+    }
+
     queries : { [key : string] : any } = {
 	po: (d : any, p : Params) => {
 	    return new POQuery(
@@ -43,22 +64,15 @@ export class DefinitionsService {
 	    let label = d["label"];
 	    let query = d["query"];
 
-	    for (let p in params) {
-		let re = new RegExp("%%" + p + "%%", "g");
-		label = label.replace(re, params[p]);
-		query = query.replace(re, params[p]);
-	    }
+	    label = this.replaceParams(label, params);
+	    query = this.replaceParams(query, params);
 			  
 	    return new RawQuery(label, query);
 	},
 	"text-search": 	(d : any, params : Params) => {
 
 	    let label = d["label"];
-	    
-	    for (let p in params) {
-		let re = new RegExp("%%" + p + "%%", "g");
-		label = label.replace(re, params[p]);
-	    }
+	    label = this.replaceParams(label, params);
 
 	    return new TextSearchQuery(
 		label, params["text"], this.textSearchResults,
@@ -67,11 +81,7 @@ export class DefinitionsService {
 	"sp": 	(d : any, params : Params) => {
 
 	    let label = d["label"];
-	    
-	    for (let p in params) {
-		let re = new RegExp("%%" + p + "%%", "g");
-		label = label.replace(re, params[p]);
-	    }
+	    label = this.replaceParams(label, params);
 
 	    return new SPQuery(
 		label, params["id"], params["pred"],
@@ -106,6 +116,13 @@ export class DefinitionsService {
 	},
 	"to-triples": (d : any) => {
 	    return this.transform.queryResultToTriples();
+	},
+	"to-o-values": (d : any) => {
+	    return map(
+		(qr : QueryResult) => qr.data.map(
+		    (row : Row) => row["o"]
+		)
+	    );
 	},
     };
 
@@ -270,7 +287,7 @@ export class DefinitionsService {
 	    label: "Property %%id%% %%pred%%", kind: "sp",
 	    pipe: [
 		{
-		    kind: "o-values",
+		    kind: "to-o-values",
 		}
 	    ]
 	},
@@ -294,12 +311,12 @@ export class DefinitionsService {
     }
 
     singlePropertyQuery(id : Uri, pred : Uri) {
-/*
+
 	return this.fromDef(
 	    "single-property",
 	    { id: id, pred: pred }
 	);
-*/
+/*
 	return new SPQuery(
 	    "Property " + id.value() + " " + pred.value(),
 	    id,
@@ -309,6 +326,8 @@ export class DefinitionsService {
 	).pipe(
 	    map(qr => qr.data.map(row => row["o"])),
 	);
+*/
+
     }
 
     toData() {
@@ -359,41 +378,21 @@ export class DefinitionsService {
 
     fetchEdges = 40;
 
-    relationshipsIn(id : Uri) {
-	return new OQuery(
-	    "Relationship in " + id.value(),
-	    id,
-	    this.fetchEdges,
-	).run(
-	    this.query
-	);
-    }
-
-    relationshipsOut(id : Uri) {
-	return new SQuery(
-	    "Relationship out " + id.value(),
-	    id,
-	    this.fetchEdges,
-	).run(
-	    this.query
-	);
-    }
-
-    relationshipsInward(id : string, rel : Uri) {
+    relationshipsInward(id : Uri, rel : Uri) {
 	return new POQuery(
-	    "Relationship to " + id,
+	    "Relationship to " + id.value(),
 	    rel,
-	    new Uri(id),
+	    id,
 	    this.fetchEdges,
 	).run(
 	    this.query
 	);
     }
 
-    relationshipsOutwards(id : string, rel : Uri) {
+    relationshipsOutwards(id : Uri, rel : Uri) {
 	return new SPQuery(
-	    "Relationship to " + id,
-	    new Uri(id),
+	    "Relationship to " + id.value(),
+	    id,
 	    rel,
 	    this.fetchEdges,
 	).run(

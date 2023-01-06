@@ -14,6 +14,7 @@ import { DefinitionsService } from '../../query/definitions.service';
 import { CommandService, Command } from '../../command.service';
 
 interface Dataset {
+    dataset : Uri;
     title : string;
     description : string;
     author : string;
@@ -55,6 +56,7 @@ export class DatasetsComponent implements OnInit {
 	    map((res : Row[]) : Dataset[] => res.map(
 		(row : any) : Dataset => {
 		    return {
+			dataset: row["dataset"],
 			title: row["title"].value(),
 			description: row["description"].value(),
 			author: row["author"].value(),
@@ -72,7 +74,7 @@ export class DatasetsComponent implements OnInit {
 
     }
 
-    select(id : Value) {
+    select(id : Uri) {
 	this.graph.includeNode(id as Uri);
     }
 
