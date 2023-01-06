@@ -30,6 +30,8 @@ export class DefinitionsService {
     textSearchResults = 100;
     singlePropertyResults = 100;
     relationshipEdges = 25;
+    propertyEdges = 25;
+    fetchEdges = "FIXME?";
 
     queries : { [key : string] : any } = {
 	"po-from-defs": (d : any, params : Params) => {
@@ -140,6 +142,18 @@ export class DefinitionsService {
 		(qr : QueryResult) => qr.data.map(
 		    (row : Row) => row["o"]
 		)
+	    );
+	},
+	"null-to-zero": (d : any) => {
+	    return map(
+		(res : QueryResult) => {
+		    if (res.data.length > 0) {
+			let key = res.vars[0];
+			return [res.data[0][key]];
+		    } else {
+			return [new Literal("0")];
+		    }
+		}
 	    );
 	},
     };
@@ -294,9 +308,18 @@ export class DefinitionsService {
 	    pipe: [
 	    ]
 	},
-	"label": {
+	label: {
 	    label: "Label %%id%%", kind: "label",
 	    pipe: [
+	    ]
+	},
+	count: {
+	    label: "Count %%id%%", kind: "raw", 
+	    query: 'SELECT (COUNT(*) AS ?count) WHERE {  ?s a <%%id%%> . }',
+	    pipe: [
+		{
+		    kind: "null-to-zero"
+		},
 	    ]
 	},
     };
@@ -395,12 +418,10 @@ export class DefinitionsService {
     }
 
     singlePropertyQuery(id : Uri, pred : Uri) {
-
 	return this.fromDef(
 	    "single-property",
 	    { id: id, pred: pred }
 	);
-
     }
 
     toData() {
@@ -429,8 +450,6 @@ export class DefinitionsService {
 	);
     }
 
-    propertyEdges = 25;
-
     propertyQuery(id : Uri) {
 	return this.fromDef("property", { id: id });
     }
@@ -438,8 +457,6 @@ export class DefinitionsService {
     labelQuery(id : Uri) {
 	return this.fromDef("label", { id: id });
     }
-
-    fetchEdges = 40;
 
     relationshipsInward(id : Uri, rel : Uri) {
 	return this.fromDef("relationships-in", { id: id, pred: rel });
@@ -451,43 +468,14 @@ export class DefinitionsService {
 
     relationshipKindsIn(id : Uri) {
 	return this.fromDef("relationship-kinds-in", { id: id });
-/*	
-    	return new RelationshipQuery(
-	    "Relationships to " + id, new Uri(id), true,
-	    this.relationshipEdges
-	).run(
-	    this.query
-	);
-*/
     }
 
     relationshipKindsOut(id : Uri) {
 	return this.fromDef("relationship-kinds-out", { id: id });
-//   	return new RelationshipQuery(
-//	    "Relationships from " + id, new Uri(id), false,
-//	    this.relationshipEdges
-//	).run(
-//	    this.query
-//	)
     }
 
     toCount(id : Uri) : Observable<Value[]> {
-
-	let qry = "SELECT (COUNT(*) AS ?count) WHERE {  ?s a " +
-	    id.term() + ". }";
-
-	return new RawQuery("Count " + id.value(), qry).run(
-	    this.query
-	).pipe(
-	    map(res => {
-		if (res.data.length > 0) {
-		    let key = res.vars[0];
-		    return [res.data[0][key]];
-		} else {
-		    return [new Literal("0")];
-		}
-	    })
-	)
+	return this.fromDef("count", { id: id });
     }
 
 }
