@@ -13,6 +13,7 @@ import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';
 import { TransformService } from '../transform/transform.service';
 import { DefinitionsService } from '../query/definitions.service';
+import { QueryResult } from '../query/query';
 
 export interface SearchResult {
     s : Value,
@@ -39,7 +40,7 @@ export class SearchService {
     search(text : string) : Observable<SearchResult[]> {
 
 	return this.definitions.textSearch(text).pipe(
-	    map(x => {
+	    map((x : QueryResult) => {
 		if ("data" in x)
 		    return x.data.map(
 			row => {

@@ -19,6 +19,8 @@ import { Value, Uri, Literal } from '../rdf/triple';
 
 const DATASET = new Uri("https://schema.org/Dataset");
 
+type Params = { [key : string] : any };
+
 @Injectable({
     providedIn: 'root'
 })
@@ -31,23 +33,51 @@ export class DefinitionsService {
     }
 
     queries : { [key : string] : any } = {
-	po: (d : any) => {
+	po: (d : any, p : Params) => {
 	    return new POQuery(
 		d["label"], d["p"], d["o"], d["limit"]
 	    );
 	},
-	raw: (d : any) => {
-	    return new RawQuery(
-		d["label"], d["query"]
+	raw: (d : any, params : Params) => {
+
+	    let label = d["label"];
+	    let query = d["query"];
+
+	    for (let p in params) {
+		let re = new RegExp("%%" + p + "%%", "g");
+		label = label.replace(re, params[p]);
+		query = query.replace(re, params[p]);
+	    }
+			  
+	    return new RawQuery(label, query);
+	},
+	"text-search": 	(d : any, params : Params) => {
+
+	    let label = d["label"];
+	    
+	    for (let p in params) {
+		let re = new RegExp("%%" + p + "%%", "g");
+		label = label.replace(re, params[p]);
+	    }
+
+	    return new TextSearchQuery(
+		label, params["text"], this.textSearchResults,
 	    );
 	},
-	"raw-1": (d : any) => {
-	    let text = d["label"].replace(/%%VAR%%/, d["id"]);
-	    let query = d["query"].replace(/%%VAR%%/, d["id"]);
-	    return new RawQuery(
-		text, query
+	"sp": 	(d : any, params : Params) => {
+
+	    let label = d["label"];
+	    
+	    for (let p in params) {
+		let re = new RegExp("%%" + p + "%%", "g");
+		label = label.replace(re, params[p]);
+	    }
+
+	    return new SPQuery(
+		label, params["id"], params["pred"],
+		this.singlePropertyResults,
 	    );
-	},
+	}
     };
 
     pipes : { [key : string] : any } = {
@@ -88,6 +118,9 @@ export class DefinitionsService {
 	}
     };
 
+    textSearchResults = 100;
+    singlePropertyResults = 100;
+
     fromInnerQuery(d : any) {
 
 	let mapFactory = this.innerQueries[d["kind"]];
@@ -109,11 +142,11 @@ export class DefinitionsService {
 	}
     }
 
-    fromQuery(d : any) {
+    fromQuery(d : any, params : Params) {
 
 	let qryFactory = this.queries[d["kind"]];
 
-	let qry = qryFactory(d);
+	let qry = qryFactory(d, params);
 
 	let pipes = d["pipe"].map(
 	    (d : any) => {
@@ -126,14 +159,8 @@ export class DefinitionsService {
 
     }
 
-    fromDef(id : string) {
-	return this.fromQuery(this.defs[id]);
-    }
-
-    fromDef1(id : string, id2 : string) {
-	let def = this.defs[id];
-	def["id"] = id2;
-	return this.fromQuery(def);
+    fromDef(id : string, params : Params) {
+	return this.fromQuery(this.defs[id], params);
     }
 
     defs : { [key : string] : any } = {
@@ -213,8 +240,8 @@ export class DefinitionsService {
 	    ]
 	},
 	tag: {
-	    label: "Keyword search %%VAR%%", kind: "raw-1",
-	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "%%VAR%%" . } LIMIT 40',
+	    label: "Keyword search %%tag%%", kind: "raw",
+	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "%%tag%%" . } LIMIT 40',
 	    pipe: [
 		{
 		    kind: "add-constant-column", column: "p", value: IS_A
@@ -226,12 +253,62 @@ export class DefinitionsService {
 		    kind: "to-triples"
 		}
 	    ]
-	}
+	},
+	"text-search": {
+	    label: "Search %%text%%", kind: "text-search",
+	    limit: this.textSearchResults,
+	    pipe: [
+		{
+		    kind: "join-label", input: "s", output: "slabel"
+		},
+		{
+		    kind: "join-label", input: "p", output: "plabel"
+		}
+	    ]
+	},
+	"single-property": {
+	    label: "Property %%id%% %%pred%%", kind: "sp",
+	    pipe: [
+		{
+		    kind: "o-values",
+		}
+	    ]
+	},
     };
 
     schemaQuery() {
-	return this.fromDef("schema");
+	return this.fromDef("schema", {});
 
+    }
+
+    datasetsQuery() {
+	return this.fromDef("datasets", {});
+    }
+
+    tagQuery(tag : string) {
+	return this.fromDef("tag", {tag: tag});
+    }
+
+    textSearch(text : string) {
+	return this.fromDef("text-search", {text: text});
+    }
+
+    singlePropertyQuery(id : Uri, pred : Uri) {
+/*
+	return this.fromDef(
+	    "single-property",
+	    { id: id, pred: pred }
+	);
+*/
+	return new SPQuery(
+	    "Property " + id.value() + " " + pred.value(),
+	    id,
+	    pred
+	).run(
+	    this.query
+	).pipe(
+	    map(qr => qr.data.map(row => row["o"])),
+	);
     }
 
     toData() {
@@ -260,32 +337,6 @@ export class DefinitionsService {
 	);
     }
 
-    datasetsQuery() {
-	return this.fromDef("datasets");
-    }
-
-    // FIXME: Injectable in a non-read-only store
-    tagQuery(tag : string) {
-	return this.fromDef1("tag", tag);
-    }
-    
-    textSearchResults = 100;
-
-    textSearch(text : string) {
-
-	return new TextSearchQuery(
-	    "Search " + text,
-	    text,
-	    this.textSearchResults,
-	).run(
-	    this.query
-	).pipe(
-	    this.joinLabel("s", "slabel"),
-	    this.joinLabel("p", "plabel"),
-	);
-
-    }
-
     propertyEdges = 25;
 
     propertyQuery(id : string) {
@@ -298,18 +349,6 @@ export class DefinitionsService {
 	    this.query
 	);
 
-    }
-
-    singlePropertyQuery(id : Uri, pred : Uri) {
-	return new SPQuery(
-	    "Property " + id.value() + " " + pred.value(),
-	    id,
-	    pred
-	).run(
-	    this.query
-	).pipe(
-	    map(qr => qr.data.map(row => row["o"])),
-	);
     }
 
     labelQuery(id : Uri) {

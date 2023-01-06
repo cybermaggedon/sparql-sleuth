@@ -66,7 +66,6 @@ export class DatasetsComponent implements OnInit {
 	    ))
 	).subscribe(
 	    (result : Dataset[]) => {
-		console.log(result);
 		this.datasets = result;
 	    }
 	);
