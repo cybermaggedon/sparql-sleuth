@@ -44,7 +44,7 @@ export class SchemaComponent implements OnInit {
 
 	schemaQuery.subscribe(
 	    (result : any) => {
-		this.schema = result;
+		this.schema = result.data;
 	    }
 	);
 

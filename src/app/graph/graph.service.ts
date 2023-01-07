@@ -47,96 +47,48 @@ export class GraphService {
 		    this.events.reset();
 		    this.includeNode(ev.id);
 
-		    if (ev.relationship == "in" || ev.relationship == "yes" ||
-			ev.relationship == "both" || ev.relationship == "true") {
-
-			this.relationshipIn(ev.id);
-
-		    }
-
-		    if (ev.relationship == "out" || ev.relationship == "yes" ||
-			ev.relationship == "both" || ev.relationship == "true") {
-
-			this.relationshipOut(ev.id);
-			
-		    }
-
 		}
 	    }
 	);
 
-	// If there's a schema event, reset the graph and drop the schema in
-	// place.
-	this.events.schemaEvents().subscribe(
-	    ev => {
-	    // This is a legacy event
-	    }
-	);
-
 	this.command.command(Command.RELATIONSHIP).subscribe(
-	    ev => this.relationship(
-		ev.relationship.node,
-		ev.relationship.relationship
-	    )
+	    ev => {
+		this.relationship(
+		    new Uri(ev.relationship.node.id),
+		    ev.relationship.relationship.id,
+		    ev.relationship.relationship.inward
+		);
+	    }		
 	);
 
     }
 
+    relationship(id : Uri, rel : Uri, inward : boolean) {
 
-    relationshipIn(id : Uri) {
+	if (inward) {
 
-	return this.definitions.relationshipsIn(id).pipe(
-	    this.transform.addConstantColumn("o", id),
-	    this.transform.filterNonProperties(),
-	    this.transform.queryResultToTriples(),
-	).subscribe(
-	    result => {
-		this.includeTriples(result);
-	    }
-	);
+	    let o = id;
 
-    }
-
-    relationshipOut(id : Uri) {
-
-	this.definitions.relationshipsOut(id).pipe(
-	    this.transform.addConstantColumn("s", id),
-	    this.transform.filterNonProperties(),
-	    this.transform.queryResultToTriples(),
-	).subscribe(
-	    result => {
-		this.includeTriples(result);
-	    }
-	);
-
-    }
-
-    relationship(node : Node, rel : Relationship) {
-
-	if (rel.inward) {
-
-	    let o = new Uri(node.id);
-
-	    this.definitions.relationshipsInward(node.id, rel.id).pipe(
-		this.transform.addConstantColumn("p", rel.id),
+	    this.definitions.relationshipsInward(id, rel).pipe(
+		this.transform.addConstantColumn("p", rel),
 		this.transform.addConstantColumn("o", o),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
-		result => {
+		(result : Triple[]) => {
 		    this.includeTriples(result);
 		}
 	    );
 
 	} else {
 
-	    let s = new Uri(node.id);
+	    let s = id;
 	    
-	    this.definitions.relationshipsOutwards(node.id, rel.id).pipe(
+	    this.definitions.relationshipsOutwards(id, rel).pipe(
 		this.transform.addConstantColumn("s", s),
-		this.transform.addConstantColumn("p", rel.id),
+		this.transform.addConstantColumn("p", rel),
 		this.transform.queryResultToTriples(),
 	    ).subscribe(
-		result => {
+		(result : Triple[]) => {
 		    this.includeTriples(result);
 		}
 	    );
@@ -182,7 +134,7 @@ export class GraphService {
 
 	// FIXME: Can be wrapped in transform?
 	this.definitions.labelQuery(id).subscribe(
-	    lbl => {
+	    (lbl : string) => {
 		if (lbl)
 		    n.label = lbl;
 		else
@@ -201,7 +153,7 @@ export class GraphService {
 	link.to = to.value();
 
 	this.definitions.labelQuery(rel).subscribe(
-	    lbl => {
+	    (lbl : string) => {
 		if (lbl)
 		    link.label = lbl;
 		else

@@ -14,6 +14,7 @@ import { DefinitionsService } from '../../query/definitions.service';
 import { CommandService, Command } from '../../command.service';
 
 interface Dataset {
+    dataset : Uri;
     title : string;
     description : string;
     author : string;
@@ -52,9 +53,11 @@ export class DatasetsComponent implements OnInit {
     runQuery() {
 
 	this.definitions.datasetsQuery().pipe(
+	    map((x : any) => x.data),
 	    map((res : Row[]) : Dataset[] => res.map(
 		(row : any) : Dataset => {
 		    return {
+			dataset: row["dataset"],
 			title: row["title"].value(),
 			description: row["description"].value(),
 			author: row["author"].value(),
@@ -72,7 +75,7 @@ export class DatasetsComponent implements OnInit {
 
     }
 
-    select(id : Value) {
+    select(id : Uri) {
 	this.graph.includeNode(id as Uri);
     }
 
@@ -80,7 +83,7 @@ export class DatasetsComponent implements OnInit {
 
     handleKeyword(tag : string) {
 
-	this.definitions.tagQuery(tag).subscribe(
+	this.definitions.tagQuery(new Literal(tag)).subscribe(
 	    (result : any) => {
 		this.graph.includeTriples(result);
 	    }

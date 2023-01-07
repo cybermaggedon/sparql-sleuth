@@ -7,14 +7,14 @@ import { Triple, Uri, Value } from '../rdf/triple';
 export class LabelQuery implements Query {
     constructor(
 	desc : string,
-	id : Uri,
+	id : Value,
 	limit : number = 100
     ) {
 	this.id = id;
 	this.desc = desc;
 	this.limit = limit;
     }
-    id : Uri;
+    id : Value;
     desc : string;
     limit : number = 1;
     description() { return this.desc; }
@@ -41,21 +41,23 @@ export class LabelQuery implements Query {
 
     }
 
-    run(q : QueryEngine) : Observable<string | null> {
+    run(q : QueryEngine) : Observable<QueryResult> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);
     }
 
-    decode(res : QueryResult) : string | null {
+    decode(res : QueryResult) : QueryResult {
 
+    	return res;
+	/*
 	if (res.data.length > 0) {
 	    let key = res.vars[0];
 	    return res.data[0][key].value();
 	}
 
 	return null;
-
+*/
     }
 
 }

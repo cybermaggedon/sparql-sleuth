@@ -34,8 +34,8 @@ export class RelationshipService {
 	return false;
     }
 
-    getRelationshipsIn(node : Node) : Observable<Value[]> {
-	return this.definitions.relationshipKindsIn(node.id).pipe(
+    getRelationshipsIn(id : Uri) : Observable<Value[]> {
+	return this.definitions.relationshipKindsIn(id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)
@@ -45,9 +45,9 @@ export class RelationshipService {
 
     }
 
-    getRelationshipsOut(node : Node) : Observable<Value[]> {
+    getRelationshipsOut(id : Uri) : Observable<Value[]> {
 
-	return this.definitions.relationshipKindsOut(node.id).pipe(
+	return this.definitions.relationshipKindsOut(id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)
@@ -57,15 +57,15 @@ export class RelationshipService {
 
     }
 
-    getRelationshipPreds(node : Node) : Observable<Relationship[]>{
+    getRelationshipPreds(id : Uri) : Observable<Relationship[]>{
 
 	return new Observable<any>(
 
 	    sub => {
 
-		let inw = this.getRelationshipsIn(node);
+		let inw = this.getRelationshipsIn(id);
 
-		let outw = this.getRelationshipsOut(node);
+		let outw = this.getRelationshipsOut(id);
 	    
 		// combineLatest maybe?
 
@@ -109,12 +109,12 @@ export class RelationshipService {
 
     }
 
-    getRelationships(node : Node) {
+    getRelationships(id : Uri) {
 
 	return new Observable<Relationship[]>(
 	    sub => {
 
-		this.getRelationshipPreds(node).subscribe(
+		this.getRelationshipPreds(id).subscribe(
 		    exps => {
 			    
 			let todo : any[] = [];

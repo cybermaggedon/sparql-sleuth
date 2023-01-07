@@ -53,14 +53,15 @@ export class RelationshipQuery implements Query {
 
     }
 
-    run(q : QueryEngine) : Observable<Value[]> {
+    run(q : QueryEngine) : Observable<QueryResult> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);
     }
 
-    decode(res : QueryResult) : any {
-
+    decode(res : QueryResult) : QueryResult {
+        return res;
+/*
 	let values : Value[] = [];
 
 	for (let row of res.data) {
@@ -69,6 +70,7 @@ export class RelationshipQuery implements Query {
 	}
 
 	return values;
+	*/
     }
 	
 }

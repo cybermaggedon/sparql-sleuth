@@ -18,3 +18,4 @@ export class Relationship {
     id : Uri = new Uri("");
     inward : boolean = false;
 };
+

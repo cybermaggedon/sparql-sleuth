@@ -45,11 +45,11 @@ export class PropertiesService {
     propertiesEvents() { return this.propertiesSubject; }
 
     getProperties(node : Node) {
-	return this.definitions.propertyQuery(node.id).pipe(
+	return this.definitions.propertyQuery(new Uri(node.id)).pipe(
 	    this.transform.filterRelationships(),
 	    this.mapToProperties(),
 	).subscribe(
-	    res => {
+	    (res : Row[]) => {
 		let prop = new Properties();
 		for (let row of res) {
 		    prop.properties[row["p"].value()] = row["o"];
@@ -110,8 +110,9 @@ export class PropertiesService {
 	);
     }
 
-    mapToProperties() {
-	return mergeMap((qr : QueryResult) => {
+    // FIXME: any
+    mapToProperties() : (a : any) => Observable<any> {
+	return mergeMap((qr : any) => {
 
 	    if (qr.data.length == 0) {
 	        return of([]);
@@ -131,7 +132,7 @@ export class PropertiesService {
     mapToLiteral(p : Uri, o : Value, sub : Subscriber<Row>) {
 
 	this.definitions.labelQuery(p).subscribe(
-	    lbl => {
+	    (lbl : string) : void => {
 		if (lbl) {
 		    sub.next({p: new Literal(lbl), o: o});
 		    sub.complete();
@@ -151,7 +152,7 @@ export class PropertiesService {
 	// IS_A relationship, work out the class name
 
 	this.definitions.labelQuery(id).subscribe(
-	    lbl => {
+	    (lbl : any) => {
 		if (lbl) {
 		    sub.next({
 			p: new Literal("class"), o: new Literal(lbl)
@@ -176,11 +177,11 @@ export class PropertiesService {
     }
 
     getProps(node : Node) : Observable<any> {
-	return this.definitions.propertyQuery(node.id).pipe(
+	return this.definitions.propertyQuery(new Uri(node.id)).pipe(
 	    this.transform.addConstantColumn("s", new Uri(node.id)),
 	    this.definitions.joinLabel("s", "slabel"),
 	    this.definitions.joinLabel("p", "plabel"),
-	    map(qr => {
+	    map((qr : QueryResult) : { key : string, value : string }[] => {
 		let res : { key : string, value : string }[] = [];
 
 		for (let row of qr.data) {
