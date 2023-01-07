@@ -28,9 +28,10 @@ type PipeDef = any;
 type InnerQueryDef = any;
 
 //type QueryBuilder = (d : QueryDef, p : Params) => Query;
-type QueryBuilder = any;
-type PipeBuilder = any;
-type InnerQueryBuilder = any;
+type QueryBuilder = (d : QueryDef, p : Params) => any;
+type PipeBuilder = (d : PipeDef) => any;
+type InnerQueryBuilder = (d : InnerQueryDef) => any;
+
 type Definition = any;
 
 @Injectable({
@@ -446,12 +447,16 @@ export class DefinitionsService {
     }
 
 
-    relationshipKindsIn(id : Uri) {
-	return this.fromDef("relationship-kinds-in", { id: id });
+    relationshipKindsIn(id : Uri) : Observable<Value[]> {
+	return this.fromDef("relationship-kinds-in", { id: id }).pipe(
+	    map((res : QueryResult) => res.data.map(row => row["pred"]))
+	);
     }
 
-    relationshipKindsOut(id : Uri) {
-	return this.fromDef("relationship-kinds-out", { id: id });
+    relationshipKindsOut(id : Uri) : Observable<Value[]> {
+	return this.fromDef("relationship-kinds-out", { id: id }).pipe(
+	    map((res : QueryResult) => res.data.map(row => row["pred"]))
+	);
     }
 
     joinLabel(id : string, dest : string) {
