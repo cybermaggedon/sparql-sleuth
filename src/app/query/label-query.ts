@@ -41,21 +41,23 @@ export class LabelQuery implements Query {
 
     }
 
-    run(q : QueryEngine) : Observable<string | null> {
+    run(q : QueryEngine) : Observable<QueryResult> {
 	return q.query(this).pipe(
 	    map(x => this.decode(x))
 	);
     }
 
-    decode(res : QueryResult) : string | null {
+    decode(res : QueryResult) : QueryResult {
 
+    	return res;
+	/*
 	if (res.data.length > 0) {
 	    let key = res.vars[0];
 	    return res.data[0][key].value();
 	}
 
 	return null;
-
+*/
     }
 
 }

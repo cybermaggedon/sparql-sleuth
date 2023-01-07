@@ -47,74 +47,74 @@ export class DefinitionsService {
     private queries : { [key : string] : QueryBuilder } = {
 	"po-from-defs": (d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 
 	    return new POQuery(
-		d["label"], d["pred"], d["id"], d["limit"]
+		description, d["pred"], d["id"], d["limit"]
 	    );
 	},
 	po: (d : QueryDef, params : Params) : Query => {
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 	    return new POQuery(
-		d["label"], params["pred"], params["id"], d["limit"]
+		description, params["pred"], params["id"], d["limit"]
 	    );
 	},
 	raw: (d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
+	    let description = d["description"];
 	    let query = d["query"];
 
-	    label = this.replaceParams(label, params);
+	    description = this.replaceParams(description, params);
 	    query = this.replaceParams(query, params);
 			  
-	    return new RawQuery(label, query);
+	    return new RawQuery(description, query);
 	},
 	"text-search": 	(d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 
 	    return new TextSearchQuery(
-		label, params["text"], this.textSearchResults,
+		description, params["text"], this.textSearchResults,
 	    );
 	},
-	"sp": (d : QueryDef, params : Params) : Query => {
+	sp: (d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 
 	    return new SPQuery(
-		label, params["id"], params["pred"],
+		description, params["id"], params["pred"],
 		this.singlePropertyResults,
 	    );
 	},
-	"s": (d : QueryDef, params : Params) : Query => {
+	s: (d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 
 	    return new SQuery(
-		label, params["id"],
+		description, params["id"],
 		this.propertyEdges,
 	    );
 	    
 	},
-	"label": (d : QueryDef, params : Params) : Query => {
+	label: (d : QueryDef, params : Params) : Query => {
 
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 
 	    return new LabelQuery(
-		label, params["id"]
+		description, params["id"]
 	    );
 	},
-	"relationship": (d : QueryDef, params : Params) : Query => {
-	    let label = d["label"];
-	    label = this.replaceParams(label, params);
+	relationship: (d : QueryDef, params : Params) : Query => {
+	    let description = d["description"];
+	    description = this.replaceParams(description, params);
 	    return new RelationshipQuery(
-		label, params["id"], d["inward"], d["limit"]
+		description, params["id"], d["inward"], d["limit"]
 	    );
 	},
     };
@@ -143,13 +143,6 @@ export class DefinitionsService {
 	"to-triples": (d : PipeDef) => {
 	    return this.transform.queryResultToTriples();
 	},
-	"to-o-values": (d : PipeDef) => {
-	    return map(
-		(qr : QueryResult) => qr.data.map(
-		    (row : Row) => row["o"]
-		)
-	    );
-	},
 	"null-to-zero": (d : PipeDef) => {
 	    return map(
 		(res : QueryResult) => {
@@ -175,7 +168,7 @@ export class DefinitionsService {
 
     defs : { [key : string] : Definition } = {
 	schema: {
-	    label: "Acquire schema", kind: "po-from-defs",
+	    description: "Acquire schema", kind: "po-from-defs",
 	    pred: IS_A, id: CLASS, limit: 50,
 	    pipe: [
 		{
@@ -197,7 +190,7 @@ export class DefinitionsService {
 	    ]
 	},
 	datasets: {
-	    label: "Acquire datasets", kind: "raw",
+	    description: "Acquire datasets", kind: "raw",
 	    query: "PREFIX schema: <https://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?dataset WHERE { ?dataset a schema:Dataset . } GROUP BY ?dataset LIMIT 40",
 	    pipe: [
 		{
@@ -245,7 +238,7 @@ export class DefinitionsService {
 	    ]
 	},
 	tag: {
-	    label: "Keyword search %%tag%%", kind: "raw",
+	    description: "Keyword search %%tag%%", kind: "raw",
 	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "%%tag%%" . } LIMIT 40',
 	    pipe: [
 		{
@@ -260,7 +253,7 @@ export class DefinitionsService {
 	    ]
 	},
 	"text-search": {
-	    label: "Search %%text%%", kind: "text-search",
+	    description: "Search %%text%%", kind: "text-search",
 	    limit: this.textSearchResults,
 	    pipe: [
 		{
@@ -272,51 +265,48 @@ export class DefinitionsService {
 	    ]
 	},
 	"single-property": {
-	    label: "Property %%id%% %%pred%%", kind: "sp",
+	    description: "Property %%id%% %%pred%%", kind: "sp",
 	    pipe: [
-		{
-		    kind: "to-o-values",
-		}
 	    ]
 	},
 	"property": {
-	    label: "Properties %%id%%", kind: "s",
+	    description: "Properties %%id%%", kind: "s",
 	    pipe: [
 	    ]
 	},
 	"relationships-in": {
-	    label: "Properties %%pred%% %%id%%", kind: "po",
+	    description: "Properties %%pred%% %%id%%", kind: "po",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	"relationships-out": {
-	    label: "Properties %%id%% %%pred%%", kind: "sp",
+	    description: "Properties %%id%% %%pred%%", kind: "sp",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	"relationship-kinds-in": {
-	    label: "Relationships to %%id%%", inward: true,
+	    description: "Relationships to %%id%%", inward: true,
 	    kind: "relationship",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	"relationship-kinds-out": {
-	    label: "Relationships from %%id%%", inward: false,
+	    description: "Relationships from %%id%%", inward: false,
 	    kind: "relationship",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	label: {
-	    label: "Label %%id%%", kind: "label",
+	    description: "Label %%id%%", kind: "label",
 	    pipe: [
 	    ]
 	},
 	count: {
-	    label: "Count %%id%%", kind: "raw", 
+	    description: "Count %%id%%", kind: "raw", 
 	    query: 'SELECT (COUNT(*) AS ?count) WHERE {  ?s a <%%id%%> . }',
 	    pipe: [
 		{
@@ -408,43 +398,50 @@ export class DefinitionsService {
 
     // Entrypoints go here?
     
-    schemaQuery() {
+    schemaQuery() : Observable<QueryResult> {
 	return this.fromDef("schema", {});
 
     }
 
-    datasetsQuery() : Observable<Row[]> {
+    datasetsQuery() : Observable<QueryResult> {
 	return this.fromDef("datasets", {});
     }
 
-    tagQuery(tag : Value) {
+    tagQuery(tag : Value) : Observable<QueryResult> {
 	return this.fromDef("tag", {tag: tag});
     }
 
-    textSearch(text : Value) {
+    textSearch(text : Value) : Observable<QueryResult> {
 	return this.fromDef("text-search", {text: text});
     }
 
-    singlePropertyQuery(id : Uri, pred : Uri) {
-	return this.fromDef(
-	    "single-property",
-	    { id: id, pred: pred }
-	);
+    singlePropertyQuery(id : Uri, pred : Uri) : Observable<QueryResult> {
+	return this.fromDef("single-property", { id: id, pred: pred });
     }
 
-    propertyQuery(id : Uri) {
+    propertyQuery(id : Uri) : Observable<QueryResult> {
 	return this.fromDef("property", { id: id });
     }
 
-    labelQuery(id : Uri) {
-	return this.fromDef("label", { id: id });
+    labelQuery(id : Uri) : Observable<string> {
+	return this.fromDef("label", { id: id }).pipe(
+	    map(
+		res => {
+		    if (res.data.length > 0) {
+			let key = res.vars[0];
+			return res.data[0][key].value();
+		    } else
+			return this.transform.makeLabel(id);
+		}
+	    )
+	);	    
     }
 
-    relationshipsInward(id : Uri, rel : Uri) {
+    relationshipsInward(id : Uri, rel : Uri) : Observable<QueryResult> {
 	return this.fromDef("relationships-in", { id: id, pred: rel });
     }
 
-    relationshipsOutwards(id : Uri, rel : Uri) {
+    relationshipsOutwards(id : Uri, rel : Uri) : Observable<QueryResult> {
 	return this.fromDef("relationships-out", { id: id, pred: rel });
     }
 
@@ -478,7 +475,13 @@ export class DefinitionsService {
     // ----------------------------------------------------------------------
 
     private toProperty(id : Uri, pred : Uri) : Observable<Value[]> {
-	return this.singlePropertyQuery(id, pred);
+	return this.singlePropertyQuery(id, pred).pipe(
+	     map(
+		(qr : QueryResult) => qr.data.map(
+		    (row : Row) => row["o"]
+		)
+	     )
+	);
     }
     
     private toCount(id : Uri) : Observable<Value[]> {
