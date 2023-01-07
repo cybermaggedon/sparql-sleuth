@@ -36,7 +36,7 @@ export class TextSearchQuery implements Query {
 
 	query += "  FILTER (";
 	query += "    !isIRI(?o) &&";
-	query += "    CONTAINS(?o, \"" + this.text + "\")";
+	query += "    CONTAINS(?o, " + this.text.term() + ")";
 	query += "  ) 	";
 
 	query += "}\n";
