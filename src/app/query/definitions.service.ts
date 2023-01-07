@@ -228,7 +228,7 @@ export class DefinitionsService {
 	},
 	tag: {
 	    description: "Keyword search %%tag%%", kind: "raw",
-	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords "%%tag%%" . } LIMIT 40',
+	    query: 'PREFIX schema: <https://schema.org/> SELECT DISTINCT ?s WHERE { ?s a schema:Dataset . ?s schema:keywords %%tag%% . } LIMIT 40',
 	    pipe: [
 		{
 		    kind: "add-constant-column", column: "p", value: IS_A
@@ -293,7 +293,7 @@ export class DefinitionsService {
 	},
 	count: {
 	    description: "Count %%id%%", kind: "raw", 
-	    query: 'SELECT (COUNT(*) AS ?count) WHERE {  ?s a <%%id%%> . }',
+	    query: 'SELECT (COUNT(*) AS ?count) WHERE {  ?s a %%id%% . }',
 	    pipe: [
 	    ]
 	},
@@ -305,17 +305,9 @@ export class DefinitionsService {
     ) {
     }
 
-    private replaceParam(input : string, key : string, value : any) : string {
+    private replaceParam(input : string, key : string, value : Value) : string {
 	let re = new RegExp("%%" + key + "%%", "g");
-
-	if (value instanceof Uri || value instanceof Literal) {
-	    return input.replace(re, value.value());
-	} else if (typeof value === "string") {
-	    return input.replace(re, value);
-	} else {
-	    console.log("ERROR", value);
-	    throw Error("replaceParam can't handle value");
-	}
+	return input.replace(re, value.term());
     }
 
     private replaceParams(input : string, params : Params) : string {
