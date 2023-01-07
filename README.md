@@ -1,5 +1,5 @@
 
-# SparqlExplorer
+# SPARQL Sleuth
 
 This is a client-side web application which allows the user to discover
 information from a SPARQL endpoint by interacting with a representation
@@ -40,7 +40,7 @@ datasets or scalable services beyond 1 billion edges.
 ### Container
 
 Easiest way to deploy is to use the containers I have
-built: docker.io/cybermaggedon/sparql-explorer which bundles both the
+built: docker.io/cybermaggedon/sparql-sleuth which bundles both the
 built Angular application plus the web proxy.  The only thing you
 need to do is tell the application where the SPARQL endpoint is, and you do
 this by setting the container command line.  It should take the form:
@@ -61,7 +61,7 @@ small RDF datasets which are built into a `sqlite` database.
 
 You need to:
 - Build the Angular application with `ng build -c production`
-- The resultant web application is built to `dist/sparql-explorer`, and
+- The resultant web application is built to `dist/sparql-sleuth`, and
   you need to put that on your web server.
 - Redirect /sparql on your web server to the SPARQL endpoint.
 
