@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable, of, OperatorFunction } from 'rxjs';
 
 import { TransformService } from '../transform/transform.service';
 import { QueryService } from './query.service';
@@ -16,7 +16,7 @@ import { RelationshipQuery } from './relationship-query';
 import { Query } from './query';
 
 import { IS_A, CLASS, LABEL } from '../rdf/defs';
-import { Value, Uri, Literal } from '../rdf/triple';
+import { Value, Uri, Literal, Triple } from '../rdf/triple';
 import { QueryResult, Row } from './query';
 
 const DATASET = new Uri("https://schema.org/Dataset");
@@ -31,6 +31,9 @@ type InnerQueryDef = any;
 type QueryBuilder = (d : QueryDef, p : Params) => any;
 type PipeBuilder = (d : PipeDef) => any;
 type InnerQueryBuilder = (d : InnerQueryDef) => any;
+
+//type Pipe = (qr : QueryResult) => QueryResult;
+type Pipe = OperatorFunction<QueryResult, QueryResult>;
 
 type Definition = any;
 
@@ -121,10 +124,10 @@ export class DefinitionsService {
     };
 
     private pipes : { [key : string] : PipeBuilder } = {
-	"join-label": (d : PipeDef) => {
+	"join-label": (d : PipeDef) : Pipe  => {
 	    return this.joinLabel(d["input"], d["output"]);
 	},
-	"add-constant-column": (d : PipeDef) => {
+	"add-constant-column": (d : PipeDef) : Pipe => {
 	    return this.transform.addConstantColumn(d["column"], d["value"]);
 	},
 	"join-property": (d : PipeDef) => {
@@ -134,26 +137,11 @@ export class DefinitionsService {
 
 	    );
 	},
-	"join-property-array": (d : PipeDef) => {
+	"join-property-array": (d : PipeDef) : Pipe => {
 	    return this.transform.joinPropertyArray(
 		d["input"], d["output"],
 		this.fromInnerQuery(d["query"])
 
-	    );
-	},
-	"to-triples": (d : PipeDef) => {
-	    return this.transform.queryResultToTriples();
-	},
-	"null-to-zero": (d : PipeDef) => {
-	    return map(
-		(res : QueryResult) => {
-		    if (res.data.length > 0) {
-			let key = res.vars[0];
-			return [res.data[0][key]];
-		    } else {
-			return [new Literal("0")];
-		    }
-		}
 	    );
 	},
     };
@@ -247,9 +235,6 @@ export class DefinitionsService {
 		},
 		{
 		    kind: "add-constant-column", column: "o", value: DATASET
-		},
-		{
-		    kind: "to-triples"
 		}
 	    ]
 	},
@@ -310,9 +295,6 @@ export class DefinitionsService {
 	    description: "Count %%id%%", kind: "raw", 
 	    query: 'SELECT (COUNT(*) AS ?count) WHERE {  ?s a <%%id%%> . }',
 	    pipe: [
-		{
-		    kind: "null-to-zero"
-		},
 	    ]
 	},
     };
@@ -408,8 +390,10 @@ export class DefinitionsService {
 	return this.fromDef("datasets", {});
     }
 
-    tagQuery(tag : Value) : Observable<QueryResult> {
-	return this.fromDef("tag", {tag: tag});
+    tagQuery(tag : Value) : Observable<Triple[]> {
+	return this.fromDef("tag", {tag: tag}).pipe(
+	    this.transform.queryResultToTriples()
+	);
     }
 
     textSearch(text : Value) : Observable<QueryResult> {
@@ -490,7 +474,18 @@ export class DefinitionsService {
     }
     
     private toCount(id : Uri) : Observable<Value[]> {
-	return this.fromDef("count", { id: id });
+	return this.fromDef("count", { id: id }).pipe(
+	    map(
+		(res : QueryResult) => {
+		    if (res.data.length > 0) {
+			let key = res.vars[0];
+			return [res.data[0][key]];
+		    } else {
+			return [new Literal("0")];
+		    }
+		}
+	    )
+	);
     }
 
 }
