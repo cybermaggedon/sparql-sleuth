@@ -27,13 +27,13 @@ type QueryDef = any;
 type PipeDef = any;
 type InnerQueryDef = any;
 
-//type QueryBuilder = (d : QueryDef, p : Params) => Query;
-type QueryBuilder = (d : QueryDef, p : Params) => any;
-type PipeBuilder = (d : PipeDef) => any;
-type InnerQueryBuilder = (d : InnerQueryDef) => any;
+type QueryBuilder = (d : QueryDef, p : Params) => Query;
+type PipeBuilder = (d : PipeDef) => Pipe;
+type InnerQueryBuilder = (d : InnerQueryDef) => InnerQuery;
 
 //type Pipe = (qr : QueryResult) => QueryResult;
 type Pipe = OperatorFunction<QueryResult, QueryResult>;
+type InnerQuery = (id : string) => Observable<Value[]>;
 
 type Definition = any;
 
@@ -130,7 +130,7 @@ export class DefinitionsService {
 	"add-constant-column": (d : PipeDef) : Pipe => {
 	    return this.transform.addConstantColumn(d["column"], d["value"]);
 	},
-	"join-property": (d : PipeDef) => {
+	"join-property": (d : PipeDef) : Pipe => {
 	    return this.transform.joinProperty(
 		d["input"], d["output"],
 		this.fromInnerQuery(d["query"])
@@ -147,10 +147,10 @@ export class DefinitionsService {
     };
 
     innerQueries : { [key : string] : InnerQueryBuilder } = {
-	"to-count": (d : InnerQueryDef) => {
+	"to-count": (d : InnerQueryDef) : InnerQuery => {
 	    return (id : any) => this.toCount(id);
 	},
-	"to-property": (d : InnerQueryDef) => {
+	"to-property": (d : InnerQueryDef) : InnerQuery => {
 	    return (id : any) => this.toProperty(id, d["p"]);
 	}
     };
@@ -332,6 +332,8 @@ export class DefinitionsService {
 
 	let innerQuery = mapFactory(d);
 
+	/*
+	  // Not using pipes for inner queries
 	if ("pipe" in d) {
 	    let pipes = d["pipe"].map(
 		(d : any) => {
@@ -342,9 +344,10 @@ export class DefinitionsService {
 
 	    return innerQuery.pipe(...pipes);
 
-	} else {
-	    return innerQuery;
-	}
+	    } */
+
+	return innerQuery;
+
     }
 
     // FIXME: Return type
@@ -360,14 +363,22 @@ export class DefinitionsService {
 
 	let qry = qryFactory(d, params);
 
-	let pipes = d["pipe"].map(
+	let pipes : Pipe[] = d["pipe"].map(
 	    (d : any) => {
 		let pipeFactory = this.pipes[d["kind"]];
 		return pipeFactory(d);
 	    }
 	);
 
-	return qry.run(this.query).pipe(...pipes);
+	// Doesn't compile???
+//	return qrs.run(this.query).pipe(...pipes);
+
+	let qrs : Observable<QueryResult> = qry.run(this.query);
+
+	for(let pipe of pipes)
+	    qrs = qrs.pipe(pipe);
+
+	return qrs;
 
     }
 

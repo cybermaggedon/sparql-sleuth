@@ -34,8 +34,8 @@ export class RelationshipService {
 	return false;
     }
 
-    getRelationshipsIn(id : string) : Observable<Value[]> {
-	return this.definitions.relationshipKindsIn(new Uri(id)).pipe(
+    getRelationshipsIn(id : Uri) : Observable<Value[]> {
+	return this.definitions.relationshipKindsIn(id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)
@@ -45,9 +45,9 @@ export class RelationshipService {
 
     }
 
-    getRelationshipsOut(id : string) : Observable<Value[]> {
+    getRelationshipsOut(id : Uri) : Observable<Value[]> {
 
-	return this.definitions.relationshipKindsOut(new Uri(id)).pipe(
+	return this.definitions.relationshipKindsOut(id).pipe(
 	    map(
 		(v : Value[]) => v.filter(
 		    v => !this.ignoreRelationship(v)
@@ -57,7 +57,7 @@ export class RelationshipService {
 
     }
 
-    getRelationshipPreds(id : string) : Observable<Relationship[]>{
+    getRelationshipPreds(id : Uri) : Observable<Relationship[]>{
 
 	return new Observable<any>(
 
@@ -109,7 +109,7 @@ export class RelationshipService {
 
     }
 
-    getRelationships(id : string) {
+    getRelationships(id : Uri) {
 
 	return new Observable<Relationship[]>(
 	    sub => {

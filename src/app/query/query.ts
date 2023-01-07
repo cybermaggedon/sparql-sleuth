@@ -20,7 +20,7 @@ export interface Query {
 
     // Return type is variable.
     // FIXME: Standardise on QueryResult? Vary in transforms?
-    run(qe : QueryEngine): Observable<any>;
+    run(qe : QueryEngine): Observable<QueryResult>;
 };
 
 export interface QueryEngine {

@@ -82,7 +82,9 @@ export class GraphViewerComponent implements OnInit {
 
 		this.relationships = [];
 
-		this.relationship.getRelationships(ev.node.id).subscribe(
+		this.relationship.getRelationships(
+		    new Uri(ev.node.id)
+		).subscribe(
 		    ev => { this.relationships = ev; }
 		);
 
@@ -228,12 +230,12 @@ export class GraphViewerComponent implements OnInit {
 		timer(1).subscribe(
 		    () => {
 
-			this.events.recentre(
-			    new Uri(id)
-			);
+			let i = new Uri(id);
+
+			this.events.recentre(i);
 
 			if (relationships != "no")
-			    this.relationship.getRelationshipPreds(id).
+			    this.relationship.getRelationshipPreds(i).
 			    subscribe(
 				rels => {
 				    for (let rel of rels) {
