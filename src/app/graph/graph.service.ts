@@ -51,14 +51,6 @@ export class GraphService {
 	    }
 	);
 
-	// If there's a schema event, reset the graph and drop the schema in
-	// place.
-	this.events.schemaEvents().subscribe(
-	    ev => {
-	    // This is a legacy event
-	    }
-	);
-
 	this.command.command(Command.RELATIONSHIP).subscribe(
 	    ev => {
 		this.relationship(

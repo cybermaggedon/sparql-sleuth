@@ -56,7 +56,6 @@ export class EventService {
     private nodeUnselectSubject = new Subject<null>;
     private resetSubject = new Subject<null>;
     private recentreSubject = new Subject<RecentreEvent>;
-    private schemaSubject = new Subject<null>;
 
     addNodeEvents() { return this.addNodeSubject; }
     removeNodeEvents() { return this.removeNodeSubject; }
@@ -67,7 +66,6 @@ export class EventService {
     nodeUnselectEvents() { return this.nodeUnselectSubject; }
     resetEvents() { return this.resetSubject; }
     recentreEvents() { return this.recentreSubject; }
-    schemaEvents() { return this.schemaSubject; }
 
     addNode(node : Node) {
 	let ev = new AddNodeEvent();
@@ -115,10 +113,6 @@ export class EventService {
 	let ev = new RecentreEvent();
 	ev.id = id;
 	this.recentreSubject.next(ev);
-    }
-
-    schema() {
-	this.schemaSubject.next(null);
     }
 
 }
