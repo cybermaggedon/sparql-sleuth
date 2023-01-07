@@ -7,7 +7,7 @@ import { Value, Uri, Literal, Triple } from '../rdf/triple';
 export class TextSearchQuery implements Query {
     constructor(
 	desc : string,
-	text : string,
+	text : Value,
 	limit : number = 100
     ) {
 	this.desc = desc;
@@ -15,7 +15,7 @@ export class TextSearchQuery implements Query {
 	this.limit = limit;
     }
     desc : string;
-    text : string;
+    text : Value;
     limit : number = 100;
     description() { return this.desc; }
 

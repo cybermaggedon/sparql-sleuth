@@ -16,7 +16,11 @@ export interface Query {
     description() : string;
     getQueryString() : string;
     hash() : string;
-    decode(res : any) : any 
+    decode(res : any) : any;
+
+    // Return type is variable.
+    // FIXME: Standardise on QueryResult? Vary in transforms?
+    run(qe : QueryEngine): Observable<any>;
 };
 
 export interface QueryEngine {

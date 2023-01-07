@@ -7,7 +7,7 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Value } from '../rdf/triple';
+import { Literal, Value } from '../rdf/triple';
 import { QueryService } from '../query/query.service';
 import { GraphService } from './graph.service';
 import { TextSearchQuery } from '../query/text-search-query';
@@ -39,7 +39,7 @@ export class SearchService {
 
     search(text : string) : Observable<SearchResult[]> {
 
-	return this.definitions.textSearch(text).pipe(
+	return this.definitions.textSearch(new Literal(text)).pipe(
 	    map((x : QueryResult) => {
 		if ("data" in x)
 		    return x.data.map(

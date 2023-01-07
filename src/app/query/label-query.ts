@@ -7,14 +7,14 @@ import { Triple, Uri, Value } from '../rdf/triple';
 export class LabelQuery implements Query {
     constructor(
 	desc : string,
-	id : Uri,
+	id : Value,
 	limit : number = 100
     ) {
 	this.id = id;
 	this.desc = desc;
 	this.limit = limit;
     }
-    id : Uri;
+    id : Value;
     desc : string;
     limit : number = 1;
     description() { return this.desc; }

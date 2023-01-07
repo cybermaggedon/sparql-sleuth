@@ -13,6 +13,7 @@ import { OQuery } from './o-query';
 import { SQuery } from './s-query';
 import { LabelQuery } from './label-query';
 import { RelationshipQuery } from './relationship-query';
+import { Query } from './query';
 
 import { IS_A, CLASS, LABEL } from '../rdf/defs';
 import { Value, Uri, Literal } from '../rdf/triple';
@@ -20,21 +21,31 @@ import { QueryResult, Row } from './query';
 
 const DATASET = new Uri("https://schema.org/Dataset");
 
-type Params = { [key : string] : any };
+type Params = { [key : string] : Value };
+
+type QueryDef = any;
+type PipeDef = any;
+type InnerQueryDef = any;
+
+//type QueryBuilder = (d : QueryDef, p : Params) => Query;
+type QueryBuilder = any;
+type PipeBuilder = any;
+type InnerQueryBuilder = any;
+type Definition = any;
 
 @Injectable({
     providedIn: 'root'
 })
 export class DefinitionsService {
 
-    textSearchResults = 100;
-    singlePropertyResults = 100;
-    relationshipEdges = 25;
-    propertyEdges = 25;
-    fetchEdges = "FIXME?";
+    private textSearchResults = 100;
+    private singlePropertyResults = 100;
+    private relationshipEdges = 25;
+    private propertyEdges = 25;
+    private fetchEdges = "FIXME?";
 
-    queries : { [key : string] : any } = {
-	"po-from-defs": (d : any, params : Params) => {
+    private queries : { [key : string] : QueryBuilder } = {
+	"po-from-defs": (d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -43,14 +54,14 @@ export class DefinitionsService {
 		d["label"], d["pred"], d["id"], d["limit"]
 	    );
 	},
-	po: (d : any, params : Params) => {
+	po: (d : QueryDef, params : Params) : Query => {
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
 	    return new POQuery(
 		d["label"], params["pred"], params["id"], d["limit"]
 	    );
 	},
-	raw: (d : any, params : Params) => {
+	raw: (d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    let query = d["query"];
@@ -60,7 +71,7 @@ export class DefinitionsService {
 			  
 	    return new RawQuery(label, query);
 	},
-	"text-search": 	(d : any, params : Params) => {
+	"text-search": 	(d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -69,7 +80,7 @@ export class DefinitionsService {
 		label, params["text"], this.textSearchResults,
 	    );
 	},
-	"sp": (d : any, params : Params) => {
+	"sp": (d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -79,7 +90,7 @@ export class DefinitionsService {
 		this.singlePropertyResults,
 	    );
 	},
-	"s": (d : any, params : Params) => {
+	"s": (d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -90,7 +101,7 @@ export class DefinitionsService {
 	    );
 	    
 	},
-	"label": (d : any, params : Params) => {
+	"label": (d : QueryDef, params : Params) : Query => {
 
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
@@ -99,7 +110,7 @@ export class DefinitionsService {
 		label, params["id"]
 	    );
 	},
-	"relationship": (d : any, params : Params) => {
+	"relationship": (d : QueryDef, params : Params) : Query => {
 	    let label = d["label"];
 	    label = this.replaceParams(label, params);
 	    return new RelationshipQuery(
@@ -108,43 +119,38 @@ export class DefinitionsService {
 	},
     };
 
-
-
-    pipes : { [key : string] : any } = {
-	"join-label": (d : any) => {
+    private pipes : { [key : string] : PipeBuilder } = {
+	"join-label": (d : PipeDef) => {
 	    return this.joinLabel(d["input"], d["output"]);
 	},
-	"add-constant-column": (d : any) => {
+	"add-constant-column": (d : PipeDef) => {
 	    return this.transform.addConstantColumn(d["column"], d["value"]);
 	},
-	"join-property": (d : any) => {
+	"join-property": (d : PipeDef) => {
 	    return this.transform.joinProperty(
 		d["input"], d["output"],
 		this.fromInnerQuery(d["query"])
 
 	    );
 	},
-	"join-property-array": (d : any) => {
+	"join-property-array": (d : PipeDef) => {
 	    return this.transform.joinPropertyArray(
 		d["input"], d["output"],
 		this.fromInnerQuery(d["query"])
 
 	    );
 	},
-	"to-data": (d : any) => {
-	    return map((x : any) => x.data)
-	},
-	"to-triples": (d : any) => {
+	"to-triples": (d : PipeDef) => {
 	    return this.transform.queryResultToTriples();
 	},
-	"to-o-values": (d : any) => {
+	"to-o-values": (d : PipeDef) => {
 	    return map(
 		(qr : QueryResult) => qr.data.map(
 		    (row : Row) => row["o"]
 		)
 	    );
 	},
-	"null-to-zero": (d : any) => {
+	"null-to-zero": (d : PipeDef) => {
 	    return map(
 		(res : QueryResult) => {
 		    if (res.data.length > 0) {
@@ -158,16 +164,16 @@ export class DefinitionsService {
 	},
     };
 
-    innerQueries : { [key : string] : any } = {
-	"to-count": (d : any) => {
+    innerQueries : { [key : string] : InnerQueryBuilder } = {
+	"to-count": (d : InnerQueryDef) => {
 	    return (id : any) => this.toCount(id);
 	},
-	"to-property": (d : any) => {
+	"to-property": (d : InnerQueryDef) => {
 	    return (id : any) => this.toProperty(id, d["p"]);
 	}
     };
 
-    defs : { [key : string] : any } = {
+    defs : { [key : string] : Definition } = {
 	schema: {
 	    label: "Acquire schema", kind: "po-from-defs",
 	    pred: IS_A, id: CLASS, limit: 50,
@@ -187,10 +193,7 @@ export class DefinitionsService {
 		{
 		    kind: "join-property", input: "s", output: "count",
 		    query: { kind: "to-count" }
-                },
-		{
-		    kind: "to-data"
-		}
+                }
 	    ]
 	},
 	datasets: {
@@ -238,10 +241,7 @@ export class DefinitionsService {
 			"kind": "to-property",
 			"p": new Uri("https://schema.org/keywords")
 		    }
-		},
-		{
-		    kind: "to-data"
-		}		
+		}
 	    ]
 	},
 	tag: {
@@ -332,7 +332,7 @@ export class DefinitionsService {
     ) {
     }
 
-    replaceParam(input : string, key : string, value : any) {
+    private replaceParam(input : string, key : string, value : any) : string {
 	let re = new RegExp("%%" + key + "%%", "g");
 
 	if (value instanceof Uri || value instanceof Literal) {
@@ -345,14 +345,15 @@ export class DefinitionsService {
 	}
     }
 
-    replaceParams(input : string, params : Params) {
+    private replaceParams(input : string, params : Params) : string {
 	for (let p in params) {
 	    input = this.replaceParam(input, p, params[p]);
 	}
 	return input;
     }
 
-    fromInnerQuery(d : any) {
+    // FIXME: Return type
+    private fromInnerQuery(d : any) : any {
 
 	let mapFactory = this.innerQueries[d["kind"]];
 
@@ -373,7 +374,8 @@ export class DefinitionsService {
 	}
     }
 
-    fromQuery(d : any, params : Params) {
+    // FIXME: Return type
+    private fromQuery(d : any, params : Params) : Observable<any> {
 
 	if (!d["kind"]) throw Error("Query 'kind' must be provided");
 
@@ -396,26 +398,30 @@ export class DefinitionsService {
 
     }
 
-    fromDef(id : string, params : Params) {
+    private fromDef(id : string, params : Params) {
 	let def = this.defs[id];
 	if (!def) throw Error("Definition " + id + " not defined");
 	return this.fromQuery(def, params);
     }
 
+    // ----------------------------------------------------------------------
+
+    // Entrypoints go here?
+    
     schemaQuery() {
 	return this.fromDef("schema", {});
 
     }
 
-    datasetsQuery() {
+    datasetsQuery() : Observable<Row[]> {
 	return this.fromDef("datasets", {});
     }
 
-    tagQuery(tag : string) {
+    tagQuery(tag : Value) {
 	return this.fromDef("tag", {tag: tag});
     }
 
-    textSearch(text : string) {
+    textSearch(text : Value) {
 	return this.fromDef("text-search", {text: text});
     }
 
@@ -426,12 +432,29 @@ export class DefinitionsService {
 	);
     }
 
-    toData() {
-	return map((x : any) => x.data);
+    propertyQuery(id : Uri) {
+	return this.fromDef("property", { id: id });
     }
 
-    toProperty(id : Uri, pred : Uri) : Observable<Value[]> {
-	return this.singlePropertyQuery(id, pred);
+    labelQuery(id : Uri) {
+	return this.fromDef("label", { id: id });
+    }
+
+    relationshipsInward(id : Uri, rel : Uri) {
+	return this.fromDef("relationships-in", { id: id, pred: rel });
+    }
+
+    relationshipsOutwards(id : Uri, rel : Uri) {
+	return this.fromDef("relationships-out", { id: id, pred: rel });
+    }
+
+
+    relationshipKindsIn(id : Uri) {
+	return this.fromDef("relationship-kinds-in", { id: id });
+    }
+
+    relationshipKindsOut(id : Uri) {
+	return this.fromDef("relationship-kinds-out", { id: id });
     }
 
     joinLabel(id : string, dest : string) {
@@ -452,31 +475,13 @@ export class DefinitionsService {
 	);
     }
 
-    propertyQuery(id : Uri) {
-	return this.fromDef("property", { id: id });
-    }
+    // ----------------------------------------------------------------------
 
-    labelQuery(id : Uri) {
-	return this.fromDef("label", { id: id });
+    private toProperty(id : Uri, pred : Uri) : Observable<Value[]> {
+	return this.singlePropertyQuery(id, pred);
     }
-
-    relationshipsInward(id : Uri, rel : Uri) {
-	return this.fromDef("relationships-in", { id: id, pred: rel });
-    }
-
-    relationshipsOutwards(id : Uri, rel : Uri) {
-	return this.fromDef("relationships-out", { id: id, pred: rel });
-    }
-
-    relationshipKindsIn(id : Uri) {
-	return this.fromDef("relationship-kinds-in", { id: id });
-    }
-
-    relationshipKindsOut(id : Uri) {
-	return this.fromDef("relationship-kinds-out", { id: id });
-    }
-
-    toCount(id : Uri) : Observable<Value[]> {
+    
+    private toCount(id : Uri) : Observable<Value[]> {
 	return this.fromDef("count", { id: id });
     }
 
