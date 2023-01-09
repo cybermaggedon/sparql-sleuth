@@ -1,15 +1,22 @@
 
-<div class="infobox" *ngIf="working">
-  <div *ngFor="let i of info">
-    {{i}}
+<div class="container">
+
+  <div style="position: absolute; top: 0px; left: 0px; z-index: 9999;">
+    <menu></menu>
   </div>
-</div>
 
-<div class="spinner">
-  <spinner></spinner>
-</div>
+  <div class="infobox" *ngIf="working">
+    <div *ngFor="let i of info">
+      {{i}}
+    </div>
+  </div>
 
-<router-outlet></router-outlet>
+  <div class="spinner">
+    <spinner></spinner>
+  </div>
+
+  <router-outlet></router-outlet>
+
+</div>
 
 <toast></toast>
-

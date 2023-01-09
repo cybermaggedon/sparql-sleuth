@@ -13,6 +13,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { GraphViewerModule } from './graph-viewer/graph-viewer.module';
 import { QueryEditorModule } from './query-editor/query-editor.module';
 import { TableViewerModule } from './table-viewer/table-viewer.module';
+import { AppMenuModule } from './app-menu/app-menu.module';
 
 import { MessageService } from 'primeng/api';
 
@@ -38,9 +39,10 @@ import { SpinnerComponent } from './spinner/spinner.component';
 	GraphViewerModule,
 	QueryEditorModule,
 	TableViewerModule,
+	AppMenuModule,
     ],
     providers: [
-    MessageService,
+	MessageService,
     ],
     bootstrap: [
 	AppComponent
