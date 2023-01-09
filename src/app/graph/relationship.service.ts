@@ -44,13 +44,11 @@ export class RelationshipService {
 		    this.transform.addConstantColumn(
 			"dir", new Literal("in")
 		    ),
-		    this.definitions.joinLabel("pred", "name")
 		),
 	        out: this.definitions.relationshipKindsOut(id).pipe(
 		    this.transform.addConstantColumn(
 			"dir", new Literal("out")
 		    ),
-		    this.definitions.joinLabel("pred", "name")
 		)
 	}).pipe(
 	    map(rels => {
@@ -61,8 +59,26 @@ export class RelationshipService {
 		    rel => !this.ignoreRelationship(rel["pred"])
 		)
 	    ),
+	    mergeMap(
+		res => {
+		    return forkJoin(
+			res.map(
+			    rel => this.definitions.labelQuery(
+				rel["pred"]
+			    ).pipe(
+				map(
+				    lbl => {
+					rel["name"] = new Literal(lbl);
+					return rel;
+				    }
+				)
+			    )
+			)
+		    )
+		}
+	    ),
 	    map(rels => rels.map(
-		row => {
+		(row : any) => {
 		    let rel = new Relationship();
 		    rel.id = row["pred"] as Uri;
 		    rel.name = row["name"].value();
@@ -70,7 +86,7 @@ export class RelationshipService {
 		    return rel;
 		}
 	    )),
-	);
+	)
 
     }
 
