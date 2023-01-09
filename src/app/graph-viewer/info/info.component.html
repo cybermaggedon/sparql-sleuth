@@ -1,0 +1,214 @@
+<p-accordion>
+  <p-accordionTab header="Introduction" [selected]="true">
+
+    <h2>Welcome to SPARQL Sleuth!</h2>
+
+    <p>
+      This tool is used to explores a knowledge graph dataset.  A knowledge
+      graph is stored as a set of nodes, interconnected by edges.
+      Nodes may have properties associate with them.
+      Edges represent a relationsip between nodes, and have a direction -
+      they are drawn as an array, and are labelled with an edge label.
+    </p>
+
+    <p>
+      SPARQL Sleuth is an exploration tool. The ideas is that it helps
+      you find out more information about the knowledge in the graph,
+      starting with nodes representing knowledge you know, so that you
+      can navigate to find out more about what is in the graph.
+    </p>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Getting started">
+
+    <h2>Getting started</h2>
+
+    <p>
+      When you start the application, you are faced with a blank canvas,
+      so your first task is find information you know to start navigating.
+    </p>
+
+    <p>
+      There are three things you can explore straight away:
+    </p>
+
+    <ul>
+      <li>
+	You can select <b>Search</b> from the menu, and search for
+	information based on text associated with a node.
+      </li>
+      <li>
+	You can select <b>Schema</b> and find out the names of
+	<i>class</i> objects which are stored in the graph.  Class objects
+	represent the <i>type</i> of an object.  For instance, the
+	<code>PostalAddress</code> object represents the type of
+	objects which are street addresses.  Once you have found a class
+	of interest, you can navigate to find objects which are associated
+	with that type.
+      </li>
+      <li>
+	You can select <b>Datasets</b> and read more about datasets
+	stored in the knowledge graph.  Information about Datasets is
+	represented as a node in the graph, so in some graphs you may be
+	able to navigate from the Dataset node to find nodes stored in
+	the dataset.
+      </li>
+    </ul>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Search">
+
+    <h2>Search</h2>
+
+    <p>
+      The search tool is a simple way to add new nodes to your graph
+      view.  After selecting <b>Search</b> from the menu, you can
+      enter a search term into the search dialog, and click <b>Search</b>
+      to submit the search.
+    </p>
+
+    <p>
+      The dialog will then contain a table of information which was found.
+      In the right-hand column is a column of textual properties which
+      match your search term.
+      In the left handle column is a list of nodes.  In the middle column
+      is the name of the edge relationship which connects the
+      left-hand node to the property text.
+    </p>
+
+    <p>
+      Note that nodes may be listed multiple times, if there are multiple
+      properties which match your search term.
+    </p>
+
+    <p>
+      When you have found some nodes of interest, clicking on the name in the
+      left-hand column adds the node to the main graph display.
+      Nodes are only added once to the graph. If you try to add a node
+      which is already included in the main graph display, nothing will
+      happen.  Note that you may need to scroll the main display, or
+      close the search dialogue to find the nodes.
+    </p>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Node Interaction">
+
+    <h2>Node interaction</h2>
+
+    <p>
+      Once you have some graph nodes to work with, you can 
+      Click on a graph node to see detail.  Any detail for a node
+      is shown in a property dialogue.
+    </p>
+
+    <p>
+      In this dialogue, you can click on a node and press
+      <b>re-centre</b>, this clears the entire graph leaving only the
+      selected node.  This can be useful if your graph display is
+      cluttered and you want to continue exploring with less
+      information on the screen.
+    </p>
+
+    <p>
+      Nodes can have a URL associate with them, linking to a web page
+      containing further information.  Nodes may also have image information
+      associate, in which case a preview thumbnail image will be shown.
+      Images are not stored in the knowledge graph, SPARQL Sleuth shows
+      images by following the image URL links.
+    </p>
+
+    <p>
+      Also in this dialogue are navigation buttons to allow
+      you to explore nodes related to this node through relationship
+      edges.
+    </p>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Relationships">
+
+    <h2>Node interaction</h2>
+
+    <p>      
+      The relationship buttons are shown on the node display
+      and have arrow icons <b>&#x2b95;</b>.
+      Clicking one of these relationship buttons causes SPARQL Sleuth
+      to follow the edges associated with that relationship and add
+      a set of related nodes and edges to the graph display.
+    </p>
+
+    <p>
+      Note when exploring relationships, all relationships have a
+      direction (indicated by the direction of arrow-heads on the
+      lines.  The direction of the arrow on the button indicates which
+      direction to explore.
+    </p>
+
+    <ul>
+      <li>
+	When the arrow icon is on the left of the button, SPARQL
+	Sleuth will look for relationships which are 'incoming' i.e.
+	the arrow-head points to the selected node.
+      </li>
+      <li>
+	When the arrow icon is on the right of the button, SPARQL
+	Sleuth will look for relationships which are 'outgoing' i.e.
+	the arrow-head points away from the selected node.
+      </li>
+    </ul>
+
+    <p>
+      By way of an example, if you select a node and then press
+      the button marked <b>type &#x2b95;</b>, you will explore <b>type</b>
+      relationships with the selected node at the start of the arrow.
+      This is essentially asking "What type is this node?".
+    </p>
+
+    <p>
+      If you select a node and select the button
+      marked <b>&#x2b95; type</b>, you will explore <b>type</b>
+      relationships with the selected node at the end of the arrow.
+      This is essentially asking "Show me all nodes which have this type?".
+    </p>
+
+  </p-accordionTab>
+
+  <p-accordionTab header="Schema">
+
+    <p>
+      Select the menu icon and click <b>Schema</b> to see a list of graph
+      classes.  Selecting the name of a class will cause that class to be
+      added to the main graph view.  Once you have that class added, you can
+      use it to navigate to nodes which declare that class as their
+      <i>type</i>.  Note that there may be classes in the schema with no
+      linked information, so you should look for classes which you think
+      exist in the dataset.
+    </p>
+    
+  </p-accordionTab>
+  
+  <p-accordionTab header="Datasets">
+
+    <p>
+      The <b>Datasets</b> dialogue shows you information about the datasets in
+      the graph.  Note that not all knowledge graphs will have dataset
+      information included.  The Dataset schema used is the
+      <code>schema.org</code> <code>Dataset</code> schema.  Dataset
+      information will be shown if it conforms to this schema.
+    </p>
+
+    <p>
+      The Datasets dialogue shows dataset descriptions, along with
+      any source / author information and possible keywords.
+      There is a small blue button which will add the Dataset object
+      to the main graph view.  It is possible that you will be able
+      to navigate from the Dataset object to other information in the
+      dataset.
+    </p>
+    
+  </p-accordionTab>
+
+</p-accordion>

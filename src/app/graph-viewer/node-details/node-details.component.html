@@ -1,0 +1,66 @@
+
+<div class="box info" id="selection">
+
+  <h2 *ngIf="label">{{label}}</h2>
+
+  <div *ngIf="link">
+    <a href="{{link}}">{{link}}</a>
+  </div>
+
+  <div *ngIf="thumbnail">
+    <p-image
+      src="{{thumbnail}}" alt="thumbnail" width="250" [preview]="true">
+    </p-image>
+  </div>
+
+<div class="buttonbox">
+  <button *ngIf="selection"
+	  pButton pRipple type="button" label="Re-centre"
+	  icon="pi pi-plus-circle"	  
+	  class="p-button-raised p-button-text p-button-warning p-button-sm"
+	  style="color: #e04040"
+	  (click)="recentre()">
+  </button>
+
+  <button *ngFor="let rel of inward"
+	  (click)="reln(rel)"
+	  pButton pRipple type="button" label="{{rel.name}}"
+	  icon="pi pi-arrow-right" iconPos="left"
+	  class="p-button-raised p-button-text p-button-secondary p-button-sm"
+	  >
+  </button>
+
+  <button *ngFor="let rel of outward" (click)="reln(rel)"
+	  pButton pRipple type="button" label="{{rel.name}}"
+	  icon="pi pi-arrow-right" iconPos="right"
+	  class="p-button-raised p-button-text p-button-sm"
+	  >
+  </button>
+
+</div>
+
+  <div *ngIf="noProperties()">
+    Object has no properties
+  </div>
+
+  <div *ngIf="!noProperties()">
+    <p-table [value]="properties" styleClass="p-datatable-striped"
+	     [tableStyle]="{'min-width': '20rem'}">
+      <ng-template pTemplate="header">
+	<tr>
+          <th>Key</th>
+          <th>Value</th>
+	</tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-table>
+	<tr>
+          <td>{{table.key}}</td>
+          <td>{{table.value}}</td>
+	</tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>
+
+

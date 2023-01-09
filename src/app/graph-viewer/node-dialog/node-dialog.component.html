@@ -1,0 +1,26 @@
+
+<p-dialog class="dialog" position="right"
+	  [(visible)]="display" [modal]="false"
+	  [breakpoints]="{'1200px': '25rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '30rem'}"
+	  (onHide)="onHide()">
+
+  <ng-template pTemplate="header">
+  </ng-template>
+
+  <node-details
+    [properties]="properties"
+    [relationships]="relationships"
+    [selection]="selection"
+    >
+  </node-details>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+

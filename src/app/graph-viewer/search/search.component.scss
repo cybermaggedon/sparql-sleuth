@@ -1,0 +1,39 @@
+
+.key {
+    font-weight: bold;
+    text-align: right;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #c0c0c0;
+    padding: 0.3rem 0.6rem 0.3rem 0.6rem;
+}
+
+img {
+    max-width: 150px;
+    border: 1px solid #808080;
+    margin: 0.5rem;
+    padding: 0.2rem;
+}
+
+.box {
+    padding: 0.1rem;
+    margin: 0.1rem;
+}
+
+.box div {
+    margin: 0.8rem;
+}
+
+h2 {
+    margin: 0.8rem;
+}
+
+td button {
+    text-align: left;
+}
+

@@ -1,0 +1,48 @@
+
+<p-dialog class="dialog"
+	  [(visible)]="display" [modal]="false"
+	  [breakpoints]="{'1200px': '25rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '40rem'}"
+	   (onHide)="onHide()">
+
+  <ng-template pTemplate="header">
+    <h2>About...</h2>
+  </ng-template>
+
+  <p>
+    SPARQL Sleuth is an open-source knowledge exploration tool for
+    knowledge represented in RDF.  It can search and explore a knowledge base
+    by querying a knowledge graph which supports the SPARQL query language.
+  </p>
+
+
+  <p>
+    Also available by the same author is SPARQL Service, a simple RDF
+    knowledge store, which allows RDF data to be queried using SPARQL.
+  </p>
+
+  <p>
+    Both tools are hosted on Github here:
+  </p>
+
+  <p style="font-size: medium">
+    <a href="https://github.com/cybermaggedon/sparql-sleuth">
+      <code>https://github.com/cybermaggedon/sparql-sleuth</code>
+    </a>
+  </p>
+
+  <p style="font-size: medium">
+    <a href="https://github.com/cybermaggedon/sparql-service">
+      <code>https://github.com/cybermaggedon/sparql-service</code>
+    </a>
+  </p>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+

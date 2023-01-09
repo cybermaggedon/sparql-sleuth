@@ -1,0 +1,19 @@
+
+<p-toast position="top-center" key="announce">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-question-circle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="col-6">
+                    <button type="button" pButton (click)="info()" label="Getting started" class=""></button>
+                </div>
+            </div>
+        </div>
+    </ng-template>  
+</p-toast>
+
+<p-toast></p-toast>

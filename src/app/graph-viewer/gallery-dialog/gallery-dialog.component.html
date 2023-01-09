@@ -1,0 +1,23 @@
+
+<p-dialog class="dialog"
+	  [(visible)]="display" [modal]="false"
+	  [breakpoints]="{'1200px': '40rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '50rem'}"
+	   (onHide)="onHide()">
+
+  <ng-template pTemplate="header">
+    <h2>Graph Gallery</h2>
+  </ng-template>
+
+  <gallery></gallery>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+
+

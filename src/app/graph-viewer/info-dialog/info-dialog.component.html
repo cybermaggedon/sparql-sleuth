@@ -1,0 +1,22 @@
+
+<p-dialog class="dialog"
+	  [(visible)]="display" [modal]="false" position="right"
+	  [breakpoints]="{'1200px': '45rem', '960px': '75vw', '640px': '100vw'}"
+	  [style]="{width: '50rem'}"
+	   (onHide)="onHide()">
+
+  <ng-template pTemplate="header">
+    <h2>User guide</h2>
+  </ng-template>
+
+  <info></info>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" class="p-button-raised p-button-text"
+	    (click)="close()">
+      Close
+    </button>
+  </ng-template>
+
+</p-dialog>
+

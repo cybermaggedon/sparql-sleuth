@@ -1,0 +1,35 @@
+
+<p>
+  This list shows classes defined within the knowledge graph.  Be aware that
+  not all classes may be used as a type for objects.
+</p>
+
+<div *ngIf="schema.length > 0">
+  <p-table [value]="schema" styleClass="p-datatable-striped"
+	   [tableStyle]="{'min-width': '20rem'}" >
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Class</th>
+        <th>Object count</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+	  <button (click)="select(row.s)"
+		  pButton pRipple type="button" class="p-button-text"
+		  >
+	    {{row.slabel.value()}}
+	  </button>
+	</td>
+	<td>
+	  {{row.count.value()}}
+	</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+

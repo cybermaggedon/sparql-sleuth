@@ -1,0 +1,15 @@
+
+<div class="infobox" *ngIf="working">
+  <div *ngFor="let i of info">
+    {{i}}
+  </div>
+</div>
+
+<div class="spinner">
+  <spinner></spinner>
+</div>
+
+<router-outlet></router-outlet>
+
+<toast></toast>
+

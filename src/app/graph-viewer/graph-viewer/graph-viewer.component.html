@@ -1,0 +1,67 @@
+
+<div style="position: absolute; top: 0px; left: 0px;">
+  <menu></menu>
+</div>
+
+<div class="container">
+  <div class="graph">
+    <graph></graph>
+  </div>
+</div>
+
+<node-dialog
+  [display]="nodeDialogVisible"
+  [properties]="properties"
+  [relationships]="relationships"
+  [selection]="selection"
+  (onClose)="closeNodeDialog()"
+  >
+</node-dialog>
+
+<search-dialog
+  [display]="searchDialogVisible"
+  (onClose)="closeSearchDialog()"
+  >
+</search-dialog>
+
+<schema-dialog
+  [display]="schemaDialogVisible"
+  (onClose)="closeSchemaDialog()"
+  >
+</schema-dialog>
+
+<datasets-dialog
+  [display]="datasetsDialogVisible"
+  (onClose)="closeDatasetsDialog()"
+  >
+</datasets-dialog>
+
+<info-dialog
+  [display]="infoDialogVisible"
+  (onClose)="closeInfoDialog()"
+  >
+</info-dialog>
+
+<about-dialog
+  [display]="aboutDialogVisible"
+  (onClose)="closeAboutDialog()"
+  >
+</about-dialog>
+
+<import-dialog
+  [display]="importDialogVisible"
+  (onClose)="closeImportDialog()"
+  >
+</import-dialog>
+
+<export-dialog
+  [display]="exportDialogVisible"
+  (onClose)="closeExportDialog()"
+  >
+</export-dialog>
+
+<gallery-dialog
+  [display]="galleryDialogVisible"
+  (onClose)="closeGalleryDialog()"
+  >
+</gallery-dialog>
