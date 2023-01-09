@@ -14,7 +14,6 @@ import { PanelModule } from 'primeng/panel';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
-import { MenuModule } from 'primeng/menu';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DataViewModule } from 'primeng/dataview';
 
@@ -32,7 +31,6 @@ import { DatasetsComponent } from './datasets/datasets.component';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { AccordionModule } from 'primeng/accordion';
-import { MenuComponent } from './menu/menu.component';
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { ExportDialogComponent } from './export-dialog/export-dialog.component';
 import { GalleryDialogComponent } from './gallery-dialog/gallery-dialog.component';
@@ -53,7 +51,6 @@ import { GalleryComponent } from './gallery/gallery.component';
         DatasetsComponent,
         InfoDialogComponent,
         AboutDialogComponent,
-        MenuComponent,
         ImportDialogComponent,
         ExportDialogComponent,
         GalleryDialogComponent,
@@ -74,7 +71,6 @@ import { GalleryComponent } from './gallery/gallery.component';
 	PanelModule,
 	CardModule,
 	ImageModule,
-	MenuModule,
 	TagModule,
 	AccordionModule,
 	InputTextareaModule,
