@@ -42,10 +42,10 @@ type Definition = any;
 })
 export class DefinitionsService {
 
-    private textSearchResults = 100;
-    private singlePropertyResults = 100;
-    private relationshipEdges = 25;
-    private propertyEdges = 25;
+    private textSearchResults = 40;
+    private singlePropertyResults = 40;
+    private relationshipEdges = 15;
+    private propertyEdges = 15;
     private fetchEdges = "FIXME?";
 
     private queries : { [key : string] : QueryBuilder } = {
@@ -156,7 +156,7 @@ export class DefinitionsService {
     defs : { [key : string] : Definition } = {
 	schema: {
 	    description: "Acquire schema", kind: "po-from-defs",
-	    pred: IS_A, id: CLASS, limit: 50,
+	    pred: IS_A, id: CLASS, limit: 30,
 	    pipe: [
 		{
 		    kind: "join-label", input: "s", output: "slabel"
