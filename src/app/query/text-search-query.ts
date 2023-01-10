@@ -5,6 +5,7 @@ import { Query, QueryResult, QueryEngine } from './query';
 import { Value, Uri, Literal, Triple } from '../rdf/triple';
 
 export class TextSearchQuery implements Query {
+
     constructor(
 	desc : string,
 	text : Value,
@@ -20,7 +21,7 @@ export class TextSearchQuery implements Query {
     description() { return this.desc; }
 
     hash() : string {
-	return "ts " +  this.text + " " + this.limit;
+	return "ts " +  this.text.hash() + " " + this.limit;
     }
 
     
@@ -52,8 +53,5 @@ export class TextSearchQuery implements Query {
 	return q.query(this);
     }
 
-    decode(res : any) : any{
-      return res;
-    }
-
 }
+

@@ -30,14 +30,7 @@ export class RawQuery implements Query {
     }
 
     run(q : QueryEngine) : Observable<QueryResult> {
-	return q.query(this).pipe(
-	    map(x => this.decode(x))
-	);
-    }
-
-    // FIXME: Not needed?
-    decode(res : QueryResult) : QueryResult {
-	return res;
+	return q.query(this);
     }
 
 }
