@@ -66,11 +66,5 @@ export class TripleQuery implements Query {
 	return q.query(this);
     }
 
-    decode(res : QueryResult) : any {
-
-	return res;
-
-    }
-
 }
 

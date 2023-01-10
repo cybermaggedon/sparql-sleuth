@@ -76,10 +76,8 @@ export class DefinitionsService {
 	    return new RawQuery(description, query);
 	},
 	"text-search": 	(d : QueryDef, params : Params) : Query => {
-
 	    let description = d["description"];
 	    description = this.replaceParams(description, params);
-
 	    return new TextSearchQuery(
 		description, params["text"], this.textSearchResults,
 	    );
@@ -261,13 +259,13 @@ export class DefinitionsService {
 	    ]
 	},
 	"relationships-in": {
-	    description: "Properties %%pred%% %%id%%", kind: "po",
+	    description: "Relationships %%pred%% %%id%%", kind: "po",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
 	},
 	"relationships-out": {
-	    description: "Properties %%id%% %%pred%%", kind: "sp",
+	    description: "Relationships %%id%% %%pred%%", kind: "sp",
 	    limit: this.relationshipEdges,
 	    pipe: [
 	    ]
@@ -432,7 +430,6 @@ export class DefinitionsService {
     relationshipsOutwards(id : Uri, rel : Uri) : Observable<QueryResult> {
 	return this.fromDef("relationships-out", { id: id, pred: rel });
     }
-
 
     relationshipKindsIn(id : Uri) : Observable<QueryResult> {
 	return this.fromDef("relationship-kinds-in", { id: id });

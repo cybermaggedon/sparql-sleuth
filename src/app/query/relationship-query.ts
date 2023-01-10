@@ -22,7 +22,7 @@ export class RelationshipQuery implements Query {
     limit : number = 100;
     description() { return this.desc; }
     hash() : string {
-	return "eq " +  this.id.hash() + " " + this.inward + " " + this.limit;
+	return "relq " +  this.id.hash() + " " + this.inward + " " + this.limit;
     }
 
     
@@ -54,23 +54,7 @@ export class RelationshipQuery implements Query {
     }
 
     run(q : QueryEngine) : Observable<QueryResult> {
-	return q.query(this).pipe(
-	    map(x => this.decode(x))
-	);
-    }
-
-    decode(res : QueryResult) : QueryResult {
-        return res;
-/*
-	let values : Value[] = [];
-
-	for (let row of res.data) {
-	    let pred = row["pred"];
-	    values.push(pred);
-	}
-
-	return values;
-	*/
+	return q.query(this);
     }
 	
 }
