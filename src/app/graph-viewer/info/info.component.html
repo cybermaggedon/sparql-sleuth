@@ -4,11 +4,13 @@
     <h2>Welcome to SPARQL Sleuth!</h2>
 
     <p>
-      This tool is used to explores a knowledge graph dataset.  A knowledge
-      graph is stored as a set of nodes, interconnected by edges.
-      Nodes may have properties associate with them.
+      This tool is used to explore a knowledge graph.  A knowledge
+      graph is a representation of information as a set of nodes,
+      interconnected by edges.  Nodes represent a single object.
+      Nodes may have properties associated with them.
       Edges represent a relationsip between nodes, and have a direction -
-      they are drawn as an array, and are labelled with an edge label.
+      they are drawn as an arrow, and are labelled with an edge label which
+      describes the relationship.
     </p>
 
     <p>
@@ -36,7 +38,7 @@
     <ul>
       <li>
 	You can select <b>Search</b> from the menu, and search for
-	information based on text associated with a node.
+	information based on text in properties associated with a node.
       </li>
       <li>
 	You can select <b>Schema</b> and find out the names of
@@ -45,7 +47,8 @@
 	<code>PostalAddress</code> object represents the type of
 	objects which are street addresses.  Once you have found a class
 	of interest, you can navigate to find objects which are associated
-	with that type.
+	with that type.  Note that some type objects may not represent
+	any information in the graph.
       </li>
       <li>
 	You can select <b>Datasets</b> and read more about datasets
@@ -196,7 +199,7 @@
       The <b>Datasets</b> dialogue shows you information about the datasets in
       the graph.  Note that not all knowledge graphs will have dataset
       information included.  The Dataset schema used is the
-      <code>schema.org</code> <code>Dataset</code> schema.  Dataset
+      schema.org <code>Dataset</code> schema.  Dataset
       information will be shown if it conforms to this schema.
     </p>
 
