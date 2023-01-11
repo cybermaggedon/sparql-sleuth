@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { map } from 'rxjs/operators';
 
@@ -19,35 +19,14 @@ import { DefinitionsService } from '../../query/definitions.service';
 })
 export class SchemaComponent implements OnInit {
 
-    constructor(
-	private graph : GraphService,
-	private command : CommandService,
-	private definitions : DefinitionsService,
-    ) { }
-
+    @Input()
     schema : Row[] = [];
 
+    constructor(
+	private graph : GraphService,
+    ) { }
+
     ngOnInit(): void {
-
-	this.command.command(Command.SCHEMA).subscribe(
-	    () => {
-		if (this.schema.length > 0) return;
-		this.runQuery();
-	    }
-	);
-
-    }
-
-    runQuery() {
-
-	let schemaQuery = this.definitions.schemaQuery();
-
-	schemaQuery.subscribe(
-	    (result : any) => {
-		this.schema = result.data;
-	    }
-	);
-
     }
 
     select(id : Uri) {

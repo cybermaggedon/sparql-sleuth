@@ -1,4 +1,7 @@
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+
+import { Row } from '../../query/query';
 
 @Component({
     selector: 'schema-dialog',
@@ -8,6 +11,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class SchemaDialogComponent implements OnInit {
 
     @Input() display = false;
+
+    @Input() schema : Row[] = [];
 
     @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
