@@ -53,7 +53,7 @@ export class NodeDetailsComponent implements OnInit {
     }
 
     noProperties() : boolean {
-	return Object.keys(this.props).length == 0;
+	return this.props.empty();
     }
 
     ngOnInit(): void {

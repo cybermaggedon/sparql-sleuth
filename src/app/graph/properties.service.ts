@@ -24,6 +24,8 @@ export class Properties {
 
     private props : Property[] = [];
 
+    empty() { return this.props.length == 0; }
+
     private propMap : { [key : string] : string } = {};
 
     set properties(p : Property[]) {
@@ -122,7 +124,8 @@ export class PropertiesService {
 			    );
 			} 
 
-		    })
+		    });
+		if (tasks.length == 0) return of([]);
 		return forkJoin(tasks);
 	    }
 	);

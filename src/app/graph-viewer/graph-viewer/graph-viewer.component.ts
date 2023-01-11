@@ -81,12 +81,15 @@ export class GraphViewerComponent implements OnInit {
 		this.relationship.getRelationships(
 		    new Uri(ev.node.id)
 		).subscribe(
-		    ev => { this.relationships = ev; }
+		    ev => {
+			this.relationships = ev;
+		    }
 		);
 
 		this.propertyService.getProperties(ev.node).subscribe(
 		    props => {
 			this.properties = props;
+			console.log(props);
 			this.state = DialogState.NODE;
 		    }
 		);
