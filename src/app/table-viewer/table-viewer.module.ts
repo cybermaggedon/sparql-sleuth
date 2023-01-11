@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -22,6 +23,7 @@ import { TableViewerComponent } from './table-viewer/table-viewer.component';
 	InputTextareaModule,
 	FormsModule,
 	ReactiveFormsModule,
+	RouterModule,
     ]
 })
 export class TableViewerModule { }

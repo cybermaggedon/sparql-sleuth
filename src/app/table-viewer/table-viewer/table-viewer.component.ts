@@ -109,7 +109,7 @@ export class TableViewerComponent implements OnInit {
 	    ),
 	).subscribe(
 	    (res : any) => {
-		console.log(res);
+//		console.log(res);
 		this.relationships = res;
 	    }
 	);
