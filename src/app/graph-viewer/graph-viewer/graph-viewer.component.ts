@@ -1,9 +1,7 @@
 
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
-
-import { MenuItem } from 'primeng/api';
 
 import { Uri } from '../../rdf/triple';
 import { Node, Relationship } from '../../graph/graph';
@@ -14,8 +12,10 @@ import { PropertiesService, Properties } from '../../graph/properties.service';
 import { EventService } from '../../graph/event.service';
 import { MessageService } from '../../message.service';
 import { GalleryService } from '../../gallery.service';
-import { SerialisationService } from '../../graph/serialisation.service';
 import { GraphService } from '../../graph/graph.service';
+import { DatasetsService } from '../../query/datasets.service';
+import { SchemaService } from '../../query/schema.service';
+import { Row } from '../../query/query';
 
 // Which dialog is open.  Can only be 1 at once.
 enum DialogState {
@@ -38,27 +38,27 @@ enum DialogState {
 })
 export class GraphViewerComponent implements OnInit {
 
+    schema : Row[] = [];
+    datasets : Row[] = [];
+    state : DialogState = DialogState.NONE;
+    properties : Properties = new Properties();
+    selection? : Node;
+    relationships : Relationship[] = [];
+
     constructor(
 	private command : CommandService,
 	private route : ActivatedRoute,
-	private router : Router,
 	private propertyService : PropertiesService,
 	private events : EventService,
 	private relationship : RelationshipService,
 	private message : MessageService,
 	private gallery : GalleryService,
-	private ss : SerialisationService,
 	private graph : GraphService,
+	private datasetsService : DatasetsService,
+	private schemaService : SchemaService,
     ) {
-	
     }
 
-
-    state : DialogState = DialogState.NONE;
-
-    properties : Properties = new Properties();
-
-    // FIXME: quad-state type needed.
     get nodeDialogVisible() { return this.state == DialogState.NODE; }
     get searchDialogVisible() { return this.state == DialogState.SEARCH; }
     get schemaDialogVisible() { return this.state == DialogState.SCHEMA; }
@@ -68,10 +68,6 @@ export class GraphViewerComponent implements OnInit {
     get exportDialogVisible() { return this.state == DialogState.EXPORT; }
     get importDialogVisible() { return this.state == DialogState.IMPORT; }
     get galleryDialogVisible() { return this.state == DialogState.GALLERY; }
-
-    selection? : Node;
-
-    relationships : Relationship[] = [];
 
     ngOnInit() : void {
 
@@ -99,6 +95,28 @@ export class GraphViewerComponent implements OnInit {
 	    
 	);
 
+	this.command.command(Command.SCHEMA).subscribe(
+	    () => {
+	       this.schemaService.getSchema().subscribe(
+		   sch => {
+		       this.schema = sch.data;
+		       this.state = DialogState.SCHEMA;
+		   }
+	       );
+	    }
+	);
+
+	this.command.command(Command.DATASETS).subscribe(
+	    () => {
+	       this.datasetsService.getDatasets().subscribe(
+		   ds => {
+		       this.datasets = ds;
+		       this.state = DialogState.DATASETS
+		   }
+	       );
+	    }
+	);
+
 	this.events.nodeDeselectedEvents().subscribe(
 	    ev => {
 		if (this.state == DialogState.NODE)
@@ -121,14 +139,6 @@ export class GraphViewerComponent implements OnInit {
 
 	this.command.command(Command.SEARCH).subscribe(
 	    () => this.state = DialogState.SEARCH
-	);
-
-	this.command.command(Command.SCHEMA).subscribe(
-	    () => this.state = DialogState.SCHEMA
-	);
-
-	this.command.command(Command.DATASETS).subscribe(
-	    () => this.state = DialogState.DATASETS
 	);
 
 	this.command.command(Command.INFO).subscribe(

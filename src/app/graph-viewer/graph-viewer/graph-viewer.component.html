@@ -20,12 +20,14 @@
 
 <schema-dialog
   [display]="schemaDialogVisible"
+  [schema]="schema"
   (onClose)="closeSchemaDialog()"
   >
 </schema-dialog>
 
 <datasets-dialog
   [display]="datasetsDialogVisible"
+  [datasets]="datasets"
   (onClose)="closeDatasetsDialog()"
   >
 </datasets-dialog>
