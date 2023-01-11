@@ -1,4 +1,8 @@
 
+// This is a work in the progress.  The design behind it is that the
+// defs object below is pure JSON and could be stored in the configuration
+// object, thus allowing the query engine to be tailored to various dialects
+// of SPARQL service.
 import { Injectable } from '@angular/core';
 import { map, Observable, of, OperatorFunction } from 'rxjs';
 
