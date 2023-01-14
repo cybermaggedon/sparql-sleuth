@@ -5,8 +5,8 @@
 
 <div *ngIf="gallery.length > 0">
 
-  <p-dataView #dv [value]="gallery" [paginator]="true" [rows]="3"
-	      filterBy="title" layout="grid">
+  <p-dataView #dv [value]="gallery" [paginator]="true" [rows]="10"
+	      filterBy="title,description,keywords" layout="list">
 
     <ng-template pTemplate="header">
       <div class="flex flex-column md:flex-row md:justify-content-between">
@@ -50,6 +50,47 @@
 	</div>
       </div>
     </ng-template>
+
+    <ng-template let-item pTemplate="listItem">
+      <div class="col-12">
+        <div class="item-list-item">
+
+          <div class="item-list-image">
+
+	    <p-image
+	      [src]="item.image" [alt]="item.title" [preview]="true"
+	      styleClass="image">
+	    </p-image>
+
+	  </div>
+
+          <div class="item-list-detail">
+
+	    <button (click)="load(item)"
+		    pButton pRipple type="button"
+		    class="p-button-text item-title"
+		    >
+	      {{item.title}}
+	    </button>
+	    
+            <div class="item-description">{{item.description}}</div>
+
+          </div>
+
+	  <div class="item-list-buttons">
+
+            <div class="item-keywords">
+	      <span class="item-keyword" *ngFor="let keyword of item.keywords">
+		{{keyword}}
+	      </span>
+	    </div>
+
+          </div>
+
+        </div>
+      </div>
+    </ng-template>    
+
   </p-dataView>
 
 </div>
