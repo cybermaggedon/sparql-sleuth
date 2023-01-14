@@ -1,19 +1,51 @@
 :host ::ng-deep {
 
-    .item-title {
-        font-size: large;
-        font-weight: 700;
-	margin: 0.5rem;
-    }
+    .item-list-item {
+
+        display: flex;
+        align-items: center;
+        padding: 0.1rem;
+        width: 100%;
+
+	.item-list-image {
+	    flex: 0 0 20%;
+	    align-self: flex-centre;
+	}
     
-    .item-description {
-        margin: 0.5rem;
-	height: 4rem;
-    }
+	.item-list-detail {
+	    flex: 0 0 60%;
+	    align-self: flex-start;
+	}
     
-    .item-keywords {
-        margin: 0.5rem 0 0.5rem 0;
-	line-height: 180%;
+	.item-title {
+            font-weight: 700;
+	    margin-top: 0.5rem;
+	    margin-bottom: 0.5rem;
+	    text-align: left;
+	}
+    
+	.item-description {
+	    padding-left: 2.2rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+	}
+    
+	.item-list-buttons {
+
+	    flex: 0 0 20%;
+	    align-self: flex-start;
+	    margin: 1rem;
+
+	    button {
+		margin: 1rem;
+	    }
+
+	    .p-button {
+		margin-bottom: .2rem;
+		font-size: small;
+	    }
+	}
+    
     }
 
     .item-image-box {
@@ -31,36 +63,21 @@
 	color: white;
     }
     
-    .grid-item {
-
-        margin: .5em;
-        border: 1px solid var(--surface-border);
-	height: 30rem;
-    
-        .grid-item-top,
-        .grid-item-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-    
-        .grid-item-content {
-            text-align: center;
-        }
-    }
-    
     img {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16),
 		    0 3px 6px rgba(0, 0, 0, 0.23);
+	margin: 1rem;
     }
 
     .image.p-image {
 	img {
-	    height: 8rem;
+	    width: 100%;
 	}
+
 	.p-image-preview {
 	    height: 24rem;
 	}
+
     }
 
     .item-buttons {
