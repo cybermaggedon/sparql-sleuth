@@ -1,18 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 
 import { Uri, Literal } from '../../rdf/triple';
 import { Row } from '../../query/query';
 
 import { GraphService } from '../../graph/graph.service';
 import { DefinitionsService } from '../../query/definitions.service';
-
-interface Dataset {
-    dataset : Uri;
-    title : string;
-    description : string;
-    author : string;
-    keywords : string[];
-};
 
 @Component({
   selector: 'datasets',
@@ -22,6 +14,8 @@ interface Dataset {
 export class DatasetsComponent implements OnInit {
 
     @Input() datasets : Row[] = [];
+
+    @ViewChild('dataView') dataView : any;
 
     constructor(
 	private graph : GraphService,
@@ -38,13 +32,8 @@ export class DatasetsComponent implements OnInit {
     filterby = "";
 
     handleKeyword(tag : string) {
-
-	this.definitions.tagQuery(new Literal(tag)).subscribe(
-	    (result : any) => {
-		this.graph.includeTriples(result);
-	    }
-	);
-
+	this.filterby = tag;
+	this.dataView.filter(tag);
     }
 
 }

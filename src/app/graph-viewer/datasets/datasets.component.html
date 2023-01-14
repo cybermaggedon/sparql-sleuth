@@ -10,8 +10,8 @@
 
 <div *ngIf="datasets.length > 0">
 
-  <p-dataView #dv [value]="datasets" [paginator]="true" [rows]="2"
-	      filterBy="title" layout="grid">
+  <p-dataView #dataView [value]="datasets" [paginator]="true" [rows]="10"
+	      filterBy="title,description,keywords" layout="list">
 
     <ng-template pTemplate="header">
       <div class="flex flex-column md:flex-row md:justify-content-between">
@@ -19,40 +19,42 @@
           <i class="pi pi-search"></i>
           <input type="search" pInputText [(ngModel)]="filterby"
 		 placeholder="Search by title"
-		 (input)="dv.filter(this.filterby)">
+		 (input)="dataView.filter(this.filterby)">
 	</span>
       </div>
     </ng-template>
 
-    <ng-template let-item pTemplate="gridItem">
-      <div class="col-12 md:col-6 surface-section">
-	<div class="grid-item card">
+    <ng-template let-item pTemplate="listItem">
+      <div class="col-12">
+        <div class="item-list-item">
 
-          <div class="grid-item-content">
+          <div class="item-list-detail">
 
-            <div class="item-title">{{item.title}}</div>
+	    <button (click)="select(item.dataset)"
+		    pButton pRipple type="button"
+		    class="p-button-text item-title"
+		    >
+	    {{item.title}}
+	  </button>
+
             <div class="item-description">{{item.description}}</div>
-	    <div class="item-button">
-	      <button pButton type="button" label="{{item.title}}"
-		      id="locate-node"
-		      class="p-button-sm p-button-rounded"
-		      (click)="select(item.dataset)">
-	      </button>
-	    </div>
-            <div class="item-keywords">
-	      <span class="item-keyword" *ngFor="let keyword of item.keywords">
-		<button pButton type="button"
-			class="p-button-sm p-button-rounded p-button-outlined tag"
-			label="{{keyword}}"
-			(click)="handleKeyword(keyword)"
-			>
-		</button>
-	      </span>
-	    </div>
           </div>
-	</div>
+
+	  <div class="item-list-buttons">
+  	    <span class="item-keyword" *ngFor="let keyword of item.keywords">
+	      <button pButton type="button"
+		      class="p-button-sm p-button-rounded p-button-outlined tag"
+		      label="{{keyword}}"
+		      (click)="handleKeyword(keyword)"
+		      >
+	      </button>
+	    </span>
+          </div>
+
+        </div>
       </div>
-    </ng-template>
+    </ng-template>    
+
   </p-dataView>
 
 </div>

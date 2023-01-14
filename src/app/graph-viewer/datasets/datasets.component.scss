@@ -1,5 +1,7 @@
 :host ::ng-deep {
 
+    .grid-item {
+
     .item-title {
         font-weight: 700;
 	height: 2rem;
@@ -13,8 +15,6 @@
 	overflow: clip;
     }
     
-    .grid-item {
-
         margin: .5em;
         border: 1px solid var(--surface-border);
 	height: 30rem;
@@ -52,8 +52,47 @@
 	margin-right: auto;
     }
 
-    button {
-	margin: 1rem;
+    .item-list-item {
+
+        display: flex;
+        align-items: center;
+        padding: 0.1rem;
+        width: 100%;
+
+	.item-list-detail {
+	    flex: 0 0 60%;
+	    align-self: flex-start;
+	}
+    
+	.item-title {
+            font-weight: 700;
+	    margin-top: 0.5rem;
+	    margin-bottom: 0.5rem;
+	    text-align: left;
+	}
+    
+	.item-description {
+	    padding-left: 1.2rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+	}
+    
+	.item-list-buttons {
+
+	    flex: 0 0 40%;
+	    align-self: center;
+	    margin: 1rem;
+
+	    button {
+		margin: 0.1rem;
+	    }
+
+	    .p-button {
+		margin-bottom: .2rem;
+		font-size: small;
+	    }
+	}
+    
     }
 
 }
