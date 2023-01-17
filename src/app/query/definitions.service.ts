@@ -20,7 +20,7 @@ import { RelationshipQuery } from './relationship-query';
 import { Query } from './query';
 
 import { IS_A, CLASS, LABEL } from '../rdf/defs';
-import { Value, Uri, Literal, Triple } from '../rdf/triple';
+import { Value, Uri, Literal, Triple, Unbound } from '../rdf/triple';
 import { QueryResult, Row } from './query';
 
 const DATASET = new Uri("https://schema.org/Dataset");
@@ -463,8 +463,12 @@ export class DefinitionsService {
 
     // ----------------------------------------------------------------------
 
-    private toProperty(id : Uri, pred : Uri) : Observable<Value[]> {
-	return this.singlePropertyQuery(id, pred).pipe(
+    private toProperty(id : Value, pred : Uri) : Observable<Value[]> {
+
+	if (!id.is_uri())
+	    return of([new Unbound()]);
+
+	return this.singlePropertyQuery(id as Uri, pred).pipe(
 	     map(
 		(qr : QueryResult) => qr.data.map(
 		    (row : Row) => row["o"]

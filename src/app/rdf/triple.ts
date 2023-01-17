@@ -63,7 +63,7 @@ export class Unbound implements Value {
     hash() { return "n"; }
     term() {
         console.log("FIXME: Caan't put Unbound in a SPARQL query");
-	return '""';
+	return '<>';
 //	throw new Error("Can't put Unbound in a SPARQL query");
 //	return "FIXME";
     }
