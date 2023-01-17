@@ -27,6 +27,9 @@ export class TransformService {
 	if (label.startsWith("http://"))
             label = label.substr(label.lastIndexOf("/") + 1);
 
+	if (label.startsWith("https://"))
+            label = label.substr(label.lastIndexOf("/") + 1);
+
 	if (label.lastIndexOf("#") >= 0)
             label = label.substr(label.lastIndexOf("#") + 1);
 

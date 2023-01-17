@@ -94,6 +94,9 @@ export class QueryService implements QueryEngine {
 
 		if (dat.type == "unbound") {
 		    qrow[k] = new Unbound();
+		} else if (dat.type == "bnode") {
+		    // Dunno what we're supposed to do with bnode?
+		    qrow[k] = new Unbound();
 		} else if (dat.type == "literal") {
 		    if (!dat.value)
 			throw new Error("SPARQL results missing a literal value");

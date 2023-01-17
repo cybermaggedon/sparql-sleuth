@@ -89,7 +89,6 @@ export class GraphViewerComponent implements OnInit {
 		this.propertyService.getProperties(ev.node).subscribe(
 		    props => {
 			this.properties = props;
-			console.log(props);
 			this.state = DialogState.NODE;
 		    }
 		);
