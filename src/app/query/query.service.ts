@@ -98,11 +98,11 @@ export class QueryService implements QueryEngine {
 		    // Dunno what we're supposed to do with bnode?
 		    qrow[k] = new Unbound();
 		} else if (dat.type == "literal") {
-		    if (!dat.value)
+		    if (dat.value === undefined)
 			throw new Error("SPARQL results missing a literal value");
 		    qrow[k] = new Literal(dat.value, dat.datatype);
 		} else if (dat.type == "uri") {
-		    if (!dat.value)
+		    if (dat.value === undefined)
 			throw new Error("SPARQL results missing a URI value");
 		    qrow[k] = new Uri(dat.value);
 		} else {
