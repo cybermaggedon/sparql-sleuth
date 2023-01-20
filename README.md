@@ -9,6 +9,8 @@ of the underlying knowledge graph.
 
 ![screenshot](screen.png)
 
+Demo: https://partygate-web-prod-wrennwfy6q-ew.a.run.app/graph?node=http:%2F%2Fe623fd-partygate%2Fdec-top-aide-leaving-do&relationships=both
+
 ## How it works
 
 This is a web application built using Angular.  Building the application
