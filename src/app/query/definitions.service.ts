@@ -49,6 +49,7 @@ export class DefinitionsService {
     private textSearchResults = 40;
     private singlePropertyResults = 40;
     private relationshipEdges = 15;
+    private relationshipKindEdges = 15;
     private propertyEdges = 15;
     private fetchEdges = "FIXME?";
 
@@ -113,7 +114,7 @@ export class DefinitionsService {
 	    description = this.replaceParams(description, params);
 
 	    return new LabelQuery(
-		description, params["id"]
+		description, params["id"], d["limit"]
 	    );
 	},
 	relationship: (d : QueryDef, params : Params) : Query => {
@@ -254,11 +255,13 @@ export class DefinitionsService {
 	},
 	"single-property": {
 	    description: "Property %%id%% %%pred%%", kind: "sp",
+	    limit: 30,
 	    pipe: [
 	    ]
 	},
 	"property": {
 	    description: "Properties %%id%%", kind: "s",
+	    limit: 30,
 	    pipe: [
 	    ]
 	},
@@ -277,19 +280,20 @@ export class DefinitionsService {
 	"relationship-kinds-in": {
 	    description: "Relationships to %%id%%", inward: true,
 	    kind: "relationship",
-	    limit: this.relationshipEdges,
+	    limit: this.relationshipKindEdges,
 	    pipe: [
 	    ]
 	},
 	"relationship-kinds-out": {
 	    description: "Relationships from %%id%%", inward: false,
 	    kind: "relationship",
-	    limit: this.relationshipEdges,
+	    limit: this.relationshipKindEdges,
 	    pipe: [
 	    ]
 	},
 	label: {
 	    description: "Label %%id%%", kind: "label",
+	    limit: 5,
 	    pipe: [
 	    ]
 	},

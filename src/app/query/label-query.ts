@@ -8,7 +8,7 @@ export class LabelQuery implements Query {
     constructor(
 	desc : string,
 	id : Value,
-	limit : number = 100
+	limit : number = 10
     ) {
 	this.id = id;
 	this.desc = desc;
